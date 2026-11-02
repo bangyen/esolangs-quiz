@@ -339,6 +339,21 @@ function playGenericRound() {
   nextBtn.click();
 }
 
+// feedbackNow() reads innerHTML — the SERIALIZED form, in which a
+// language name containing & < > (e.g. Hexagony's decoy) comes
+// back escaped (&gt;&lt;&gt;), while the scenario records below
+// carry the RAW lang/decoy names from the data. Comparing the two
+// failed whenever the shuffle dealt that one entry into the
+// wrong-pick slot (~1 run in 10). Decode the entities so the
+// recorded feedback is the line the app actually composed; the
+// Python assertions then pin that raw text exactly, whichever
+// entry is dealt. (The mirror image of the escaped-needle review
+// checks elsewhere in this file.) &amp; decodes last so an escaped
+// literal entity round-trips instead of double-decoding.
+const feedbackText = () => feedbackNow()
+  .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  .replace(/&amp;/g, '&');
+
 function handleDiscRound(record) {
   const entry = discData.find(e =>
     e.code === document.getElementById('codeEl').textContent);
@@ -354,7 +369,7 @@ function handleDiscRound(record) {
     discScen.correct = {
       delta: scoreNow() - before,
       pendingAfter: pendingTimers().length,
-      feedback: feedbackNow(),
+      feedback: feedbackText(),
       srBefore: srBefore,
       title: titleNow(),
       tag: qTag.textContent,
@@ -369,7 +384,7 @@ function handleDiscRound(record) {
     discScen.wrong = {
       delta: scoreNow() - before,
       pendingAfter: pendingTimers().length,
-      feedback: feedbackNow(),
+      feedback: feedbackText(),
       lang: entry.lang,
       decoy: entry.decoy,
     };
