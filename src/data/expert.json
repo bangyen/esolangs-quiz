@@ -910,6 +910,54 @@
       "code": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
       "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
       "fact": "Fractran (John Conway): multiply one integer by the first listed fraction that keeps it whole, repeat. Prime factorisation is the memory."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Brainfuck",
+      "family": "Tape & bit cells",
+      "code": "++++++++++[>+++++++>++++++++++>+++>+<<<<-]\n>++.>+.+++++++..+++.>++.\n<<+++++++++++++++.>.+++.------.--------.>+.>.",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Brainfuck (Urban Müller, 1993): eight commands over a tape of byte cells — the ancestor the rest of its family (Brainbool, Smallfuck, Ook!, COW) re-encodes or shrinks."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Ook!",
+      "family": "Tape & bit cells",
+      "code": "Ook. Ook? Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok? Ook? Ook! Ook? Ook? Ook. Ook. Ook. Ook. Ook?",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Ook! is Brainfuck with its eight commands written as pairs of one word — Ook. Ook?, Ook? Ook. and friends — so it lives in the same tape family despite the fur."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Unlambda",
+      "family": "Combinators — no variables",
+      "code": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Unlambda: ` is function application and .x prints x — pure combinators (s, k, i) with no variables, which puts it with Iota, Jot and Lazy K rather than with the tape languages its dots suggest."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Jot",
+      "family": "Combinators — no variables",
+      "code": "1111110011110000111110101011\n1100011111000010111110001110",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Jot (Chris Barker) writes the SK combinator calculus in binary: 0 and 1 are the only symbols, and the digit string itself is the function. No tape, no stack — just application."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Befunge",
+      "family": "2D grids & paths",
+      "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Befunge (Chris Pressey, 1993) is the original 2D grid language: arrows steer the pointer, the reversed string is pushed a letter at a time, and @ halts."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Whitespace",
+      "family": "Numbers & lists only",
+      "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n␣␣␣ ⇥␣ ␣⇥␣␣␣ ⏎\n⇥⏎ ␣␣ ⏎",
+      "note": "// Two-stage round — shown with visible symbols, since the real file would look blank. Stage 1 of 2: pick the family. Get it wrong and the round ends immediately.",
+      "fact": "Whitespace pushes numbers encoded in spaces and tabs: its programs are quite literally lists of numbers written in an invisible alphabet, which is why it sits in the numbers family here."
     }
   ],
   "EXPERT_PAIR": [
