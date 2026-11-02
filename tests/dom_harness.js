@@ -235,8 +235,18 @@ for (let step = 0; step < 15 && !twoStage; step++) {
 out.expertTwoStage = twoStage;
 
 // A pending timer is cancelled by a mode switch; firing the stale
-// handle afterwards must not touch the fresh run.
+// handle afterwards must not touch the fresh run. The current Expert
+// round here is the run's SECOND two-stage round (the hunt above ends
+// on the round after the first two-stage, and buildOrder deals Expert
+// phases in ID / odd / two-stage / pairing order): a blind first click
+// is only a stage-1 family pick, and a CORRECT family pick completes
+// nothing — it swaps in stage 2 and schedules no timer (the same is
+// true of a correct pairing "Different"). So click through a possible
+// stage-2 swap-in: this setup must guarantee a genuinely pending
+// timer, whatever the shuffle dealt. (Regression: this flaked in CI
+// whenever the shuffled first family button was the correct one.)
 optionsEl.children[0].click();                             // answer current Expert round
+if (!pendingTimers().length) optionsEl.children[0].click();  // finish a stage-2 swap-in
 const staleAfterSwitch = pendingTimers()[0];
 out.modeSwitchHadTimer = !!staleAfterSwitch;
 document.getElementById('modeHardBtn').click();            // setMode('hard')
@@ -245,8 +255,13 @@ if (staleAfterSwitch) fireTimer(staleAfterSwitch.id);
 out.modeSwitchAfterStaleFire = { q: stats().q, tag: qTag.textContent };
 
 // Same for Play again (restart) in Hard, where the answered round's
-// timer is pending at the moment of the restart.
+// timer is pending at the moment of the restart. Hard round 1 is
+// always a fragment (buildOrder deals fragments first) and any
+// fragment answer completes the round, so one click already
+// guarantees the timer; the guarded second click is defence in depth
+// mirroring the mode-switch setup — a no-op while that order holds.
 optionsEl.children[0].click();                             // answer Hard round 1
+if (!pendingTimers().length) optionsEl.children[0].click();  // finish a stage-2 swap-in
 const staleAfterRestart = pendingTimers()[0];
 out.restartHadTimer = !!staleAfterRestart;
 document.getElementById('restartBtn').click();
