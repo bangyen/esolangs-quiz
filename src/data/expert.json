@@ -323,6 +323,114 @@
         "Whitespace"
       ],
       "fact": "Labyrinth (Martin Ender) is a 2D language whose source is a maze — the cells around the instruction pointer decide its direction of travel, and characters like ( ) and \" are instructions collected on the way through."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Piet",
+      "family": "2D grids & paths",
+      "code": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)\n(a painting-like grid of coloured rectangles — block size and hue change are the instructions)",
+      "note": "// Shown as a description — the real source is an image. Colour-block size and hue change are the entire instruction set.",
+      "options": [
+        "Piet",
+        "Velato",
+        "Befunge",
+        "Labyrinth",
+        "Hexagony",
+        "SNUSP",
+        "><>",
+        "Whitespace"
+      ],
+      "fact": "Piet (David Morgan-Mar) programs are Mondrian-style images: the interpreter moves between colour blocks (codels), pushing block sizes and reacting to hue changes. There is no text in the source at all — the description above stands in for the painting."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Velato",
+      "family": "2D grids & paths",
+      "code": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4\n(a melody — each step from one note to the next is one command)",
+      "note": "// Shown as notation — the real source is a MIDI file. The intervals between successive notes are the commands.",
+      "options": [
+        "Velato",
+        "Piet",
+        "Emojicode",
+        "Befunge",
+        "Labyrinth",
+        "Hexagony",
+        "Rockstar",
+        "Shakespeare Programming Language"
+      ],
+      "fact": "Velato programs are MIDI files: each step from one note to the next — up a third, down a second — selects a command from a root-note table. The same melody in a different key is a different program."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "HQ9+",
+      "family": "Almost no syntax",
+      "code": "H",
+      "note": "// A complete program. One character, and it is the first letter of what it prints.",
+      "options": [
+        "HQ9+",
+        "JSFuck",
+        "Malbolge",
+        "INTERCAL",
+        "FALSE",
+        "Thue",
+        "Deadfish",
+        "Unary"
+      ],
+      "fact": "HQ9+ (Cliff L. Biffle) has four one-character instructions: H prints Hello World, Q prints the program itself (a quine), 9 prints the 99 Bottles song, and + increments an accumulator nobody can read. The joke is that three famously hard exercises are all built in."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Chicken",
+      "family": "Tape & token soup",
+      "code": "chicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\n…",
+      "note": "// An excerpt — the full program runs to many lines of the same word. The count of the word on each line is the instruction.",
+      "options": [
+        "Chicken",
+        "Ook!",
+        "COW",
+        "Blub",
+        "Brainfuck",
+        "Smallfuck",
+        "Brainbool",
+        "Whitespace"
+      ],
+      "fact": "Chicken's only keyword is \"chicken\": a line of N chickens is an opcode, selected by count. Unlike Ook!, COW and Blub it is not a Brainfuck re-encoding — its virtual machine is a stack machine with chicken-flavoured opcodes, including one that loads a chicken."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Unary",
+      "family": "Numbers & lists only",
+      "code": "0000000000000000000000000000000000000000…\n(one unbroken run of zeroes — the full Hello World is astronomically longer than this)",
+      "note": "// Shown in miniature — the source really is a single run of one character. All information is carried by the run's length.",
+      "options": [
+        "Unary",
+        "Fractran",
+        "Jot",
+        "Brainbool",
+        "Iota",
+        "FALSE",
+        "JSFuck",
+        "Whitespace"
+      ],
+      "fact": "Unary encodes a Brainfuck program as a single number, then writes that number out in zeroes. The result is a valid program whose file size explodes past any practical limit — a Hello World you could not print in this universe."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Deadfish",
+      "family": "Numbers & lists only",
+      "code": "iiiiiiiisiiiiiiiioiiiiiiiiiiiiiiiiiiiiiiiiiiiiio\niiiiiiiooiiio\n…",
+      "note": "// An excerpt that genuinely prints \"Hello\" — the full program keeps counting for the remaining letters. One accumulator, four commands.",
+      "options": [
+        "Deadfish",
+        "Fractran",
+        "Brainbool",
+        "Jot",
+        "Smallfuck",
+        "Brainfuck",
+        "Whitespace",
+        "JSFuck"
+      ],
+      "fact": "Deadfish has one accumulator and four commands — i increment, d decrement, s square, o output — plus the notorious rule that hitting exactly 256 or -1 resets the value to 0. The excerpt works because 8 squared is 64, and 64 + 8 is H."
     }
   ],
   "EXPERT_ODD_PROMPT": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
