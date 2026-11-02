@@ -29,6 +29,7 @@ DATA_FILES = [
     ("src/data/hard.json", ["HARD_FRAGMENTS", "HARD_REVERSE", "HARD_WIDE"]),
     ("src/data/expert.json", ["EXPERT_ID", "EXPERT_ODD",
                               "EXPERT_FAMILIES", "EXPERT_TWO", "EXPERT_PAIR"]),
+    ("src/data/commands.json", ["COMMANDS"]),
 ]
 
 DATA_HEADER = """\

@@ -1,0 +1,1284 @@
+{
+  "COMMANDS": [
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": ">",
+      "effect": "Move the pointer one cell to the right",
+      "short": "moves the pointer one cell right",
+      "ask": "moves the pointer one cell to the right",
+      "distractors": [
+        "Shift the pointer one cell leftward",
+        "Raise the current cell by 1",
+        "Write the current cell out as a character"
+      ],
+      "weakHint": "It changes where you are, not what anything holds.",
+      "fact": "Urban Müller designed Brainfuck in 1993 aiming for the smallest possible compiler — this arrow is half of its entire vocabulary for moving.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": "<",
+      "effect": "Move the pointer one cell to the left",
+      "short": "moves the pointer one cell left",
+      "ask": "moves the pointer one cell to the left",
+      "distractors": [
+        "Shift the pointer one cell rightward",
+        "Lower the current cell by 1",
+        "Take one character of input into the current cell"
+      ],
+      "weakHint": "It changes where you are, not what anything holds.",
+      "fact": "Brainfuck's tape is unbounded in both directions in the classic model — this command walks it backwards.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": "+",
+      "effect": "Add 1 to the current cell",
+      "short": "adds 1 to the current cell",
+      "ask": "adds 1 to the current cell",
+      "distractors": [
+        "Lower the current cell by 1",
+        "Toggle the current bit",
+        "Shift the pointer one cell rightward"
+      ],
+      "weakHint": "The smallest possible change to a value.",
+      "fact": "Cells are bytes in the classic language, so enough of these wrap 255 back around to 0.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": "-",
+      "effect": "Subtract 1 from the current cell",
+      "short": "subtracts 1 from the current cell",
+      "ask": "subtracts 1 from the current cell",
+      "distractors": [
+        "Raise the current cell by 1",
+        "Set the current cell to 0",
+        "Shift the pointer one cell leftward"
+      ],
+      "weakHint": "The smallest possible change to a value, the other way.",
+      "fact": "What happens below 0 is implementation-defined in Brainfuck — wrapping and crashing dialects both exist.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": ".",
+      "effect": "Print the current cell as a character",
+      "short": "prints the current cell as a character",
+      "ask": "prints the current cell as a character",
+      "distractors": [
+        "Take one character of input into the current cell",
+        "Print the current cell as a number",
+        "Raise the current cell by 1"
+      ],
+      "weakHint": "This one talks to the outside world.",
+      "fact": "The cell's byte value is written out as the character with that code — 72 prints H.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": ",",
+      "effect": "Read one character of input into the current cell",
+      "short": "reads a character into the current cell",
+      "ask": "reads one character of input into the current cell",
+      "distractors": [
+        "Write the current cell out as a character",
+        "Read an integer into the current cell",
+        "Read a single bit of input"
+      ],
+      "weakHint": "This one listens to the outside world.",
+      "fact": "At end-of-input, dialects disagree: the cell may become 0, 255, or stay unchanged.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": "[",
+      "effect": "Begin a loop: if the current cell is 0, jump forward past the matching ]",
+      "short": "starts a loop, skipping it if the cell is 0",
+      "ask": "begins a loop and skips it entirely when the current cell is 0",
+      "distractors": [
+        "Jump back to the matching [ if the current cell is not 0",
+        "End the program",
+        "Duplicate the current cell"
+      ],
+      "weakHint": "It decides whether what follows happens at all.",
+      "fact": "Brainfuck has no other control flow: every loop in the language starts exactly here.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainfuck",
+      "symbol": "]",
+      "effect": "End a loop body: if the current cell is not 0, jump back to the matching [",
+      "short": "jumps back to the matching [ if the cell is not 0",
+      "ask": "jumps back to the matching [ when the current cell is not 0",
+      "distractors": [
+        "Skip forward past the matching ] if the current cell is 0",
+        "Write the current cell out as a character",
+        "Shift the pointer one cell rightward"
+      ],
+      "weakHint": "It decides whether what came before happens again.",
+      "fact": "A ] with a zero cell simply falls through — the loop test lives at both ends in Brainfuck.",
+      "note": "Brainfuck · Tape and cells"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "moo",
+      "effect": "Loop end: jump back to the matching MOO, which re-tests the cell",
+      "short": "jumps back to the matching MOO",
+      "ask": "ends a loop by jumping back to the matching MOO",
+      "distractors": [
+        "Skip forward past the matching moo if the cell is 0",
+        "Step the memory pointer one block back",
+        "Execute the value in the cell as an instruction"
+      ],
+      "weakHint": "It belongs with a partner command, and looks backwards for it.",
+      "fact": "moo pairs with MOO like Brainfuck's brackets — and the instruction right after a MOO decides which moo it matches, a famous COW trap.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "mOo",
+      "effect": "Move the memory pointer one block back",
+      "short": "moves the pointer one block back",
+      "ask": "moves the memory pointer one block back",
+      "distractors": [
+        "Step the memory pointer one block forward",
+        "Subtract 1 from the current cell",
+        "Copy the current cell into the register"
+      ],
+      "weakHint": "Position, not value — and mind the capitalisation.",
+      "fact": "COW's commands differ only by case: mOo steps back, while its near-twin moO steps forward.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "moO",
+      "effect": "Move the memory pointer one block forward",
+      "short": "moves the pointer one block forward",
+      "ask": "moves the memory pointer one block forward",
+      "distractors": [
+        "Step the memory pointer one block back",
+        "Add 1 to the current cell",
+        "Print the current cell as a character"
+      ],
+      "weakHint": "Position, not value — and mind the capitalisation.",
+      "fact": "Sean Heber created COW in 2003; every command is three letters long and a variation of 'moo'.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "Moo",
+      "effect": "If the current cell is 0, read a character into it; otherwise print the cell as a character",
+      "short": "reads a character if the cell is 0, otherwise prints it as a character",
+      "ask": "reads a character when the cell is 0 and prints the cell as a character otherwise",
+      "distractors": [
+        "Print the current cell as an integer",
+        "Read an integer into the current cell",
+        "Zero the current cell outright"
+      ],
+      "weakHint": "One command doing double duty — the cell decides which.",
+      "fact": "Moo is COW's only character I/O: the very same token is input or output depending on the cell it finds.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "MOO",
+      "effect": "Loop start: if the current cell is 0, jump forward past the matching moo",
+      "short": "starts a loop, jumping past it if the cell is 0",
+      "ask": "begins a loop and jumps past the matching moo when the cell is 0",
+      "distractors": [
+        "Jump back to the matching MOO whenever it is reached",
+        "Skip the next instruction unconditionally",
+        "Read a character into the current cell"
+      ],
+      "weakHint": "It belongs with a partner command, and tests the cell first.",
+      "fact": "MOO skips the instruction immediately after itself while searching for its moo — so 'OOO MOO moo moo' matches the second moo, not the first.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "OOO",
+      "effect": "Set the current cell to 0",
+      "short": "sets the current cell to 0",
+      "ask": "sets the current cell to 0",
+      "distractors": [
+        "Copy the current cell into the register",
+        "Subtract 1 from the current cell",
+        "Print the current cell as an integer"
+      ],
+      "weakHint": "It throws the value away entirely.",
+      "fact": "OOO is the reset COW adds to Brainfuck's model — no counting down with MOo required.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "MMM",
+      "effect": "Register toggle: if the register is empty, copy the cell into it; otherwise paste the register into the cell and clear it",
+      "short": "copies the cell into the register, or pastes the register back into the cell and clears it",
+      "ask": "copies the cell into the empty register, or pastes the register into the cell and clears it",
+      "distractors": [
+        "Zero the current cell outright",
+        "Print the current cell as an integer",
+        "Execute the value in the cell as an instruction"
+      ],
+      "weakHint": "It involves the one place outside the memory blocks.",
+      "fact": "COW has exactly one register, and MMM is its only door — the same command loads it and unloads it.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "COW",
+      "symbol": "oom",
+      "effect": "Read an integer from input into the current cell",
+      "short": "reads an integer into the current cell",
+      "ask": "reads an integer from input into the current cell",
+      "distractors": [
+        "Print the current cell as an integer",
+        "Read a character into the current cell",
+        "Print the current cell as a character"
+      ],
+      "weakHint": "It takes a whole number in — case decides direction.",
+      "fact": "oom reads an integer; its capitalised twin OOM prints one. In COW, case is not decoration, it is the instruction set.",
+      "note": "COW · Memory blocks and one register"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook. Ook?",
+      "effect": "Move the pointer one cell to the right (Brainfuck's >)",
+      "short": "moves the pointer one cell right",
+      "ask": "moves the pointer one cell to the right",
+      "distractors": [
+        "Move the pointer one cell to the left",
+        "Add 1 to the current cell",
+        "Print the current cell as a character"
+      ],
+      "weakHint": "Two Ooks, two marks — read them as a pair.",
+      "fact": "Ook! was designed by David Madore as a joke gift: Brainfuck, as spoken by an orangutan.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook? Ook.",
+      "effect": "Move the pointer one cell to the left (Brainfuck's <)",
+      "short": "moves the pointer one cell left",
+      "ask": "moves the pointer one cell to the left",
+      "distractors": [
+        "Move the pointer one cell to the right",
+        "Subtract 1 from the current cell",
+        "Read one character of input into the current cell"
+      ],
+      "weakHint": "Two Ooks, two marks — read them as a pair.",
+      "fact": "Every Ook! command is exactly two tokens; single Ooks left over are meaningless.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook. Ook.",
+      "effect": "Add 1 to the current cell (Brainfuck's +)",
+      "short": "adds 1 to the current cell",
+      "ask": "adds 1 to the current cell",
+      "distractors": [
+        "Subtract 1 from the current cell",
+        "Move the pointer one cell to the right",
+        "Print the current cell as a character"
+      ],
+      "weakHint": "The friendliest-looking pair does arithmetic.",
+      "fact": "Ook. Ook. is the only pair made of two identical dotted tokens — and it is the increment.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook! Ook!",
+      "effect": "Subtract 1 from the current cell (Brainfuck's -)",
+      "short": "subtracts 1 from the current cell",
+      "ask": "subtracts 1 from the current cell",
+      "distractors": [
+        "Add 1 to the current cell",
+        "Set the current cell to 0",
+        "Move the pointer one cell to the left"
+      ],
+      "weakHint": "The most emphatic pair does arithmetic.",
+      "fact": "Two exclamations make the decrement — Ook!'s punctuation is its entire syntax.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook! Ook.",
+      "effect": "Print the current cell as a character (Brainfuck's .)",
+      "short": "prints the current cell as a character",
+      "ask": "prints the current cell as a character",
+      "distractors": [
+        "Read one character of input into the current cell",
+        "Print the current cell as a number",
+        "Begin a loop"
+      ],
+      "weakHint": "This pair talks to the outside world.",
+      "fact": "Ook! is a pure reskin: any Brainfuck program translates token for token, and this pair is its full stop.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook. Ook!",
+      "effect": "Read one character of input into the current cell (Brainfuck's ,)",
+      "short": "reads a character into the current cell",
+      "ask": "reads one character of input into the current cell",
+      "distractors": [
+        "Print the current cell as a character",
+        "Read an integer into the current cell",
+        "End a loop body"
+      ],
+      "weakHint": "This pair listens to the outside world.",
+      "fact": "Ook. Ook! and Ook! Ook. are mirror images with opposite jobs — input and output.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook! Ook?",
+      "effect": "Begin a loop: if the current cell is 0, jump forward past the matching Ook? Ook! (Brainfuck's [)",
+      "short": "starts a loop, skipping it if the cell is 0",
+      "ask": "begins a loop and skips it entirely when the current cell is 0",
+      "distractors": [
+        "Jump back if the current cell is not 0",
+        "End the program",
+        "Duplicate the current cell"
+      ],
+      "weakHint": "It decides whether what follows happens at all.",
+      "fact": "Ook!'s loop brackets are its two mixed question pairs — Ook! Ook? opens, Ook? Ook! closes.",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Ook!",
+      "symbol": "Ook? Ook!",
+      "effect": "End a loop body: if the current cell is not 0, jump back to the matching Ook! Ook? (Brainfuck's ])",
+      "short": "jumps back if the cell is not 0",
+      "ask": "jumps back to the loop start when the current cell is not 0",
+      "distractors": [
+        "Skip forward if the current cell is 0",
+        "Print the current cell as a character",
+        "Move the pointer one cell to the right"
+      ],
+      "weakHint": "It decides whether what came before happens again.",
+      "fact": "Because Ook! is Brainfuck in disguise, its loop test lives at both ends, exactly like [ and ].",
+      "note": "Ook! · Brainfuck in pairs of Ook"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": ">",
+      "effect": "Send the instruction pointer right — it keeps travelling that way",
+      "short": "sends the instruction pointer right",
+      "ask": "sends the instruction pointer to the right",
+      "distractors": [
+        "Send the instruction pointer left",
+        "Push the value 1 onto the stack",
+        "Stop the program dead"
+      ],
+      "weakHint": "It steers; it never touches the stack.",
+      "fact": "In Befunge-93 the program counter roams a two-dimensional grid, and these arrows are its steering wheel.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "<",
+      "effect": "Send the instruction pointer left — it keeps travelling that way",
+      "short": "sends the instruction pointer left",
+      "ask": "sends the instruction pointer to the left",
+      "distractors": [
+        "Send the instruction pointer right",
+        "Make a second copy of the top stack value",
+        "Skip the next cell entirely"
+      ],
+      "weakHint": "It steers; it never touches the stack.",
+      "fact": "The Befunge-93 grid is a torus in the original spec — fly off one edge and you reappear at the other.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "^",
+      "effect": "Send the instruction pointer up — it keeps travelling that way",
+      "short": "sends the instruction pointer up",
+      "ask": "sends the instruction pointer upward",
+      "distractors": [
+        "Send the instruction pointer down",
+        "Pop a value and print it as a number",
+        "Exchange the top two stack values"
+      ],
+      "weakHint": "It steers; it never touches the stack.",
+      "fact": "Vertical travel is what makes Befunge programs two-dimensional rather than merely wrapped lines.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "v",
+      "effect": "Send the instruction pointer down — it keeps travelling that way",
+      "short": "sends the instruction pointer down",
+      "ask": "sends the instruction pointer downward",
+      "distractors": [
+        "Send the instruction pointer up",
+        "Pop a value and print it as a character",
+        "Throw the top stack value away"
+      ],
+      "weakHint": "It steers; it never touches the stack.",
+      "fact": "The letter v doubles as the arrow — Befunge's arrows point the way they are drawn.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "+",
+      "effect": "Pop two values and push their sum",
+      "short": "adds the top two stack values",
+      "ask": "pops two values and pushes their sum",
+      "distractors": [
+        "Pop two values and push the result of multiplying them",
+        "Make a second copy of the top stack value",
+        "Push the value 0 onto the stack"
+      ],
+      "weakHint": "Two values go in, one comes out.",
+      "fact": "Befunge is stack-based: + finds its operands waiting on the stack and leaves the answer there.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "*",
+      "effect": "Pop two values and push their product",
+      "short": "multiplies the top two stack values",
+      "ask": "pops two values and pushes their product",
+      "distractors": [
+        "Pop two values and push the result of adding them",
+        "Exchange the top two stack values",
+        "Read a number onto the stack"
+      ],
+      "weakHint": "Two values go in, one comes out.",
+      "fact": "There is no multiply instruction in Brainfuck at all — Befunge's arithmetic is positively luxurious by comparison.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": ":",
+      "effect": "Duplicate the top stack value",
+      "short": "duplicates the top stack value",
+      "ask": "duplicates the top stack value",
+      "distractors": [
+        "Exchange the top two stack values",
+        "Throw the top stack value away",
+        "Store a value into the grid"
+      ],
+      "weakHint": "After this, the stack holds the same value twice.",
+      "fact": "The colon is drawn as two dots — two copies of whatever sat on top.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "\\",
+      "effect": "Swap the top two stack values",
+      "short": "swaps the top two stack values",
+      "ask": "swaps the top two stack values",
+      "distractors": [
+        "Make a second copy of the top stack value",
+        "Throw the top stack value away",
+        "Send the instruction pointer up and to the left"
+      ],
+      "weakHint": "Nothing is added or lost — only the order changes.",
+      "fact": "With only a stack to work with, swapping is how Befunge programs reach the second value down.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "$",
+      "effect": "Pop the top stack value and discard it",
+      "short": "pops and discards the top value",
+      "ask": "pops the top stack value and discards it",
+      "distractors": [
+        "Make a second copy of the top stack value",
+        "Print the top value as a number",
+        "Stop the program dead"
+      ],
+      "weakHint": "This one throws information away.",
+      "fact": "Every discarded intermediate result in a Befunge program passes under the dollar sign.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "_",
+      "effect": "Pop a value: travel right if it was 0, left if it was anything else",
+      "short": "pops a value and goes right on 0, left otherwise",
+      "ask": "pops a value and branches right on zero, left otherwise",
+      "distractors": [
+        "Travel right if the value was nonzero, left if it was 0",
+        "Skip the next cell entirely",
+        "Make a second copy of the top stack value"
+      ],
+      "weakHint": "A fork in the road, decided by one popped value.",
+      "fact": "The underscore is Befunge's horizontal if — its vertical twin is the pipe, |.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "#",
+      "effect": "Bridge: skip the next cell entirely, whatever it holds",
+      "short": "skips the next cell entirely",
+      "ask": "skips the next cell entirely",
+      "distractors": [
+        "Stop the program dead",
+        "Send the instruction pointer in a random direction",
+        "Throw the top stack value away"
+      ],
+      "weakHint": "The cell after this one might as well not exist.",
+      "fact": "The bridge is how Befunge code hops over a cell it must not execute — often the @ that would end it.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Befunge",
+      "symbol": "@",
+      "effect": "End the program",
+      "short": "ends the program",
+      "ask": "ends the program",
+      "distractors": [
+        "Skip the next cell entirely",
+        "Send the instruction pointer right",
+        "Pop a value and print it as a character"
+      ],
+      "weakHint": "There is no coming back from this cell.",
+      "fact": "Every Befunge-93 program must reach an @ to stop; run off without one and the pointer wraps forever.",
+      "note": "Befunge-93 · Steering the instruction pointer"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "␣␣␣⏎",
+      "effect": "Push a number onto the stack — this exact form pushes 0",
+      "short": "pushes a number onto the stack",
+      "ask": "pushes a number onto the stack",
+      "distractors": [
+        "Make a copy of the top item of the stack",
+        "Exchange the top two items of the stack",
+        "Remove the top item of the stack and throw it away"
+      ],
+      "weakHint": "The opening pair says 'stack'; the rest is a number written in space and tab.",
+      "fact": "Whitespace numbers are written in binary — space for 0, tab for 1 — and ended by a linefeed.",
+      "note": "Whitespace · Stack manipulation"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "␣⏎␣",
+      "effect": "Duplicate the top item of the stack",
+      "short": "duplicates the top stack item",
+      "ask": "duplicates the top item of the stack",
+      "distractors": [
+        "Exchange the top two items of the stack",
+        "Remove the top item of the stack and throw it away",
+        "Push the number 0 onto the stack"
+      ],
+      "weakHint": "One prefix says 'stack', and the item count grows.",
+      "fact": "Whitespace instructions are prefix-coded: space-space starts most stack operations.",
+      "note": "Whitespace · Stack manipulation"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "␣⏎⇥",
+      "effect": "Swap the top two items of the stack",
+      "short": "swaps the top two stack items",
+      "ask": "swaps the top two items of the stack",
+      "distractors": [
+        "Make a copy of the top item of the stack",
+        "Remove the top item of the stack and throw it away",
+        "Add the top two numbers"
+      ],
+      "weakHint": "Nothing is created or destroyed — just reordered.",
+      "fact": "In an invisible language, swap and duplicate differ by a single tab-versus-space — a classic Whitespace bug source.",
+      "note": "Whitespace · Stack manipulation"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "␣⏎⏎",
+      "effect": "Pop and discard the top item of the stack",
+      "short": "pops and discards the top stack item",
+      "ask": "pops and discards the top item of the stack",
+      "distractors": [
+        "Make a copy of the top item of the stack",
+        "Exchange the top two items of the stack",
+        "Print the top item as a character"
+      ],
+      "weakHint": "This one throws information away.",
+      "fact": "Whitespace was released on 1 April 2003 by Edwin Brady and Chris Morris — and was not entirely a joke.",
+      "note": "Whitespace · Stack manipulation"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "⇥␣␣␣",
+      "effect": "Pop two numbers and push their sum",
+      "short": "adds the top two numbers",
+      "ask": "pops two numbers and pushes their sum",
+      "distractors": [
+        "Pop two numbers and push their difference",
+        "Make a copy of the top item of the stack",
+        "Print the top number"
+      ],
+      "weakHint": "The leading tab moves you out of stack territory into arithmetic.",
+      "fact": "Whitespace groups its instructions by prefix: tab-space begins every arithmetic operation.",
+      "note": "Whitespace · Arithmetic"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "⇥⏎␣␣",
+      "effect": "Pop a number and print it as a character",
+      "short": "prints the top number as a character",
+      "ask": "pops a number and prints it as a character",
+      "distractors": [
+        "Pop a number and output it as a number",
+        "Read a character and push its code",
+        "Remove the top item of the stack and throw it away"
+      ],
+      "weakHint": "This one talks to the outside world.",
+      "fact": "Tab-linefeed begins every Whitespace I/O instruction; the third character picks input versus output.",
+      "note": "Whitespace · Input/output"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "⇥⏎␣⇥",
+      "effect": "Pop a number and print it as a number",
+      "short": "prints the top number as a number",
+      "ask": "pops a number and prints it as a number",
+      "distractors": [
+        "Pop a number and output it as a character",
+        "Read a number from input",
+        "Push a number onto the stack"
+      ],
+      "weakHint": "Same doorway as printing a character — one glyph decides the format.",
+      "fact": "Output-character and output-number differ only in their final space-versus-tab.",
+      "note": "Whitespace · Input/output"
+    },
+    {
+      "kind": "command",
+      "lang": "Whitespace",
+      "symbol": "⇥⏎⇥␣",
+      "effect": "Read a character and push its code onto the stack",
+      "short": "reads a character and pushes its code",
+      "ask": "reads a character and pushes its code onto the stack",
+      "distractors": [
+        "Pop a number and output it as a character",
+        "Read a number and push it",
+        "Make a copy of the top item of the stack"
+      ],
+      "weakHint": "This one listens to the outside world.",
+      "fact": "Whitespace input reads a single character whose code lands on the stack, ready for arithmetic.",
+      "note": "Whitespace · Input/output"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "+",
+      "effect": "Pop two numbers and push their sum",
+      "short": "adds the top two numbers",
+      "ask": "pops two numbers and pushes their sum",
+      "distractors": [
+        "Pop two numbers and push the result of multiplying them",
+        "Make a copy of the top stack item",
+        "Negate the top number"
+      ],
+      "weakHint": "Two values go in, one comes out.",
+      "fact": "FALSE (1993) predates Brainfuck and inspired it — its whole arithmetic set is single characters like this.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "*",
+      "effect": "Pop two numbers and push their product",
+      "short": "multiplies the top two numbers",
+      "ask": "pops two numbers and pushes their product",
+      "distractors": [
+        "Pop two numbers and push the result of adding them",
+        "Exchange the top two stack items",
+        "Print the top number as an integer"
+      ],
+      "weakHint": "Two values go in, one comes out.",
+      "fact": "Wouter van Oortmerssen fit FALSE's original compiler into 1024 bytes of assembly.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "_",
+      "effect": "Negate the top number — multiply it by -1",
+      "short": "negates the top number",
+      "ask": "negates the top number",
+      "distractors": [
+        "Throw the top stack item away",
+        "Take the bitwise NOT of the top number",
+        "Subtract the top two numbers"
+      ],
+      "weakHint": "One value, flipped in sign — this is how FALSE writes negatives.",
+      "fact": "FALSE has no negative literals: -3 is written 3_ , the underscore supplying the minus sign.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "$",
+      "effect": "Duplicate the top stack item",
+      "short": "duplicates the top stack item",
+      "ask": "duplicates the top stack item",
+      "distractors": [
+        "Throw the top stack item away",
+        "Exchange the top two stack items",
+        "Store the top item into a variable"
+      ],
+      "weakHint": "After this, the top item exists twice.",
+      "fact": "FALSE's stack trio is $ % \\ — duplicate, drop, swap — borrowed from Forth's DUP DROP SWAP.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "%",
+      "effect": "Drop the top stack item",
+      "short": "drops the top stack item",
+      "ask": "drops the top stack item",
+      "distractors": [
+        "Make a copy of the top stack item",
+        "Exchange the top two stack items",
+        "Print the top item as a character"
+      ],
+      "weakHint": "This one throws information away.",
+      "fact": "In FALSE's Turing-completeness proof, % is the optional convenience — everything else in $%\\[]! carries the load.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "\\",
+      "effect": "Swap the top two stack items",
+      "short": "swaps the top two stack items",
+      "ask": "swaps the top two stack items",
+      "distractors": [
+        "Make a copy of the top stack item",
+        "Throw the top stack item away",
+        "Rotate the top three stack items"
+      ],
+      "weakHint": "Nothing is added or lost — only the order changes.",
+      "fact": "The backslash swap, the dollar duplicate and the percent drop are FALSE's complete basic stack kit.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "'a",
+      "effect": "Push the character code of the character after the apostrophe (here, a = 97)",
+      "short": "pushes the character code of the following character",
+      "ask": "pushes the character code of the character that follows it",
+      "distractors": [
+        "Print the following character literally",
+        "Read a character from input",
+        "Begin a string literal"
+      ],
+      "weakHint": "The apostrophe reaches for the very next character in the source.",
+      "fact": "Character literals in FALSE are written 'a — the quote turns the next glyph into its own code.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "FALSE",
+      "symbol": "ß",
+      "effect": "Flush the input and output buffers",
+      "short": "flushes the I/O buffers",
+      "ask": "flushes the input and output buffers",
+      "distractors": [
+        "End the program",
+        "Print the top item as a character",
+        "Read a character from input"
+      ],
+      "weakHint": "Nothing is computed — this is housekeeping for the streams.",
+      "fact": "The Eszett is FALSE's only non-ASCII command, there to force buffered output to actually appear.",
+      "note": "FALSE · A one-character stack machine"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "/",
+      "effect": "Reflect the direction of travel like a / mirror: heading right turns up, heading up turns right",
+      "short": "reflects travel: right becomes up, up becomes right",
+      "ask": "reflects the direction of travel, turning rightward motion upward",
+      "distractors": [
+        "Reflect travel the other way: heading right turns down",
+        "Skip the next character in the path",
+        "Raise the current tape cell by 1"
+      ],
+      "weakHint": "A mirror — which way it bends you depends on how you arrive.",
+      "fact": "SNUSP replaces Brainfuck's brackets with geometry: loops are made by bouncing the path with / and \\.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "\\",
+      "effect": "Reflect the direction of travel like a \\ mirror: heading right turns down, heading down turns right",
+      "short": "reflects travel: right becomes down, down becomes right",
+      "ask": "reflects the direction of travel, turning rightward motion downward",
+      "distractors": [
+        "Reflect travel the other way: heading right turns up",
+        "Skip the next character if the cell is 0",
+        "Lower the current tape cell by 1"
+      ],
+      "weakHint": "A mirror — which way it bends you depends on how you arrive.",
+      "fact": "The two mirrors have names in the spec: / is RULD and \\ is LURD, after the turns they make.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "+",
+      "effect": "Add 1 to the current tape cell",
+      "short": "adds 1 to the current tape cell",
+      "ask": "adds 1 to the current tape cell",
+      "distractors": [
+        "Lower the current tape cell by 1",
+        "Move the tape pointer one cell right",
+        "Skip the next character in the path"
+      ],
+      "weakHint": "The smallest possible change to a value.",
+      "fact": "Core SNUSP is Brainfuck laid over a 2D path — its + is Brainfuck's +, cell for cell.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "-",
+      "effect": "Subtract 1 from the current tape cell",
+      "short": "subtracts 1 from the current tape cell",
+      "ask": "subtracts 1 from the current tape cell",
+      "distractors": [
+        "Raise the current tape cell by 1",
+        "Move the tape pointer one cell left",
+        "Print the current tape cell as a character"
+      ],
+      "weakHint": "The smallest possible change to a value, the other way.",
+      "fact": "SNUSP's data tape is one-dimensional Brainfuck tape; only the code is two-dimensional.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": ">",
+      "effect": "Move the tape pointer one cell to the right",
+      "short": "moves the tape pointer right",
+      "ask": "moves the tape pointer one cell to the right",
+      "distractors": [
+        "Shift the tape pointer one cell leftward",
+        "Send the instruction pointer to the right",
+        "Raise the current tape cell by 1"
+      ],
+      "weakHint": "This moves the data pointer — the path itself is unmoved.",
+      "fact": "The trap in SNUSP: > moves the memory pointer, while the instruction pointer's travels are steered by mirrors.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "<",
+      "effect": "Move the tape pointer one cell to the left",
+      "short": "moves the tape pointer left",
+      "ask": "moves the tape pointer one cell to the left",
+      "distractors": [
+        "Shift the tape pointer one cell rightward",
+        "Send the instruction pointer to the left",
+        "Lower the current tape cell by 1"
+      ],
+      "weakHint": "This moves the data pointer — the path itself is unmoved.",
+      "fact": "SNUSP was designed by Daniel Brockman in 2003 as a structured answer to PATH.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "!",
+      "effect": "Skip the next character in the path, unconditionally",
+      "short": "skips the next character",
+      "ask": "skips the next character in the path",
+      "distractors": [
+        "Skip the next character only if the cell is 0",
+        "End the program",
+        "Reflect the direction of travel"
+      ],
+      "weakHint": "Whatever comes next simply doesn't happen.",
+      "fact": "SKIP is half of SNUSP's conditional machinery — paired with a mirror, it builds loops and branches.",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "SNUSP",
+      "symbol": "?",
+      "effect": "Skip the next character in the path, but only if the current cell is 0",
+      "short": "skips the next character if the cell is 0",
+      "ask": "skips the next character in the path when the current cell is 0",
+      "distractors": [
+        "Skip the next character unconditionally",
+        "Jump back to the start of the line",
+        "Read a character into the current cell"
+      ],
+      "weakHint": "A skip with a condition attached — the cell decides.",
+      "fact": "? is SKIPZ in the spec; together / \\ ! and ? do all the work of Brainfuck's [ and ].",
+      "note": "SNUSP · A path across the page"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": ">",
+      "effect": "Send the instruction pointer right — it keeps swimming that way",
+      "short": "sends the instruction pointer right",
+      "ask": "sends the instruction pointer to the right",
+      "distractors": [
+        "Send the instruction pointer left",
+        "Pop the top value and write it out as a character",
+        "Stop the program dead"
+      ],
+      "weakHint": "It steers the swimmer; the stack is untouched.",
+      "fact": "In ><> (Fish), code is a pond the pointer swims through — and the grid wraps around at the edges.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": "<",
+      "effect": "Send the instruction pointer left — it keeps swimming that way",
+      "short": "sends the instruction pointer left",
+      "ask": "sends the instruction pointer to the left",
+      "distractors": [
+        "Send the instruction pointer right",
+        "Duplicate the top stack value",
+        "Skip the next cell entirely"
+      ],
+      "weakHint": "It steers the swimmer; the stack is untouched.",
+      "fact": "Fish's arrows face the way they send you, like Befunge's — but here the fish does the travelling.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": "^",
+      "effect": "Send the instruction pointer up — it keeps swimming that way",
+      "short": "sends the instruction pointer up",
+      "ask": "sends the instruction pointer upward",
+      "distractors": [
+        "Send the instruction pointer down",
+        "Pop a value and print it as a number",
+        "Swap the top two stack values"
+      ],
+      "weakHint": "It steers the swimmer; the stack is untouched.",
+      "fact": "Vertical swimming is what lets Fish programs loop back over their own lines.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": "v",
+      "effect": "Send the instruction pointer down — it keeps swimming that way",
+      "short": "sends the instruction pointer down",
+      "ask": "sends the instruction pointer downward",
+      "distractors": [
+        "Send the instruction pointer up",
+        "Pop a value and print it as a character",
+        "Pop the top value and discard it"
+      ],
+      "weakHint": "It steers the swimmer; the stack is untouched.",
+      "fact": "A Fish program with no direction changes at all still wraps off the right edge and continues.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": ";",
+      "effect": "End the program",
+      "short": "ends the program",
+      "ask": "ends the program",
+      "distractors": [
+        "Skip the next cell entirely",
+        "Send the instruction pointer right",
+        "Pop a value and print it as a number"
+      ],
+      "weakHint": "This is the only way a Fish stops on purpose.",
+      "fact": "Reaching the end of the code is NOT the end in ><> — the pointer wraps, so ; is a necessity, not a formality.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "><>",
+      "symbol": "o",
+      "effect": "Pop the top value and print it as a character",
+      "short": "pops and prints the top value as a character",
+      "ask": "pops the top value and prints it as a character",
+      "distractors": [
+        "Pop the top value and print it as a number",
+        "Push the character code of the next cell",
+        "Read a character onto the stack"
+      ],
+      "weakHint": "This one talks to the outside world — and consumes the value.",
+      "fact": "Fish has two output commands: o prints the top value as a character, n as a number — and both pop it.",
+      "note": "><> · Fish — a pointer swimming the grid"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": ">",
+      "effect": "Move the pointer one cell to the right — each cell holds a single bit",
+      "short": "moves the pointer one bit-cell right",
+      "ask": "moves the pointer one cell to the right",
+      "distractors": [
+        "Move the pointer one cell to the left",
+        "Toggle the current bit",
+        "Print the current bit"
+      ],
+      "weakHint": "It changes where you are, not what anything holds.",
+      "fact": "Brainbool (2005) shrinks Brainfuck's byte cells to single bits — the tape is a row of switches.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": "<",
+      "effect": "Move the pointer one cell to the left — each cell holds a single bit",
+      "short": "moves the pointer one bit-cell left",
+      "ask": "moves the pointer one cell to the left",
+      "distractors": [
+        "Move the pointer one cell to the right",
+        "Toggle the current bit",
+        "Read a bit into the current cell"
+      ],
+      "weakHint": "It changes where you are, not what anything holds.",
+      "fact": "Everything in Brainbool is the Brainfuck you know, at one-eighth the width.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": "+",
+      "effect": "Toggle the current bit — add 1 modulo 2, so 0 becomes 1 and 1 becomes 0",
+      "short": "toggles the current bit",
+      "ask": "toggles the current bit by adding 1 modulo 2",
+      "distractors": [
+        "Add 1 to the current byte, wrapping at 256",
+        "Set the current bit to 1",
+        "Move the pointer one cell to the right"
+      ],
+      "weakHint": "There is no 'up' from 1 in a one-bit world.",
+      "fact": "In Brainbool + and - are the same operation in disguise: with modulo-2 cells, adding and subtracting both just flip.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": "-",
+      "effect": "Toggle the current bit — subtract 1 modulo 2, which flips it just like + does",
+      "short": "toggles the current bit",
+      "ask": "toggles the current bit by subtracting 1 modulo 2",
+      "distractors": [
+        "Subtract 1 from the current byte, wrapping at 256",
+        "Set the current bit to 0",
+        "Move the pointer one cell to the left"
+      ],
+      "weakHint": "There is no 'down' from 0 in a one-bit world.",
+      "fact": "Because - toggles exactly like +, Brainbool programs use whichever sign reads better — the machine cannot tell them apart.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": ".",
+      "effect": "Output the current bit, as a 0 or a 1",
+      "short": "outputs the current bit",
+      "ask": "outputs the current bit",
+      "distractors": [
+        "Output the current byte as a character",
+        "Read a bit into the current cell",
+        "Toggle the current bit"
+      ],
+      "weakHint": "What comes out is a single binary digit.",
+      "fact": "A Brainbool Hello World must spell every letter out bit by bit — output is literally binary.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": ",",
+      "effect": "Read a single bit of input into the current cell",
+      "short": "reads one bit of input",
+      "ask": "reads a single bit of input into the current cell",
+      "distractors": [
+        "Read a whole byte of input into the current cell",
+        "Output the current bit",
+        "Toggle the current bit"
+      ],
+      "weakHint": "What comes in is a single binary digit.",
+      "fact": "Brainbool input is bit-serial: eight reads to assemble what Brainfuck gets in one , .",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": "[",
+      "effect": "Begin a loop: if the current bit is 0, jump forward past the matching ]",
+      "short": "starts a loop, skipping it if the bit is 0",
+      "ask": "begins a loop and skips it entirely when the current bit is 0",
+      "distractors": [
+        "Jump back if the current bit is 1",
+        "End the program",
+        "Toggle the current bit"
+      ],
+      "weakHint": "It decides whether what follows happens at all.",
+      "fact": "A Brainbool loop runs while its bit is 1 — with bits, 'nonzero' and 'true' are the same thing.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "Brainbool",
+      "symbol": "]",
+      "effect": "End a loop body: if the current bit is 1, jump back to the matching [",
+      "short": "jumps back to the matching [ if the bit is 1",
+      "ask": "jumps back to the matching [ when the current bit is 1",
+      "distractors": [
+        "Skip forward if the current bit is 0",
+        "Output the current bit",
+        "Move the pointer one cell to the right"
+      ],
+      "weakHint": "It decides whether what came before happens again.",
+      "fact": "Brainbool keeps Brainfuck's two-ended loop test — the bit is checked at both brackets.",
+      "note": "Brainbool · Brainfuck, one bit at a time"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "DO READ OUT ,1",
+      "effect": "Print the value of ,1 in INTERCAL's output format — numbers come out as Roman numerals",
+      "short": "prints a variable — numbers emerge as Roman numerals",
+      "ask": "prints a variable's value, with numbers rendered as Roman numerals",
+      "distractors": [
+        "Read a value typed as English digit names into a variable",
+        "Print the variable exactly as stored, in decimal",
+        "Stop the program immediately"
+      ],
+      "weakHint": "Despite the name, this one talks — it does not listen.",
+      "fact": "INTERCAL's I/O names are backwards on purpose: READ OUT writes to the terminal, and its numbers come out in Roman numerals with butchered spacing.",
+      "note": "INTERCAL · Statements, politely"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "DO WRITE IN ,1",
+      "effect": "Read a value into ,1 — the number must be typed out as English digit names, like SIX FIVE",
+      "short": "reads a value typed as English digit names",
+      "ask": "reads a value into a variable, the digits typed out as English words",
+      "distractors": [
+        "Print a variable as Roman numerals",
+        "Store a constant into the variable",
+        "Disable the variable until it is remembered"
+      ],
+      "weakHint": "Despite the name, this one listens — it does not talk.",
+      "fact": "WRITE IN is INTERCAL's input, and it accepts only digits spelled in English — SIX FIVE FIVE THREE FIVE, never 65535.",
+      "note": "INTERCAL · Statements, politely"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "PLEASE GIVE UP",
+      "effect": "End the program at once",
+      "short": "ends the program at once",
+      "ask": "ends the program at once",
+      "distractors": [
+        "Return from the current routine",
+        "Disable every statement until reinstated",
+        "Discard the top return address"
+      ],
+      "weakHint": "The politest possible way to stop.",
+      "fact": "GIVE UP is INTERCAL's only clean exit — a program that never gives up simply runs off its own end and errors.",
+      "note": "INTERCAL · Statements, politely"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "DO COME FROM (101)",
+      "effect": "Steal control: whenever line 101 finishes executing, continue here instead of at the next line",
+      "short": "hijacks control after line 101 runs — a GOTO in reverse",
+      "ask": "arranges for execution to continue at this statement whenever the labelled line finishes",
+      "distractors": [
+        "Jump immediately to line 101, saving a return address",
+        "Disable line 101 until it is reinstated",
+        "Discard the return address for line 101"
+      ],
+      "weakHint": "Nothing moves now — the trap springs when the other line runs.",
+      "fact": "COME FROM is C-INTERCAL's famous reversed GOTO: the destination declares where control comes from, not where it goes.",
+      "note": "INTERCAL · Statements, politely"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "PLEASE ABSTAIN FROM (101)",
+      "effect": "Disable line 101 — or a whole kind of statement — so it is silently skipped until reinstated",
+      "short": "disables the labelled line (or statement kind) until reinstated",
+      "ask": "disables a labelled line, or a whole kind of statement, until it is reinstated",
+      "distractors": [
+        "Re-enable a line disabled earlier",
+        "Steal control when the labelled line finishes",
+        "Make writes to a variable be silently ignored"
+      ],
+      "weakHint": "The targeted code does not run — and does not complain.",
+      "fact": "You can ABSTAIN FROM a gerund, like CALCULATING or COMING FROM, switching off a whole verb of the language at once.",
+      "note": "INTERCAL · Statements, politely"
+    },
+    {
+      "kind": "command",
+      "lang": "INTERCAL",
+      "symbol": "DO REINSTATE (101)",
+      "effect": "Re-enable a line, or a whole kind of statement, previously disabled by ABSTAIN",
+      "short": "re-enables what ABSTAIN disabled",
+      "ask": "re-enables a line or statement kind disabled by ABSTAIN",
+      "distractors": [
+        "Disable the labelled line until further notice",
+        "Resume execution at a saved return address",
+        "Restore variables pushed by STASH"
+      ],
+      "weakHint": "It undoes somebody else's disabling — nothing more.",
+      "fact": "REINSTATE can itself be abstained from, making every abstention in the program permanent — INTERCAL at its most INTERCAL.",
+      "note": "INTERCAL · Statements, politely"
+    }
+  ]
+}

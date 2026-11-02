@@ -28,7 +28,7 @@ var qTag=document.getElementById('qTag'), codeImg=document.getElementById('codeI
     modeNote=document.getElementById('modeNote'), hintsStat=document.getElementById('hintsStat'),
     srStatus=document.getElementById('srStatus');
 
-function pool(){ return mode==='expert' ? EXPERT_ALL : (mode==='hard' ? HARD_ALL : QUESTIONS); }
+function pool(){ return mode==='expert' ? EXPERT_ALL : (mode==='hard' ? HARD_ALL : (mode==='commands' ? COMMANDS : QUESTIONS)); }
 function currentQ(){ return pool()[order[idx]]; }
 function total(){ return order.length; }
 var prevWideLangs = [];
@@ -41,6 +41,11 @@ var prevExpertTwo = [];
 var prevExpertPair = [];
 var expertStage = 0;
 var pairStage = 0;
+// Commands mode: the drawn entries (pool indices into COMMANDS), which
+// of them are reverse rounds (parallel to `order`), and the entry keys
+// the previous Commands run served, for the fresh-draw preference.
+var commandsReverse = [];
+var prevCommandsKeys = [];
 // Every pool is larger than the number of rounds it serves. Each run draws
 // its rounds at random from the pool, preferring entries the previous run
 // of that phase did not serve — so a replay gets a genuinely different set
@@ -60,7 +65,54 @@ function drawFrom(poolIndices, count, prevLangs, poolArr, excludeLangs){
   scored.sort(function(a,b){ return a.s-b.s; });
   return scored.slice(0, Math.min(count, poolIndices.length)).map(function(x){ return x.i; });
 }
+// Commands draw: 12 entries from the 80-command pool, at most 3 from
+// any one language, no command twice, preferring entries the previous
+// Commands run did not serve. Exactly 3 of the 12 (from distinct
+// languages where the draw allows) are marked as reverse rounds; the
+// designation is shuffled, so reverse rounds are interleaved through
+// the run rather than dealt as a block.
+function pickCommands(){
+  var shuffled = shuffle(COMMANDS.map(function(_,i){ return i; }));
+  var fresh = shuffled.filter(function(i){
+    return prevCommandsKeys.indexOf(COMMANDS[i].lang+'|'+COMMANDS[i].symbol)===-1;
+  });
+  var stale = shuffled.filter(function(i){
+    return prevCommandsKeys.indexOf(COMMANDS[i].lang+'|'+COMMANDS[i].symbol)!==-1;
+  });
+  var picked = [], perLang = {};
+  fresh.concat(stale).forEach(function(i){
+    if(picked.length>=12) return;
+    var lang = COMMANDS[i].lang;
+    if((perLang[lang]||0)>=3) return;
+    perLang[lang] = (perLang[lang]||0)+1;
+    picked.push(i);
+  });
+  prevCommandsKeys = picked.map(function(i){ return COMMANDS[i].lang+'|'+COMMANDS[i].symbol; });
+  var designations = picked.map(function(){ return 'meaning'; });
+  var seenLangs = {}, marked = 0;
+  shuffle(picked.map(function(_,pos){ return pos; })).forEach(function(pos){
+    if(marked>=3) return;
+    var lang = COMMANDS[picked[pos]].lang;
+    if(seenLangs[lang]) return;
+    seenLangs[lang] = true;
+    designations[pos] = 'reverse';
+    marked++;
+  });
+  // Distinct languages may not cover all 3 reverse slots if the draw
+  // was language-poor; fill the rest from any remaining positions.
+  if(marked<3){
+    designations.forEach(function(d, pos){
+      if(marked>=3) return;
+      if(d==='meaning'){ designations[pos]='reverse'; marked++; }
+    });
+  }
+  commandsReverse = designations;
+  return picked;
+}
 function buildOrder(){
+  if(mode==='commands'){
+    return pickCommands();
+  }
   if(mode==='expert'){
     var ei=[], eo=[], et=[], ep=[];
     EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else if(q.kind==='expert-pair') ep.push(i); else ei.push(i); });
@@ -101,8 +153,15 @@ function render(){
   var isHard = mode==='hard';
   var isExpert = mode==='expert';
   var kind = (isHard || isExpert) ? (q.kind||'fragment') : 'normal';
+  if(mode==='commands') kind = commandsReverse[idx]==='reverse' ? 'cmd-reverse' : 'cmd-meaning';
 
-  if(kind==='expert-id'){
+  if(kind==='cmd-meaning'){
+    qTag.textContent='Commands · Meaning';
+    qTitle.textContent=q.lang+' — what does this command do?';
+  } else if(kind==='cmd-reverse'){
+    qTag.textContent='Commands · Reverse';
+    qTitle.textContent='In '+q.lang+', which command '+q.ask+'?';
+  } else if(kind==='expert-id'){
     qTag.textContent='Expert · Identification';
     qTitle.textContent='What language is this?';
   } else if(kind==='expert-odd'){
@@ -133,16 +192,23 @@ function render(){
   } else if(kind==='expert-pair'){
     codeEl.style.display=''; codeImg.classList.remove('show');
     codeEl.textContent = '— EXCERPT A —\n' + q.codeA + '\n\n— EXCERPT B —\n' + q.codeB;
+  } else if(kind==='cmd-meaning'){
+    codeEl.style.display=''; codeImg.classList.remove('show');
+    codeEl.textContent = q.symbol;
+  } else if(kind==='cmd-reverse'){
+    codeEl.style.display=''; codeImg.classList.remove('show');
+    codeEl.textContent = q.ask;
   } else {
     codeEl.style.display=''; codeImg.classList.remove('show');
     codeEl.textContent = q.code;
   }
   codeNote.textContent = q.note;
   hintBox.className='hint-box'; hintBox.innerHTML='';
-  var hardHintLeft = !isHard || hintsUsed < 1;
+  var limitedHint = isHard || mode==='commands';
+  var hardHintLeft = !limitedHint || hintsUsed < 1;
   hintBtn.disabled = !hardHintLeft;
   hintBtn.style.display = isExpert ? 'none' : '';
-  hintBtn.textContent = isHard ? (hardHintLeft ? 'Hint (−25 pts)' : 'Hint used') : 'Hint';
+  hintBtn.textContent = limitedHint ? (hardHintLeft ? 'Hint (−25 pts)' : 'Hint used') : 'Hint';
   hintsStat.style.display = isExpert ? 'none' : '';
   feedbackEl.className='feedback'; feedbackEl.innerHTML='';
   nextBtn.className='btn-next';
@@ -180,6 +246,28 @@ function render(){
       b.innerHTML='<span class="name"></span>';
       b.querySelector('.name').textContent=fam;
       b.addEventListener('click', function(){ answerExpertFamily(fam, b); });
+      optionsEl.appendChild(b);
+    });
+  } else if(kind==='cmd-meaning'){
+    optionsEl.className='options';
+    shuffle([q.effect].concat(q.distractors)).forEach(function(text){
+      var b=document.createElement('button');
+      b.type='button'; b.className='opt'; b.setAttribute('data-name', text);
+      b.innerHTML='<span class="name"></span>';
+      b.querySelector('.name').textContent=text;
+      b.addEventListener('click', function(){ answerCommand(text, b); });
+      optionsEl.appendChild(b);
+    });
+  } else if(kind==='cmd-reverse'){
+    optionsEl.className='options';
+    var sibs = shuffle(COMMANDS.filter(function(c){ return c.lang===q.lang && c.symbol!==q.symbol; }))
+      .slice(0,3).map(function(c){ return c.symbol; });
+    shuffle([q.symbol].concat(sibs)).forEach(function(sym){
+      var b=document.createElement('button');
+      b.type='button'; b.className='opt'; b.setAttribute('data-name', sym);
+      b.innerHTML='<span class="name"></span>';
+      b.querySelector('.name').textContent=sym;
+      b.addEventListener('click', function(){ answerCommand(sym, b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='reverse'){
@@ -285,17 +373,17 @@ function updateStats(){
   statQ.textContent=(Math.min(idx+1, total()))+' / '+total();
   statScore.textContent = mode==='normal' ? score : points;
   statStreak.textContent=streak;
-  statHints.textContent = mode==='hard' ? (hintsUsed+' / 1') : hintsUsed;
+  statHints.textContent = (mode==='hard' || mode==='commands') ? (hintsUsed+' / 1') : hintsUsed;
   progressBar.style.width=Math.round((idx/total())*100)+'%';
 }
 
 hintBtn.addEventListener('click', function(){
   if(hintShown || answered) return;
   if(mode==='expert') return;
-  if(mode==='hard' && hintsUsed>=1) return;
+  if((mode==='hard' || mode==='commands') && hintsUsed>=1) return;
   var q=currentQ();
   hintShown=true; hintsUsed++;
-  if(mode==='hard'){
+  if(mode==='hard' || mode==='commands'){
     points=Math.max(0, points-25);
     streak=0;
     hintBox.innerHTML='<strong>Hint — </strong>'+escapeHtml(q.weakHint||'');
@@ -425,6 +513,43 @@ function answerPairSecond(name, btn){
   var pts = correct ? ' (+100 pts)' : ' (−50 pts)';
   var line = correct ? '✓ Correct — the second excerpt is '+q.langB+pts
                      : '✕ Wrong — the second excerpt is '+q.langB+', not '+name+pts;
+  finishRound(correct, line);
+}
+
+// Commands rounds (both kinds) complete here: meaning rounds are
+// answered with an effect string, reverse rounds with a symbol. One
+// scoring point per round (+100 / 0, Hard-style streak rules), the
+// feedback line names the correct answer in short form (meaning) or
+// by symbol (reverse), and the command's fact waits for the review —
+// so completion flows through finishRound() and the Hard/Expert
+// auto-advance applies unchanged.
+function answerCommand(picked, btn){
+  if(answered) return;
+  answered=true;
+  var q=currentQ();
+  var isReverse = commandsReverse[idx]==='reverse';
+  var correctAnswer = isReverse ? q.symbol : q.effect;
+  var correct = picked===correctAnswer;
+  if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { streak=0; }
+  resultsLog.push({lang:q.lang+' — '+q.symbol, picked:picked,
+    correctAnswer:correctAnswer, correct:correct, usedHint:hintShown,
+    fact:q.fact, kind:'command'});
+  var buttons=optionsEl.querySelectorAll('.opt');
+  buttons.forEach(function(b){
+    b.disabled=true;
+    var n=b.getAttribute('data-name');
+    if(n===correctAnswer) b.classList.add('correct');
+    else if(b===btn) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  var line;
+  if(isReverse){
+    line = correct ? '✓ Correct — the command is '+q.symbol+' (+100 pts)'
+                   : '✕ Wrong — the command is '+q.symbol;
+  } else {
+    line = correct ? '✓ Correct — '+q.symbol+' '+q.short+' (+100 pts)'
+                   : '✕ Wrong — '+q.symbol+' '+q.short;
+  }
   finishRound(correct, line);
 }
 
@@ -561,20 +686,24 @@ function setMode(m){
   document.getElementById('modeNormalBtn').className = m==='normal' ? 'active' : '';
   document.getElementById('modeHardBtn').className = m==='hard' ? 'active' : '';
   document.getElementById('modeExpertBtn').className = m==='expert' ? 'active' : '';
+  document.getElementById('modeCommandsBtn').className = m==='commands' ? 'active' : '';
   // The active mode must not be colour alone: mirror it in aria-pressed.
   document.getElementById('modeNormalBtn').setAttribute('aria-pressed', m==='normal' ? 'true' : 'false');
   document.getElementById('modeHardBtn').setAttribute('aria-pressed', m==='hard' ? 'true' : 'false');
   document.getElementById('modeExpertBtn').setAttribute('aria-pressed', m==='expert' ? 'true' : 'false');
+  document.getElementById('modeCommandsBtn').setAttribute('aria-pressed', m==='commands' ? 'true' : 'false');
   modeNote.textContent = m==='expert'
     ? 'No hints · +100 correct · −50 wrong · facts at results.'
     : (m==='hard' ? 'Excerpts only · +100 per correct · 1 hint per run (−25 pts) · facts at results.'
-                 : 'Every program prints Hello, World! — name the language.');
+      : (m==='commands' ? 'What does it do? · +100 per correct · 1 hint per run (−25 pts) · facts at results.'
+                        : 'Every program prints Hello, World! — name the language.'));
   document.getElementById('scoreLabel').textContent = m==='normal' ? 'Score' : 'Points';
   startQuiz();
 }
 document.getElementById('modeNormalBtn').addEventListener('click', function(){ setMode('normal'); });
 document.getElementById('modeHardBtn').addEventListener('click', function(){ setMode('hard'); });
 document.getElementById('modeExpertBtn').addEventListener('click', function(){ setMode('expert'); });
+document.getElementById('modeCommandsBtn').addEventListener('click', function(){ setMode('commands'); });
 
 // Start through startQuiz (not a bare render) so the very first run is also
 // a random draw from the pools, not the full pool in shuffled order.
