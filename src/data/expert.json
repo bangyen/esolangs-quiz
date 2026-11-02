@@ -167,7 +167,7 @@
       "lang": "Lazy K",
       "family": "Combinators — no variables",
       "code": "``s``s`k``si`k``s``si`k``s\n``si`k`k``s``si`k``s``si`k",
-      "note": "// Excerpt — backtick means “apply”, and s, k and i are the only functions that exist. The characters of the greeting are encoded in the shape of the expression itself.",
+      "note": "// Excerpt — backtick means “apply”, and evaluation is lazy throughout. s and k do the real work — every i is just shorthand, since i = s k k — and the characters of the greeting are encoded in the shape of the expression itself.",
       "options": [
         "Lazy K",
         "Unlambda",
