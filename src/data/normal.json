@@ -1,0 +1,292 @@
+{
+  "QUESTIONS": [
+    {
+      "lang": "Brainfuck",
+      "sub": "Created 1993 · 8 commands only",
+      "code": "++++++++++[>+++++++>++++++++++>+++>+<<<<-]\n>++.>+.+++++++..+++.>++.\n<<+++++++++++++++.>.+++.------.--------.>+.>.",
+      "note": "// Output: Hello World!\n// Only  >  <  +  -  .  ,  [  ]  are commands. Everything else is a comment.",
+      "hint": "Only eight single-character commands — > < + - . , [ ] — moving a pointer along a tape of memory cells.",
+      "fact": "Created by Urban Müller in 1993 to make the smallest possible compiler. Its full name is usually censored in polite company, but the language itself is Turing complete."
+    },
+    {
+      "lang": "LOLCODE",
+      "sub": "Inspired by lolcat captions",
+      "code": "HAI 1.2\nCAN HAS STDIO?\nVISIBLE \"HAI WORLD!\"\nKTHXBYE",
+      "note": "// HAI opens the program. KTHXBYE closes it.",
+      "hint": "HAI means hi, VISIBLE means print, and KTHXBYE means… okay, thanks, bye. It’s lolcat speak turned into syntax.",
+      "fact": "Created in 2007 by Adam Lindsay. Early versions really did print “HAI WORLD!” — the grammar comes straight from LOLCat image macros."
+    },
+    {
+      "lang": "Befunge",
+      "sub": "2D, stack-based · 1993",
+      "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @",
+      "note": "// The string is pushed backwards, then printed character by character as the pointer loops.",
+      "hint": "Code isn’t read left-to-right. Arrows > < ^ v redirect the instruction pointer around a two-dimensional grid.",
+      "fact": "Befunge-93 (Chris Pressey, 1993) was designed to be as hard as possible to compile — because the program can rewrite itself as it runs."
+    },
+    {
+      "lang": "Shakespeare Programming Language",
+      "sub": "Code that reads like a play",
+      "code": "The Infamous Hello World Program.\n\nRomeo, a young man with a remarkable patience.\nJuliet, a likewise young woman of remarkable grace.\nHamlet, the flatterer of Andersen Insulting A/S.\n\n        Act I: Hamlet's insults and flattery.\n\n        Scene I: The insulting of Romeo.\n\n[Enter Hamlet and Romeo]\n\nHamlet:\n You lying stupid fatherless big smelly half-witted coward!\n You are as stupid as the difference between a handsome\n rich brave hero and thyself! Speak your mind!",
+      "note": "// Excerpt — the full program runs for several more scenes of insults and flattery. Characters push values; “Speak your mind!” prints.",
+      "hint": "Variables are characters, values are built from insults and compliments, and [Enter …] / [Exit …] bring them on and off stage.",
+      "fact": "By Jon Åslund and Karl Hasselström (2001). A noun like “coward” is a negative value, “hero” is positive — so an insult literally does arithmetic."
+    },
+    {
+      "lang": "Chef",
+      "sub": "Code that reads like a recipe",
+      "code": "Hello World Souffle.\n\nIngredients.\n72 g haricot beans\n101 eggs\n108 g lard\n111 cups oil\n32 zucchinis\n119 ml water\n114 g red salmon\n100 g dijon mustard\n33 potatoes\n\nMethod.\nPut haricot beans into the mixing bowl.\nPut eggs into the mixing bowl.\nPut lard into the mixing bowl.\nPut oil into the mixing bowl.\n…",
+      "note": "// Each ingredient’s amount is a character code: 72 = H, 101 = e, 108 = l…",
+      "hint": "Ingredients are variables, mixing bowls are stacks, and “Put … into the mixing bowl” is an instruction. Check the amounts: 72, 101, 108, 108, 111…",
+      "fact": "Designed by David Morgan-Mar. A valid program should not only work — it should ideally be cookable. The numbers here spell H-e-l-l-o in ASCII."
+    },
+    {
+      "lang": "INTERCAL",
+      "sub": "The parody language · 1972",
+      "code": "DO ,1 <- #13\nPLEASE DO ,1 SUB #1 <- #238\nDO ,1 SUB #2 <- #108\nDO ,1 SUB #3 <- #112\nDO ,1 SUB #4 <- #0\nDO ,1 SUB #5 <- #64\nDO ,1 SUB #6 <- #194\nPLEASE READ OUT ,1\nPLEASE GIVE UP",
+      "note": "// Yes, PLEASE is a real keyword. Use it too little and you’re rude; too much and you’re grovelling — both are errors.",
+      "hint": "The compiler judges your manners. Omit PLEASE too often and it refuses you for rudeness; overuse it and it rejects you for excessive politeness.",
+      "fact": "INTERCAL (1972) is the original joke language — created by Don Woods and Jim Lyon as a parody. Its manual insists the full name is “Compiler Language With No Pronounceable Acronym.”"
+    },
+    {
+      "lang": "Malbolge",
+      "sub": "Named after Hell’s 8th circle",
+      "code": "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{ABF`JyUYR\nmgk}vV~v\"R&vBkHq*^_+rBsFkI#`$%[|\"oJ~Zq8*V\n…",
+      "note": "// Excerpt. After each instruction, the code encrypts itself — so the same character never means the same thing twice.",
+      "hint": "Named after the Malebolge — the eighth circle of Hell in Dante’s Inferno. It was designed, on purpose, to be almost impossible to program in.",
+      "fact": "Invented by Ben Olmstead in 1998. Nobody wrote a working program in it for two years — the first Hello World was found by a search algorithm, not a human."
+    },
+    {
+      "lang": "ArnoldC",
+      "sub": "Based entirely on one-liners",
+      "code": "IT'S SHOWTIME\nTALK TO THE HAND \"HELLO WORLD\"\nYOU HAVE BEEN TERMINATED",
+      "note": "// IT'S SHOWTIME = main()   ·   TALK TO THE HAND = print   ·   YOU HAVE BEEN TERMINATED = end",
+      "hint": "Every keyword is a famous one-liner from this Austrian action star’s films. “GET TO THE CHOPPER” is an assignment.",
+      "fact": "Created by Lauri Hartikka. IF is “BECAUSE I'M GOING TO SAY PLEASE”, WHILE is “STICK AROUND”, and FALSE is “I LIED”."
+    },
+    {
+      "lang": "Ook!",
+      "sub": "Designed for orangutans",
+      "code": "Ook. Ook? Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok? Ook? Ook! Ook? Ook? Ook. Ook. Ook. Ook. Ook?\nOok. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook?",
+      "note": "// One word, three punctuations:  Ook.  Ook?  Ook!  — paired up, they make eight commands.",
+      "hint": "Only one word ever appears. Whether it ends in . ? or ! is the entire instruction set — a language an orangutan could, in theory, type.",
+      "fact": "Another David Morgan-Mar creation, inspired by the Librarian in Terry Pratchett’s Discworld, who only says “Ook.” It’s a direct re-encoding of Brainfuck."
+    },
+    {
+      "lang": "COW",
+      "sub": "12 moo-based instructions",
+      "code": "MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO MoO mOo MoO MoO MoO MoO\nMoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MMM MoO",
+      "note": "// MoO, mOo, MoO, Moo, moo… — capitalisation is the whole instruction set.",
+      "hint": "Twelve instructions, all of them “moo” in different capitalisations: MoO, mOo, MOO, mOO, MMM and friends.",
+      "fact": "Created by Sean Heber in 2003. It’s also Brainfuck-like under the hood — MOO and moo form its loop — but, crucially, bovine."
+    },
+    {
+      "lang": "Emojicode",
+      "sub": "Every keyword is an emoji",
+      "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉",
+      "note": "// 🏁 starts the program, 🍇…🍉 are the braces, 😀 prints.",
+      "hint": "🍇 and 🍉 open and close a block, 🏁 is the entry point, and 🔤 delimits a string. If it looks like a text message, you’re close.",
+      "fact": "A real, open-source, high-level language — not just a joke. It has classes, generics and closures, all spelled in emoji."
+    },
+    {
+      "lang": "Whitespace",
+      "sub": "Only spaces, tabs, linefeeds",
+      "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n␣␣␣ ⇥␣ ␣⇥␣␣␣ ⏎\n⇥⏎ ␣␣ ⏎",
+      "note": "// Shown visibly: ␣ = space, ⇥ = tab, ⏎ = linefeed. In a real file this page would look completely blank.",
+      "hint": "The source file looks empty. Only three invisible characters carry meaning — spaces, tabs and linefeeds. All other characters are ignored as comments.",
+      "fact": "Released on 1 April 2003 by Edwin Brady and Chris Morris — on April Fools’ Day, but it works. It’s a favourite for hiding code inside other code."
+    },
+    {
+      "lang": "Blub",
+      "sub": "Brainfuck, but for fish",
+      "code": "Blub. Blub? Blub. Blub. Blub. Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub? Blub. Blub. Blub?\nBlub. Blub. Blub. Blub. Blub. Blub. Blub. Blub.",
+      "note": "// One word, three punctuations:  Blub.  Blub?  Blub!  — paired up, they make eight commands.",
+      "hint": "One word, endlessly repeated, and it’s the sound a fish makes. Pairs of them encode the same eight commands as a certain tape language.",
+      "fact": "Blub re-encodes Brainfuck the way Ook! does for orangutans — but for fish. Blub. Blub? and Blub! pair up into the same eight tape commands."
+    },
+    {
+      "lang": "Rockstar",
+      "sub": "Code that reads like a rock ballad",
+      "code": "Say \"Hello, World!\"",
+      "note": "// That is the whole program — one line. The language was built so source code reads like 1980s rock lyrics.",
+      "hint": "It’s meant to be sung, not compiled. The keyword that prints is an ordinary verb a frontman would shout at a crowd.",
+      "fact": "Rockstar (Dylan Beattie, 2018) makes programs read as song lyrics: “Say” prints, poetic number literals are spelled out in words, and “Midnight takes your heart and your soul” defines a function."
+    },
+    {
+      "lang": "JSFuck",
+      "sub": "JavaScript using only []()!+",
+      "code": "(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]\n+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]",
+      "note": "// Only six characters ever appear in this language: [ ] ( ) ! + — and this is JavaScript in disguise. Brackets, negation and addition are abused until type coercion spells out each letter; the full Hello World runs to thousands of characters.",
+      "hint": "It’s ordinary JavaScript, written with only six characters — [ ] ( ) ! + — and nothing else. Empty arrays, true/false values and coercion between them are combined until they spell out letters.",
+      "fact": "JSFuck writes any JavaScript using only []()!+ : brackets plus coercion between booleans, strings and numbers spell out letters. It runs in any browser console."
+    },
+    {
+      "lang": "Hexagony",
+      "sub": "2D, on a hexagonal grid",
+      "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . .",
+      "note": "// The source itself forms a hexagon. The pointer moves in six directions and wraps around the edges.",
+      "hint": "The source code itself forms a hexagon and runs on a hexagonal grid: the instruction pointer moves in six directions and wraps around the edges — H e l l o are literal characters in the grid, ; prints and @ ends the program.",
+      "fact": "Hexagony (Martin Ender) runs on a hexagonal grid — the source code itself forms a hexagon of characters, and even its memory is an infinite hexagonal grid."
+    },
+    {
+      "lang": "><>",
+      "sub": "A fish swimming through code",
+      "code": "\"!dlroW ,olleH\":l?!;o",
+      "note": "// The string is pushed backwards, then popped and printed one character at a time. The pointer wraps around the edges of the grid.",
+      "hint": "The pointer wraps around the edges of a small rectangular tank and works off a stack. Its name is punctuation — and it’s pronounced “Fish”.",
+      "fact": "><> — pronounced “Fish” — is a 2D stack language where the instruction pointer swims through the code, wrapping around the edges; o prints the top of the stack and ; ends the program."
+    },
+    {
+      "lang": "Unlambda",
+      "sub": "Functional — backticks and single letters",
+      "code": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "note": "// Read the backtick as “apply”: `` applies one function to the next, and each .x prints the character x — .H prints H, .e prints e, even “. ” prints the space. Run left to right, the program spells out Hello, World! one letter at a time. There are no variables and no keywords.",
+      "hint": "Backticks apply one function to another, and .x prints the character x. This is functional programming stripped to combinators.",
+      "fact": "Unlambda (David Madore) is built from combinators — `k, `s and `i — plus .x, which prints x. It was designed to make functional programming feel as awkward as Brainfuck makes imperative programming feel."
+    },
+    {
+      "lang": "HQ9+",
+      "sub": "One letter per joke program",
+      "code": "H",
+      "note": "// Yes, that is the entire file. Each letter in this language is a complete program.",
+      "hint": "One character, and it isn’t an initialism gone wrong: H is simply the command that does exactly what this quiz is about.",
+      "fact": "HQ9+ (Cliff Biffle, 2001) has four commands: H prints “Hello, World!”, Q prints the program itself (a quine), 9 prints the lyrics to 99 Bottles of Beer, and + increments a counter nobody can read."
+    },
+    {
+      "lang": "Velato",
+      "sub": "Programs are MIDI music",
+      "code": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
+      "note": "// Shown as the note sequence — the real source is a MIDI file. Each step from one note to the next is one command.",
+      "hint": "Listen, don’t look: this one is played, not read. The interval between successive notes carries the meaning.",
+      "fact": "Velato (Daniel Johnson) reads a MIDI file: the interval between successive notes is the command, so a program is literally a melody — a good one should sound pleasant, not just run."
+    }
+  ],
+  "DISTRACTORS": {
+    "Brainfuck": [
+      "Ook!",
+      "COW",
+      "Whitespace"
+    ],
+    "LOLCODE": [
+      "ArnoldC",
+      "Rockstar",
+      "Emojicode"
+    ],
+    "Befunge": [
+      "Piet",
+      "Whitespace",
+      "Malbolge"
+    ],
+    "Shakespeare Programming Language": [
+      "Chef",
+      "Rockstar",
+      "INTERCAL"
+    ],
+    "Chef": [
+      "Shakespeare Programming Language",
+      "Velato",
+      "Rockstar"
+    ],
+    "INTERCAL": [
+      "COBOL",
+      "Brainfuck",
+      "ArnoldC"
+    ],
+    "Malbolge": [
+      "Brainfuck",
+      "JSFuck",
+      "Whitespace"
+    ],
+    "ArnoldC": [
+      "LOLCODE",
+      "Rockstar",
+      "Shakespeare Programming Language"
+    ],
+    "Ook!": [
+      "COW",
+      "Brainfuck",
+      "Emojicode"
+    ],
+    "COW": [
+      "Ook!",
+      "Brainfuck",
+      "Whitespace"
+    ],
+    "Emojicode": [
+      "Piet",
+      "LOLCODE",
+      "Velato"
+    ],
+    "Whitespace": [
+      "Brainfuck",
+      "Befunge",
+      "Malbolge"
+    ],
+    "Blub": [
+      "Ook!",
+      "Brainfuck",
+      "COW"
+    ],
+    "Rockstar": [
+      "ArnoldC",
+      "Shakespeare Programming Language",
+      "LOLCODE"
+    ],
+    "JSFuck": [
+      "Brainfuck",
+      "Malbolge",
+      "Unlambda"
+    ],
+    "Hexagony": [
+      "Befunge",
+      "><>",
+      "Labyrinth"
+    ],
+    "><>": [
+      "Befunge",
+      "Hexagony",
+      "Labyrinth"
+    ],
+    "Unlambda": [
+      "Fractran",
+      "Malbolge",
+      "JSFuck"
+    ],
+    "HQ9+": [
+      "Brainfuck",
+      "INTERCAL",
+      "Emojicode"
+    ],
+    "Velato": [
+      "Chef",
+      "Piet",
+      "Emojicode"
+    ]
+  },
+  "SUBS": {
+    "Brainfuck": "Created 1993 · 8 commands only",
+    "LOLCODE": "Inspired by lolcat captions",
+    "Befunge": "2D, stack-based · 1993",
+    "Shakespeare Programming Language": "Code that reads like a play",
+    "Chef": "Code that reads like a recipe",
+    "INTERCAL": "The parody language · 1972",
+    "Malbolge": "Named after Hell’s 8th circle",
+    "ArnoldC": "Based entirely on one-liners",
+    "Ook!": "Designed for orangutans",
+    "COW": "12 moo-based instructions",
+    "Emojicode": "Every keyword is an emoji",
+    "Whitespace": "Only spaces, tabs, linefeeds",
+    "Rockstar": "Code that reads like a rock ballad",
+    "Piet": "Programs are abstract paintings",
+    "Velato": "Programs are MIDI music",
+    "JSFuck": "JavaScript using only []()!+",
+    "COBOL": "1959 business language — not an esolang, just old",
+    "Blub": "Brainfuck, but for fish",
+    "Hexagony": "2D, on a hexagonal grid",
+    "Fractran": "Nothing but a list of fractions",
+    "Unlambda": "Functional — backticks and single letters",
+    "><>": "A fish swimming through code",
+    "Labyrinth": "2D maze — walls steer the pointer",
+    "HQ9+": "One letter per joke program"
+  }
+}

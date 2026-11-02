@@ -1,0 +1,659 @@
+{
+  "HARD_FRAGMENTS": [
+    {
+      "kind": "fragment",
+      "lang": "Brainfuck",
+      "family": "Tape & token soup",
+      "code": ">++.>+.+++++++..+++.",
+      "note": "// Tiny excerpt (1–2 lines) — the opening loop that sets up the tape cells has been cut. You are mid-print.",
+      "options": [
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Blub"
+      ],
+      "weakHint": "Almost no variety in the marks on show — that scarcity is itself the clue.",
+      "fact": "Created by Urban Müller in 1993 to make the smallest possible compiler. Only > < + - . , [ ] are commands — this fragment is the printing half of the program."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Ook!",
+      "family": "Tape & token soup",
+      "code": "Ook. Ook. Ook. Ook! Ook?\nOok? Ook. Ook. Ook. Ook?",
+      "note": "// Tiny excerpt (1–2 lines) — one word, repeated. Whether it ends in . ? or ! is the entire instruction set.",
+      "options": [
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Blub"
+      ],
+      "weakHint": "One word keeps returning. Only how each occurrence ends ever changes.",
+      "fact": "Ook! (David Morgan-Mar) re-encodes Brainfuck for orangutans — a nod to Terry Pratchett’s Librarian. Pairs of Ook./Ook?/Ook! make the eight commands."
+    },
+    {
+      "kind": "fragment",
+      "lang": "COW",
+      "family": "Tape & token soup",
+      "code": "MoO MoO MoO MoO mOo MoO\nMoO MoO MMM MoO",
+      "note": "// Tiny excerpt (1–2 lines) — twelve instructions exist in this language, and every one of them is pronounced the same.",
+      "options": [
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Blub"
+      ],
+      "weakHint": "Read it aloud. The sound matters more than the spelling.",
+      "fact": "COW (Sean Heber, 2003) has 12 instructions — MoO, mOo, MOO, mOO, MMM and friends. Under the hide, it is Brainfuck-like, with MOO/moo as its loop."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Shakespeare Programming Language",
+      "family": "Verbose English prose",
+      "code": "Hamlet:\n You are as honest as the sum of a hero and thyself! Speak your mind!",
+      "note": "// Tiny excerpt (1–2 lines) — the play’s title, cast list and Act/Scene headings have been cut.",
+      "options": [
+        "Shakespeare Programming Language",
+        "Chef",
+        "ArnoldC",
+        "Rockstar"
+      ],
+      "weakHint": "Someone is speaking to someone else — but no stage is shown.",
+      "fact": "In the Shakespeare Programming Language (2001), characters are variables and nouns carry values — “hero” is positive, “coward” is negative — so an insult literally computes. “Speak your mind!” prints."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Chef",
+      "family": "Verbose English prose",
+      "code": "Put eggs into the mixing bowl.\nFold lard into the mixing bowl.",
+      "note": "// Tiny excerpt (1–2 lines) — the recipe title and the Ingredients list, where the amounts spelled out the letters, have been cut.",
+      "options": [
+        "Chef",
+        "Shakespeare Programming Language",
+        "ArnoldC",
+        "Rockstar"
+      ],
+      "weakHint": "Ordinary imperative sentences — but nothing here is meant literally.",
+      "fact": "Chef (David Morgan-Mar) treats ingredients as variables and mixing bowls as stacks. In the full program the ingredient amounts are ASCII codes: 72 = H, 101 = e, 108 = l…"
+    },
+    {
+      "kind": "fragment",
+      "lang": "ArnoldC",
+      "family": "Verbose English prose",
+      "code": "TALK TO THE HAND \"HELLO WORLD\"\nGET TO THE CHOPPER result",
+      "note": "// Tiny excerpt (1–2 lines) — IT’S SHOWTIME and YOU HAVE BEEN TERMINATED have been cut from the top and tail.",
+      "options": [
+        "ArnoldC",
+        "Shakespeare Programming Language",
+        "Chef",
+        "Rockstar"
+      ],
+      "weakHint": "Every line sounds shouted. The phrasing is the giveaway, if you recognise the voice.",
+      "fact": "ArnoldC (Lauri Hartikka) builds every keyword from Arnold Schwarzenegger one-liners: TALK TO THE HAND prints, GET TO THE CHOPPER starts an assignment, FALSE is “I LIED”."
+    },
+    {
+      "kind": "fragment",
+      "lang": "LOLCODE",
+      "family": "Verbose English prose",
+      "code": "VISIBLE \"HAI WORLD!\"\nI HAS A count ITZ 1",
+      "note": "// Tiny excerpt (1–2 lines) — the opening HAI 1.2 and the closing KTHXBYE have been cut.",
+      "options": [
+        "LOLCODE",
+        "ArnoldC",
+        "Rockstar",
+        "Shakespeare Programming Language"
+      ],
+      "weakHint": "Deliberately broken English from an old meme era.",
+      "fact": "LOLCODE (Adam Lindsay, 2007) takes its syntax straight from LOLCat captions. HAI opens a program and KTHXBYE closes it — both were removed here, and it is still unmistakable."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Befunge",
+      "family": "2D & visual layout",
+      "code": "        > : v\n        | _ , @",
+      "note": "// Tiny excerpt (1–2 lines) — a corner of the grid, mid-execution. The pointer is not moving left-to-right any more.",
+      "options": [
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "Labyrinth"
+      ],
+      "weakHint": "Don’t assume it reads left to right.",
+      "fact": "Befunge-93 (Chris Pressey, 1993) runs on a 2D grid: > < ^ v steer the instruction pointer, _ and | are conditional turns, and @ ends the program. It can rewrite its own grid as it runs."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Fractran",
+      "family": "Almost no syntax",
+      "code": "17/91   78/85   19/51   23/38 …",
+      "note": "// Tiny excerpt (truncated) — an ordered list like this, plus a starting number, is a complete program in this language. The rest of the list has been cut.",
+      "options": [
+        "Fractran",
+        "Unlambda",
+        "Malbolge",
+        "JSFuck"
+      ],
+      "weakHint": "There is almost nothing here except numbers and one repeated separator.",
+      "fact": "Fractran (John Conway) is Turing complete with nothing but a list of fractions: multiply the current number by the first fraction that gives an integer, and repeat. Its most famous list generates prime numbers."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Unlambda",
+      "family": "Almost no syntax",
+      "code": "``.H.e.l.l.o. .W…",
+      "note": "// Tiny excerpt (1–2 lines) — backticks and single letters. There are no variables, no numbers and no keywords hiding anywhere else in the language.",
+      "options": [
+        "Unlambda",
+        "Fractran",
+        "Malbolge",
+        "JSFuck"
+      ],
+      "weakHint": "Two kinds of marks do almost everything here.",
+      "fact": "Unlambda (David Madore) is functional programming stripped to combinators — `k, `s and `i — plus .x, which prints the character x. It was designed to make functional programming feel as awkward as Brainfuck makes imperative programming feel."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Blub",
+      "family": "Tape & token soup",
+      "code": "Blub. Blub. Blub! Blub?\nBlub? Blub. Blub. Blub?",
+      "note": "// Tiny excerpt (1–2 lines) — one word, repeated. Whether it ends in . ? or ! is the entire instruction set.",
+      "options": [
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Blub"
+      ],
+      "weakHint": "One word keeps returning — and it belongs underwater.",
+      "fact": "Blub re-encodes Brainfuck the way Ook! does for orangutans — but for fish. Blub. Blub? and Blub! pair up into the same eight tape commands."
+    },
+    {
+      "kind": "fragment",
+      "lang": "INTERCAL",
+      "family": "Almost no syntax",
+      "code": "DO ,1 SUB #5 <- #64\nDO READ OUT ,1",
+      "note": "// Tiny excerpt (1–2 lines) — the PLEASEs have been cut from this stretch. In the full program they are load-bearing: too few is rude, too many is grovelling.",
+      "options": [
+        "INTERCAL",
+        "Fractran",
+        "Unlambda",
+        "Malbolge"
+      ],
+      "weakHint": "Something polite is conspicuously missing from this stretch.",
+      "fact": "INTERCAL (1972) is the original parody language, by Don Woods and Jim Lyon. DO and PLEASE DO are interchangeable to the parser — except the compiler counts your PLEASEs and rejects you for rudeness or for excessive politeness."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Malbolge",
+      "family": "Almost no syntax",
+      "code": "mgk}vV~v\"R&vBkHq*^…",
+      "note": "// Tiny excerpt (1–2 lines) — after each instruction, the code encrypts itself, so the same character never means the same thing twice.",
+      "options": [
+        "Malbolge",
+        "Fractran",
+        "Unlambda",
+        "JSFuck"
+      ],
+      "weakHint": "It looks like line noise — that hostility is deliberate.",
+      "fact": "Malbolge (Ben Olmstead, 1998) encrypts its own code after every instruction. Nobody wrote a working program in it for two years — the first Hello World was found by a search algorithm, not a human."
+    },
+    {
+      "kind": "fragment",
+      "lang": "JSFuck",
+      "family": "Almost no syntax",
+      "code": "+([][[]]+[])[+!+[]]…",
+      "note": "// Tiny excerpt (1–2 lines) — only six distinct characters appear in this entire language, and this fragment uses all of them.",
+      "options": [
+        "JSFuck",
+        "Malbolge",
+        "Unlambda",
+        "Brainfuck"
+      ],
+      "weakHint": "Only a handful of characters, yet it’s a dialect of something everyday.",
+      "fact": "JSFuck writes any JavaScript using only []()!+ : brackets and coercion between booleans, strings and numbers spell out letters. It runs in any browser console."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Hexagony",
+      "family": "2D & visual layout",
+      "code": "l o ; W o\n r l d ! @",
+      "note": "// Tiny excerpt (1–2 lines) — a corner of the grid. The source this came from is not rectangular, and the pointer does not stay in straight lines.",
+      "options": [
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "Labyrinth"
+      ],
+      "weakHint": "The shape matters as much as the letters inside it.",
+      "fact": "Hexagony (Martin Ender) runs on a hexagonal grid — the source code itself forms a hexagon of characters, and the instruction pointer moves in six directions, wrapping around the edges."
+    },
+    {
+      "kind": "fragment",
+      "lang": "><>",
+      "family": "2D & visual layout",
+      "code": "\":l?!;o",
+      "note": "// Tiny excerpt (1–2 lines) — the tail of a one-line program and the row beneath it. The pointer wraps around the tank’s edges and works off a stack.",
+      "options": [
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "Labyrinth"
+      ],
+      "weakHint": "The layout wraps — what leaves one edge comes back elsewhere.",
+      "fact": "><> — pronounced “Fish” — is a 2D stack language where the instruction pointer swims through the code, wrapping around the edges; o prints the top of the stack and ; ends the program. In the full Hello World the string is pushed backwards, then printed a character at a time."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Rockstar",
+      "family": "Verbose English prose",
+      "code": "While your heart is as high as your soul\nSay your heart",
+      "note": "// Tiny excerpt (1–2 lines) — no quotation marks, no chorus. What remains is pronouns, poetic number words and one very theatrical function definition.",
+      "options": [
+        "Rockstar",
+        "Shakespeare Programming Language",
+        "Chef",
+        "ArnoldC"
+      ],
+      "weakHint": "Try singing it. The performance is part of the puzzle.",
+      "fact": "Rockstar (Dylan Beattie, 2018) makes programs read as song lyrics: “Say” prints, poetic literals spell numbers out in words, and “Midnight takes your heart and your soul” defines a function of two arguments."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Emojicode",
+      "family": "Symbols, not letters",
+      "code": "  😀 🔤World!🔤\n🍉",
+      "note": "// Tiny excerpt (1–2 lines) — the 🏁 entry point has been cut. What remains is a block, and every keyword inside it is a picture.",
+      "options": [
+        "Emojicode",
+        "Piet",
+        "Velato",
+        "Whitespace"
+      ],
+      "weakHint": "The pictures aren’t decoration.",
+      "fact": "Emojicode is a real, open-source, high-level language — it has classes, generics and closures, all spelled in emoji. 🏁 is the entry point and 😀 is its print."
+    }
+  ],
+  "REVERSE_PROMPT": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+  "HARD_REVERSE": [
+    {
+      "kind": "reverse",
+      "lang": "Velato",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine code, each in a different art-or-music language; pick the one that is actually Velato.",
+      "snippets": [
+        {
+          "lang": "Piet",
+          "code": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)\n(a painting-like grid of coloured rectangles — block size and hue change are the instructions)"
+        },
+        {
+          "lang": "Velato",
+          "code": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4\n(each step from one note to the next — up a 3rd, down a 2nd — is one command)"
+        },
+        {
+          "lang": "Emojicode",
+          "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉"
+        },
+        {
+          "lang": "Whitespace",
+          "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n⇥⏎ ␣␣ ⏎\n(shown with visible symbols — the real file looks blank)"
+        }
+      ],
+      "weakHint": "Don’t just look at it — imagine hearing it.",
+      "fact": "Velato (Daniel Johnson) reads a MIDI file: the interval between successive notes is the command, so a program is literally a melody — a good one should sound pleasant, not just run."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Hexagony",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine 2D-grid code; pick the one that is actually Hexagony.",
+      "snippets": [
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . ."
+        },
+        {
+          "lang": "><>",
+          "code": "\"!dlroW ,olleH\":l?!;o"
+        },
+        {
+          "lang": "Labyrinth",
+          "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _"
+        }
+      ],
+      "weakHint": "The shape matters as much as the letters inside it.",
+      "fact": "Hexagony (Martin Ender) runs on a hexagonal grid — the source code itself forms a hexagon of characters, and the instruction pointer moves in six directions, wrapping around the edges."
+    },
+    {
+      "kind": "reverse",
+      "lang": "><>",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine 2D-grid code; pick the one that is actually ><> (Fish).",
+      "snippets": [
+        {
+          "lang": "Labyrinth",
+          "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _"
+        },
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "><>",
+          "code": "\"!dlroW ,olleH\":l?!;o"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . ."
+        }
+      ],
+      "weakHint": "The layout wraps — what leaves one edge comes back elsewhere.",
+      "fact": "><> — pronounced “Fish” — is a 2D stack language where the instruction pointer swims through the code, wrapping around the edges; o prints the top of the stack and ; ends the program."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Brainfuck",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine tape-language code — three are single-word re-encodings of the fourth; pick the original.",
+      "snippets": [
+        {
+          "lang": "Ook!",
+          "code": "Ook. Ook? Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook. Ook.\nOok? Ook? Ook! Ook? Ook? Ook. Ook. Ook. Ook. Ook?"
+        },
+        {
+          "lang": "Brainfuck",
+          "code": "++++++++++[>+++++++>++++++++++>+++>+<<<<-]\n>++.>+.+++++++..+++.>++."
+        },
+        {
+          "lang": "COW",
+          "code": "MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO MoO mOo MoO MoO MoO MoO"
+        },
+        {
+          "lang": "Blub",
+          "code": "Blub. Blub? Blub. Blub. Blub. Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub? Blub. Blub. Blub?\nBlub. Blub. Blub. Blub. Blub. Blub. Blub. Blub."
+        }
+      ],
+      "weakHint": "One of these uses no words at all. Look for the one that doesn’t repeat a word.",
+      "fact": "Brainfuck (Urban Müller, 1993) has exactly eight commands — > < + - . , [ ] — and everything else in a file is a comment. Ook!, COW and Blub are all re-encodings of it in a single repeated word."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Chef",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine code, each in a different English-prose language; pick the one that is actually Chef.",
+      "snippets": [
+        {
+          "lang": "Shakespeare Programming Language",
+          "code": "Hamlet:\n You lying stupid fatherless big smelly half-witted coward!\n You are as stupid as the difference between a handsome\n rich brave hero and thyself! Speak your mind!"
+        },
+        {
+          "lang": "ArnoldC",
+          "code": "IT'S SHOWTIME\nTALK TO THE HAND \"HELLO WORLD\"\nYOU HAVE BEEN TERMINATED"
+        },
+        {
+          "lang": "Chef",
+          "code": "Put haricot beans into the mixing bowl.\nPut eggs into the mixing bowl.\nFold lard into the mixing bowl.\nPour contents of the mixing bowl to the baking dish.\nServes 1."
+        },
+        {
+          "lang": "Rockstar",
+          "code": "Say \"Hello, World!\""
+        }
+      ],
+      "weakHint": "Only one of these belongs somewhere you could cook.",
+      "fact": "Chef (David Morgan-Mar) treats ingredients as variables and mixing bowls as stacks; in the full Hello World the ingredient amounts are ASCII codes — 72 = H, 101 = e, 108 = l."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Piet",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. Candidates are schematic descriptions of four different art-or-grid languages; pick the one that is actually Piet.",
+      "snippets": [
+        {
+          "lang": "Velato",
+          "code": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4\n(a melody — each step from one note to the next is one command)"
+        },
+        {
+          "lang": "Piet",
+          "code": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)\n(a painting-like grid of coloured rectangles — block size and hue change are the instructions)"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . .\n(a hexagonal grid of ordinary characters — the shape is the program)"
+        },
+        {
+          "lang": "Emojicode",
+          "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉\n(every keyword is a picture character)"
+        }
+      ],
+      "weakHint": "Think gallery, not editor. The picture is the program.",
+      "fact": "Piet (David Morgan-Mar) — programs are images in the style of Piet Mondrian. Colour blocks are instructions, and the number of pixels in a block pushes that value onto the stack."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Fractran",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine minimal-syntax code; pick the one that is actually Fractran.",
+      "snippets": [
+        {
+          "lang": "Unlambda",
+          "code": "``.H.e.l.l.o. .W.o.r.l.d.!"
+        },
+        {
+          "lang": "Malbolge",
+          "code": "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{ABF`JyUYR\nmgk}vV~v\"R&vBkHq*^_+rBsFkI#`$%[|\"oJ~Zq8*V"
+        },
+        {
+          "lang": "JSFuck",
+          "code": "(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]\n+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]"
+        },
+        {
+          "lang": "Fractran",
+          "code": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13"
+        }
+      ],
+      "weakHint": "Only one of these is nothing but numbers and one repeated separator.",
+      "fact": "Fractran (John Conway) is Turing complete with nothing but a list of fractions: multiply the current number by the first fraction that gives an integer, and repeat. Its most famous list generates prime numbers."
+    },
+    {
+      "kind": "reverse",
+      "lang": "LOLCODE",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine code, each in a different English-prose language; pick the one that is actually LOLCODE.",
+      "snippets": [
+        {
+          "lang": "LOLCODE",
+          "code": "HAI 1.2\nCAN HAS STDIO?\nVISIBLE \"HAI WORLD!\"\nKTHXBYE"
+        },
+        {
+          "lang": "ArnoldC",
+          "code": "IT'S SHOWTIME\nTALK TO THE HAND \"HELLO WORLD\"\nYOU HAVE BEEN TERMINATED"
+        },
+        {
+          "lang": "Rockstar",
+          "code": "Say \"Hello, World!\""
+        },
+        {
+          "lang": "Emojicode",
+          "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉"
+        }
+      ],
+      "weakHint": "Deliberately broken English from an old meme era.",
+      "fact": "LOLCODE (Adam Lindsay, 2007) takes its syntax straight from LOLCat captions. HAI opens a program and KTHXBYE closes it; VISIBLE prints."
+    }
+  ],
+  "HARD_WIDE": [
+    {
+      "kind": "wide",
+      "type": "image",
+      "lang": "Piet",
+      "family": "Art & visual",
+      "options": [
+        "Piet",
+        "Velato",
+        "Emojicode",
+        "Hexagony",
+        "Befunge",
+        "Labyrinth",
+        "Whitespace",
+        "><>"
+      ],
+      "code": "",
+      "note": "// This program is an image — the picture above is the complete source code, not an illustration of it. Eight options below — tap the right one.",
+      "weakHint": "Think gallery, not editor. The picture is the program.",
+      "fact": "Piet (David Morgan-Mar) — programs are images in the style of Piet Mondrian. Colour blocks are instructions, and the number of pixels in a block pushes that value onto the stack. The image above is a Piet-style Hello, World!"
+    },
+    {
+      "kind": "wide",
+      "lang": "Whitespace",
+      "family": "Invisible & minimal",
+      "options": [
+        "Whitespace",
+        "Brainfuck",
+        "Malbolge",
+        "Unlambda",
+        "JSFuck",
+        "Fractran",
+        "Befunge",
+        "INTERCAL"
+      ],
+      "code": "   \t \t   \n  \t\t    \n   \t  \t  \n\t\n    \n   \t \t\t \n  \t   \t \n",
+      "note": "// Raw fragment, exactly as stored — no visible symbols substituted this time. The box is not empty; your eyes are just not the target audience.",
+      "weakHint": "There’s less here than meets the eye — literally.",
+      "fact": "Whitespace (Edwin Brady & Chris Morris, released 1 April 2003) uses only spaces, tabs and linefeeds — every other character is ignored as a comment. In Normal mode it was shown with visible symbols; this is the real file."
+    },
+    {
+      "kind": "wide",
+      "lang": "Labyrinth",
+      "family": "2D & visual layout",
+      "options": [
+        "Labyrinth",
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "Piet",
+        "Velato",
+        "Brainfuck",
+        "Whitespace"
+      ],
+      "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _",
+      "note": "// Fragment of a source file that is also a floor plan. Walls and openings steer execution. Eight options below — tap the right one.",
+      "weakHint": "Treat the layout as a floor plan, not as text.",
+      "fact": "Labyrinth (Martin Ender) is a 2D language whose source is a maze — the cells around the instruction pointer decide its direction of travel, and characters like ( ) and \" are instructions picked up on the way through."
+    },
+    {
+      "kind": "wide",
+      "lang": "Malbolge",
+      "family": "Almost no syntax",
+      "options": [
+        "Malbolge",
+        "JSFuck",
+        "Unlambda",
+        "Fractran",
+        "Brainfuck",
+        "Whitespace",
+        "INTERCAL",
+        "Hexagony"
+      ],
+      "code": "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{ABF`JyUYR\nmgk}vV~v\"R&vBkHq*^_+rBsFkI#`$%[|\"oJ~Zq8*V",
+      "note": "// Tiny excerpt (1–2 lines) — after each instruction the code encrypts itself, so the same character never means the same thing twice.",
+      "weakHint": "It looks like line noise — that hostility is deliberate.",
+      "fact": "Malbolge (Ben Olmstead, 1998) encrypts its own code after every instruction. Nobody wrote a working program in it for two years — the first Hello World was found by a search algorithm, not a human."
+    },
+    {
+      "kind": "wide",
+      "lang": "INTERCAL",
+      "family": "Almost no syntax",
+      "options": [
+        "INTERCAL",
+        "Malbolge",
+        "Unlambda",
+        "Fractran",
+        "LOLCODE",
+        "ArnoldC",
+        "JSFuck",
+        "Whitespace"
+      ],
+      "code": "DO ,1 <- #13\nPLEASE DO ,1 SUB #1 <- #238\nDO ,1 SUB #2 <- #108\nPLEASE READ OUT ,1\nPLEASE GIVE UP",
+      "note": "// Note the manners — they are not decoration. Use PLEASE too little and you are rude; too much and you are grovelling. Both are errors.",
+      "weakHint": "Manners matter here in a way they shouldn’t.",
+      "fact": "INTERCAL (1972) is the original parody language, by Don Woods and Jim Lyon. Its manual insists the full name is “Compiler Language With No Pronounceable Acronym.”"
+    },
+    {
+      "kind": "wide",
+      "lang": "Emojicode",
+      "family": "Symbols, not letters",
+      "options": [
+        "Emojicode",
+        "Piet",
+        "Velato",
+        "LOLCODE",
+        "HQ9+",
+        "Whitespace",
+        "Hexagony",
+        "Rockstar"
+      ],
+      "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉",
+      "note": "// Every keyword in this language is an emoji. The grapes are not decoration — they are the braces.",
+      "weakHint": "The pictures aren’t decoration.",
+      "fact": "Emojicode is a real, open-source, high-level language — it has classes, generics and closures, all spelled in emoji. 😀 is its print."
+    },
+    {
+      "kind": "wide",
+      "lang": "Rockstar",
+      "family": "Verbose English prose",
+      "options": [
+        "Rockstar",
+        "Shakespeare Programming Language",
+        "Chef",
+        "ArnoldC",
+        "LOLCODE",
+        "Emojicode",
+        "Velato",
+        "INTERCAL"
+      ],
+      "code": "Say \"Hello, World!\"",
+      "note": "// That is the whole program — one line. This language was built so that source code reads like 1980s rock ballad lyrics.",
+      "weakHint": "Try singing it. The performance is part of the puzzle.",
+      "fact": "Rockstar (Dylan Beattie, 2018) makes programs read as song lyrics: “Say” prints, and a line like “Midnight takes your heart and your soul” defines a function with two arguments."
+    },
+    {
+      "kind": "wide",
+      "lang": "JSFuck",
+      "family": "Almost no syntax",
+      "options": [
+        "JSFuck",
+        "Brainfuck",
+        "Malbolge",
+        "Unlambda",
+        "Fractran",
+        "Whitespace",
+        "Blub",
+        "INTERCAL"
+      ],
+      "code": "(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]\n+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]",
+      "note": "// Tiny excerpt (1–2 lines) — only six distinct characters appear in this entire language, and this fragment uses all of them.",
+      "weakHint": "Only a handful of characters, yet it’s a dialect of something everyday.",
+      "fact": "JSFuck writes any JavaScript using only []()!+ : brackets and coercion between booleans, strings and numbers spell out letters. It runs in any browser console — a party trick and a security headache in one."
+    },
+    {
+      "kind": "wide",
+      "lang": "Blub",
+      "family": "Tape & token soup",
+      "options": [
+        "Blub",
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Whitespace",
+        "JSFuck",
+        "Malbolge",
+        "Emojicode"
+      ],
+      "code": "Blub. Blub? Blub. Blub. Blub. Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub? Blub. Blub. Blub?\nBlub. Blub. Blub. Blub. Blub. Blub. Blub. Blub.",
+      "note": "// One word, repeated. Whether it ends in . ? or ! is the entire instruction set — the aquatic counterpart of another language in this quiz.",
+      "weakHint": "One word keeps returning — and it belongs underwater.",
+      "fact": "Blub re-encodes Brainfuck the way Ook! does for orangutans — but for fish. Blub. Blub? and Blub! pair up into the same eight tape commands."
+    }
+  ]
+}

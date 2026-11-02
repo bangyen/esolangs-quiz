@@ -1,0 +1,769 @@
+{
+  "EXPERT_ID": [
+    {
+      "kind": "expert-id",
+      "lang": "Thue",
+      "family": "String rewriting & substitution",
+      "code": "x::=~Hello, World!\n::=\nx",
+      "note": "// A complete program. Everything in this language is a rewrite rule: ::= separates what is replaced from what replaces it, and ~ means “print this instead of rewriting”.",
+      "options": [
+        "Thue",
+        "///",
+        "Underload",
+        "Fractran",
+        "FALSE",
+        "Unlambda",
+        "Lazy K",
+        "INTERCAL"
+      ],
+      "fact": "Thue (John Colagioia, 2000) is a string-rewriting language: a program is a set of substitution rules ::=, text after ~ is output, and execution rewrites the initial string until no rule applies. It is Turing complete despite having no variables, no numbers and no control flow."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "FALSE",
+      "family": "Stack machines & postfix",
+      "code": "\"Hello, World!\" ß",
+      "note": "// That really is (almost) the whole program. This language is postfix and stack-based: literals push, single symbols operate, and ß flushes the output.",
+      "options": [
+        "FALSE",
+        "Underload",
+        "Smallfuck",
+        "Brainfuck",
+        "Thue",
+        "Fractran",
+        "INTERCAL",
+        "JSFuck"
+      ],
+      "fact": "FALSE (Wouter van Oortmerssen, 1993) is a stack-based language of single-character symbols, created to prove how small a compiler could be — the original was about a kilobyte. A string literal pushes its characters, and ß flushes output."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "SNUSP",
+      "family": "2D grids & paths",
+      "code": "$_/==!/==\\#==!\n  \\==!/==/==!",
+      "note": "// Excerpt of a program that is also a path. Execution starts at $ and walks the grid, turning on the slashes; the = runs are cells being counted up.",
+      "options": [
+        "SNUSP",
+        "Befunge",
+        "Hexagony",
+        "Labyrinth",
+        "><>",
+        "Brainbool",
+        "Smallfuck",
+        "Piet"
+      ],
+      "fact": "SNUSP takes Brainfuck’s tape and makes it two-dimensional: the instruction pointer travels a path through the source, turning on / and \\, entering and leaving subroutines as the path crosses itself. $ marks the start."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Brainbool",
+      "family": "Tape & bit cells",
+      "code": ">++++++++[<++++++++>-]<+.\n.+..+++..+++.<++++++++.",
+      "note": "// Excerpt — the alphabet looks familiar, but watch the output commands: the dots fall in strict groups of eight, because every character leaves the machine as eight single-bit cells.",
+      "options": [
+        "Brainbool",
+        "Brainfuck",
+        "Smallfuck",
+        "Ook!",
+        "COW",
+        "Blub",
+        "Whitespace",
+        "JSFuck"
+      ],
+      "fact": "Brainbool is Brainfuck rebuilt on boolean memory: every cell holds a single bit, input arrives bit by bit and output leaves bit by bit, so printing one character takes eight output commands. Same alphabet, crueller machine."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Smallfuck",
+      "family": "Tape & bit cells",
+      "code": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
+      "note": "// Excerpt — only five distinct characters exist in this language: > < * [ ]. There is no separate output command hiding anywhere; * is doing double duty.",
+      "options": [
+        "Smallfuck",
+        "Brainbool",
+        "Brainfuck",
+        "Ook!",
+        "COW",
+        "Blub",
+        "JSFuck",
+        "Whitespace"
+      ],
+      "fact": "Smallfuck strips Brainfuck to five commands — > < * [ ] — on a tape of single-bit cells: * flips the current bit, and a cell is output by flipping it as the pointer leaves it inside a loop. The original spec even gives the tape a finite length."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "///",
+      "family": "String rewriting & substitution",
+      "code": "/x/Hello, World!/x",
+      "note": "// A complete program, and the slashes are the whole syntax: /pattern/replacement/ rewrites the text that follows, over and over, and whatever survives is the output.",
+      "options": [
+        "///",
+        "Thue",
+        "Underload",
+        "Fractran",
+        "FALSE",
+        "Unlambda",
+        "Iota",
+        "Jot"
+      ],
+      "fact": "/// — pronounced “slashes” — has exactly one construct: /pattern/replacement/, applied repeatedly to the rest of the text. With no pattern left to match, the remaining text is printed. It is Turing complete, which surprises everyone the first time."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Underload",
+      "family": "Stack machines & postfix",
+      "code": "(Hello, World!)S",
+      "note": "// A complete program, six characters of machinery around the text: parentheses push a string onto the stack, and S prints the top of it.",
+      "options": [
+        "Underload",
+        "FALSE",
+        "Unlambda",
+        "Lazy K",
+        "Thue",
+        "///",
+        "Smallfuck",
+        "Fractran"
+      ],
+      "fact": "Underload (by ais523) is a stack machine whose stack holds strings: ( … ) pushes, S prints, ~ swaps, : duplicates, * joins two strings and ^ executes the top one as code. (Hello, World!)S really is the whole Hello World."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Iota",
+      "family": "Combinators — no variables",
+      "code": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
+      "note": "// Excerpt — the entire language is on show: one combinator, i, and one symbol, *, meaning “apply”. There is nothing else to learn, and that is the problem.",
+      "options": [
+        "Iota",
+        "Jot",
+        "Lazy K",
+        "Unlambda",
+        "Underload",
+        "///",
+        "Thue",
+        "Fractran"
+      ],
+      "fact": "Iota (Chris Barker) has a single combinator, ι = λx.((x S) K), written i, with * for function application. Every program — including this Hello World — is just i’s and *’s in prefix order, yet it can express any lambda term."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Jot",
+      "family": "Combinators — no variables",
+      "code": "1111110011110000111110101011\n1100011111000010111110001110",
+      "note": "// Excerpt — the whole program is a binary string. Each 0 and 1 extends a combinator expression; there are no other characters in the language.",
+      "options": [
+        "Jot",
+        "Iota",
+        "Lazy K",
+        "Unlambda",
+        "Brainbool",
+        "Whitespace",
+        "Fractran",
+        "///"
+      ],
+      "fact": "Jot (Chris Barker) is combinatory logic written in binary: a program is any string of 0s and 1s, where 1 applies the accumulated function and 0 wraps it in S and K combinators. Every binary string is a valid program."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Lazy K",
+      "family": "Combinators — no variables",
+      "code": "``s``s`k``si`k``s``si`k``s\n``si`k`k``s``si`k``s``si`k",
+      "note": "// Excerpt — backtick means “apply”, and s, k and i are the only functions that exist. The characters of the greeting are encoded in the shape of the expression itself.",
+      "options": [
+        "Lazy K",
+        "Unlambda",
+        "Iota",
+        "Jot",
+        "Underload",
+        "Thue",
+        "///",
+        "Fractran"
+      ],
+      "fact": "Lazy K is the untyped lambda calculus reduced to the S, K and I combinators with ` for application — no variables, no literals. Input and output are Church-encoded lists of numbers, so even “Hello” has to be built out of pure functions."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Fractran",
+      "family": "Numbers & lists only",
+      "code": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
+      "note": "// An ordered list of fractions and a starting integer: that is a complete program in this language. Nothing else exists — no instructions, no variables, no output statement.",
+      "options": [
+        "Fractran",
+        "Thue",
+        "///",
+        "Jot",
+        "Iota",
+        "FALSE",
+        "Unlambda",
+        "Malbolge"
+      ],
+      "fact": "Fractran (John Conway) runs by multiplying a single integer by the first fraction in the list that yields another integer, and repeating. Prime factorisation does all the bookkeeping — its famous PRIMEGAME list generates the prime numbers."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Unlambda",
+      "family": "Combinators — no variables",
+      "code": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "note": "// Excerpt — backtick applies one function to the next and .x prints the character x. There are no variables and no keywords anywhere in the language.",
+      "options": [
+        "Unlambda",
+        "Lazy K",
+        "Iota",
+        "Jot",
+        "Underload",
+        "Fractran",
+        "Malbolge",
+        "JSFuck"
+      ],
+      "fact": "Unlambda (David Madore) is functional programming stripped to combinators — `k, `s and `i — plus .x, which prints x. It was designed to make functional programming feel as awkward as Brainfuck makes imperative programming feel."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Malbolge",
+      "family": "Almost no syntax",
+      "code": "(=<`#9]~6ZY327Uv4-QsqpMn&+Ij\"'E%e{ABF`JyUYR\nmgk}vV~v\"R&vBkHq*^_+rBsFkI#`$%[|\"oJ~Zq8*V",
+      "note": "// Excerpt — after each instruction the code encrypts itself, so the same character never means the same thing twice. This is the deep pool; it belongs here.",
+      "options": [
+        "Malbolge",
+        "JSFuck",
+        "Unlambda",
+        "Fractran",
+        "Brainfuck",
+        "Whitespace",
+        "INTERCAL",
+        "Thue"
+      ],
+      "fact": "Malbolge (Ben Olmstead, 1998) encrypts its own code after every instruction. Nobody wrote a working program in it for two years — the first Hello World was found by a search algorithm, not a human."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "JSFuck",
+      "family": "Almost no syntax",
+      "code": "(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]\n+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]",
+      "note": "// Excerpt — only six characters ever appear in this language: [ ] ( ) ! +. Underneath the noise this is a language you have almost certainly used.",
+      "options": [
+        "JSFuck",
+        "Brainfuck",
+        "Malbolge",
+        "Unlambda",
+        "Fractran",
+        "Whitespace",
+        "Blub",
+        "Smallfuck"
+      ],
+      "fact": "JSFuck writes any JavaScript using only []()!+ : brackets and coercion between booleans, strings and numbers spell out letters. It runs in any browser console."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Whitespace",
+      "family": "Tape & bit cells",
+      "code": "   \t \t   \n  \t\t    \n   \t  \t  \n\t\n    \n   \t \t\t \n",
+      "note": "// Raw excerpt, exactly as stored — no visible symbols substituted. In Expert you read the real file: spaces, tabs and linefeeds, and nothing else carries meaning.",
+      "options": [
+        "Whitespace",
+        "Brainfuck",
+        "Malbolge",
+        "Unlambda",
+        "JSFuck",
+        "Fractran",
+        "Jot",
+        "Brainbool"
+      ],
+      "fact": "Whitespace (Edwin Brady & Chris Morris, released 1 April 2003) uses only spaces, tabs and linefeeds — every other character is ignored as a comment, so a program can hide invisibly inside ordinary text."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "INTERCAL",
+      "family": "Almost no syntax",
+      "code": "DO ,1 <- #13\nPLEASE DO ,1 SUB #1 <- #238\nDO ,1 SUB #2 <- #108\nPLEASE READ OUT ,1\nPLEASE GIVE UP",
+      "note": "// The manners are load-bearing: PLEASE too rarely and the compiler refuses you for rudeness; too often and it rejects you for grovelling.",
+      "options": [
+        "INTERCAL",
+        "Malbolge",
+        "Unlambda",
+        "Fractran",
+        "LOLCODE",
+        "ArnoldC",
+        "JSFuck",
+        "FALSE"
+      ],
+      "fact": "INTERCAL (1972), by Don Woods and Jim Lyon, is the original parody language — and the ancestor of half this pool. The compiler counts your PLEASEs and rejects programs that are too rude or too polite."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Befunge",
+      "family": "2D grids & paths",
+      "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @",
+      "note": "// The string is pushed backwards, then printed character by character as the pointer loops the grid. An old friend — but in Expert it is the easiest thing on the menu.",
+      "options": [
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "Labyrinth",
+        "SNUSP",
+        "Piet",
+        "Velato",
+        "Whitespace"
+      ],
+      "fact": "Befunge-93 (Chris Pressey, 1993) runs on a 2D grid: > < ^ v steer the instruction pointer, and the program can rewrite its own grid as it runs — designed, on purpose, to be as hard as possible to compile."
+    },
+    {
+      "kind": "expert-id",
+      "lang": "Labyrinth",
+      "family": "2D grids & paths",
+      "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _",
+      "note": "// A source file that is also a floor plan: walls and openings steer execution through the maze, and instructions are picked up on the way through.",
+      "options": [
+        "Labyrinth",
+        "Befunge",
+        "Hexagony",
+        "><>",
+        "SNUSP",
+        "Piet",
+        "Brainfuck",
+        "Whitespace"
+      ],
+      "fact": "Labyrinth (Martin Ender) is a 2D language whose source is a maze — the cells around the instruction pointer decide its direction of travel, and characters like ( ) and \" are instructions collected on the way through."
+    }
+  ],
+  "EXPERT_ODD_PROMPT": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+  "EXPERT_ODD": [
+    {
+      "kind": "expert-odd",
+      "lang": "Brainfuck",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are the same idea wearing different words. One is the original they were all copied from.",
+      "snippets": [
+        {
+          "lang": "Ook!",
+          "code": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook."
+        },
+        {
+          "lang": "COW",
+          "code": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO"
+        },
+        {
+          "lang": "Brainfuck",
+          "code": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+."
+        },
+        {
+          "lang": "Blub",
+          "code": "Blub. Blub? Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub?"
+        }
+      ],
+      "fact": "Ook!, COW and Blub are all single-word re-encodings of Brainfuck — pairs of Ook./Ook?/Ook!, MoO/mOo capitalisations, and Blub./Blub?/Blub! each spell out the same eight commands. Brainfuck itself uses no words at all, which is exactly what makes it the odd one here."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Fractran",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these execute by travelling through a layout. One never moves at all.",
+      "snippets": [
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @"
+        },
+        {
+          "lang": "Fractran",
+          "code": "17/91   78/85   19/51\n23/38   29/33   77/29"
+        },
+        {
+          "lang": "><>",
+          "code": "\"!dlroW ,olleH\":l?!;o"
+        }
+      ],
+      "fact": "Befunge, Hexagony and ><> all execute by moving an instruction pointer through a two-dimensional layout of characters. Fractran has no pointer and no layout — one integer, multiplied by fractions from a list, is the entire machine."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "INTERCAL",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are meant to be read (or sung, or cooked) as ordinary texts. One is keyword code wearing a polite disguise.",
+      "snippets": [
+        {
+          "lang": "Chef",
+          "code": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.\nServes 1."
+        },
+        {
+          "lang": "Shakespeare Programming Language",
+          "code": "Hamlet:\n You are as stupid as the difference\n between a hero and thyself! Speak your mind!"
+        },
+        {
+          "lang": "Rockstar",
+          "code": "Say \"Hello, World!\""
+        },
+        {
+          "lang": "INTERCAL",
+          "code": "DO ,1 <- #13\nPLEASE DO ,1 SUB #1 <- #238\nPLEASE READ OUT ,1"
+        }
+      ],
+      "fact": "Chef reads as a recipe, the Shakespeare Programming Language as a play, and Rockstar as song lyrics — the text is the program. INTERCAL is ordinary keyword-and-operator code; its only literary flourish is that the compiler grades your manners."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Thue",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these compute with functions and combinators. One computes by rewriting text.",
+      "snippets": [
+        {
+          "lang": "Unlambda",
+          "code": "``.H.e.l.l.o. .W.o.r.l.d.!"
+        },
+        {
+          "lang": "Iota",
+          "code": "*i*i*i*i**i*i*i*i*i*i**i*i*i"
+        },
+        {
+          "lang": "Thue",
+          "code": "x::=~Hello, World!\n::=\nx"
+        },
+        {
+          "lang": "Jot",
+          "code": "1111110011110000111110101011\n1100011111000010111110001110"
+        }
+      ],
+      "fact": "Unlambda, Iota and Jot are all combinatory logic — computation as pure function application, with no variables. Thue never applies a function: it rewrites a string by substitution rules until nothing matches, and the surviving text is the answer."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Emojicode",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are nearly invisible. One is the loudest alphabet in the quiz.",
+      "snippets": [
+        {
+          "lang": "Whitespace",
+          "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n(shown with visible symbols — the real file looks blank)"
+        },
+        {
+          "lang": "Brainbool",
+          "code": "01001000 01100101 01101100\n(the greeting, leaving the machine eight bits at a time)"
+        },
+        {
+          "lang": "Jot",
+          "code": "1111110011110000111110101011\n1100011111000010111110001110"
+        },
+        {
+          "lang": "Emojicode",
+          "code": "🏁 🍇\n  😀 🔤Hello, World!🔤\n🍉"
+        }
+      ],
+      "fact": "Whitespace hides in spaces, tabs and linefeeds; Brainbool thinks in single bits; Jot is a binary string. Emojicode spells every keyword with a full-colour emoji — the opposite of hiding."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "SNUSP",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these transform their text or their numbers. One travels.",
+      "snippets": [
+        {
+          "lang": "Thue",
+          "code": "a::=~Hello,\nb::=~ World!\n::=\nab"
+        },
+        {
+          "lang": "///",
+          "code": "/x/Hello, World!/x"
+        },
+        {
+          "lang": "Fractran",
+          "code": "17/91   78/85   19/51\n23/38   29/33   77/29"
+        },
+        {
+          "lang": "SNUSP",
+          "code": "$_/==!/==\\#==!\n  \\==!/==/==!"
+        }
+      ],
+      "fact": "Thue and /// compute by rewriting strings, and Fractran by multiplying an integer through a list of fractions — all transformation, no travel. SNUSP executes by walking a path through a grid, turning on its slashes."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Smallfuck",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these share one ancestor’s exact eight commands. One kept only five of them.",
+      "snippets": [
+        {
+          "lang": "Brainfuck",
+          "code": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+."
+        },
+        {
+          "lang": "Ook!",
+          "code": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook."
+        },
+        {
+          "lang": "Smallfuck",
+          "code": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>"
+        },
+        {
+          "lang": "Blub",
+          "code": "Blub. Blub? Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub?"
+        }
+      ],
+      "fact": "Brainfuck, Ook! and Blub all carry the same eight commands — Ook! and Blub just re-spell them in one repeated word. Smallfuck descends from the same ancestor but discarded + - . , entirely, keeping only > < * [ ] on a tape of bits."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Underload",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are pure combinator calculus. One keeps a stack of strings in its pocket.",
+      "snippets": [
+        {
+          "lang": "Lazy K",
+          "code": "``s``s`k``si`k``s``si`k``s"
+        },
+        {
+          "lang": "Iota",
+          "code": "*i*i*i*i**i*i*i*i*i*i**i*i*i"
+        },
+        {
+          "lang": "Jot",
+          "code": "1111110011110000111110101011\n1100011111000010111110001110"
+        },
+        {
+          "lang": "Underload",
+          "code": "(Hello, World!)S"
+        }
+      ],
+      "fact": "Lazy K, Iota and Jot are combinatory logic through and through — S, K and I in various disguises, nothing else. Underload is a stack machine: ( … ) pushes a string and S prints it, which is why its Hello World is readable at a glance."
+    }
+  ],
+  "EXPERT_FAMILIES": {
+    "Tape & bit cells": [
+      "Brainfuck",
+      "Brainbool",
+      "Smallfuck",
+      "Ook!",
+      "COW"
+    ],
+    "Combinators — no variables": [
+      "Unlambda",
+      "Iota",
+      "Jot",
+      "Lazy K",
+      "Underload"
+    ],
+    "String rewriting & substitution": [
+      "Thue",
+      "///",
+      "Fractran",
+      "Unlambda",
+      "Iota"
+    ],
+    "2D grids & paths": [
+      "Befunge",
+      "SNUSP",
+      "Hexagony",
+      "Labyrinth",
+      "><>"
+    ],
+    "Stack machines & postfix": [
+      "FALSE",
+      "Underload",
+      "Smallfuck",
+      "Thue",
+      "Befunge"
+    ],
+    "Numbers & lists only": [
+      "Fractran",
+      "Jot",
+      "Brainbool",
+      "Whitespace",
+      "JSFuck"
+    ]
+  },
+  "EXPERT_TWO": [
+    {
+      "kind": "expert-two",
+      "lang": "Thue",
+      "family": "String rewriting & substitution",
+      "code": "x::=~Hello, World!\n::=\nx",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Thue (John Colagioia, 2000): a program is a set of ::= substitution rules, ~ marks output, and execution rewrites the starting string until no rule applies."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "///",
+      "family": "String rewriting & substitution",
+      "code": "/x/Hello, World!/x",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "/// (“slashes”) has one construct — /pattern/replacement/ applied to the following text until nothing matches; what survives is printed. Turing complete, somehow."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Iota",
+      "family": "Combinators — no variables",
+      "code": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Iota (Chris Barker) builds everything from one combinator, ι = λx.((x S) K), written i, with * for application. This fragment is nothing but i’s and *’s — there is nothing else in the language."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Lazy K",
+      "family": "Combinators — no variables",
+      "code": "``s``s`k``si`k``s``si`k``s\n``si`k`k``s``si`k``s``si`k",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Lazy K reduces the lambda calculus to the S, K and I combinators with ` for application; input and output are Church-encoded lists, so the greeting is encoded in the expression’s shape."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "SNUSP",
+      "family": "2D grids & paths",
+      "code": "$_/==!/==\\#==!\n  \\==!/==/==!",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "SNUSP makes Brainfuck two-dimensional: execution walks a path through the source starting at $, turning on / and \\, with the tape waiting at the end of the path."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Brainbool",
+      "family": "Tape & bit cells",
+      "code": ">++++++++[<++++++++>-]<+.\n.+..+++..+++.<++++++++.",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes. Watch the output commands: they fall in groups of eight.",
+      "fact": "Brainbool is Brainfuck on boolean memory — every cell is one bit, so each character is printed as eight separate output operations."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Smallfuck",
+      "family": "Tape & bit cells",
+      "code": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes. Count the distinct characters: there are five.",
+      "fact": "Smallfuck keeps only > < * [ ] from Brainfuck, on a bit tape: * flips the current cell, and output happens as a side effect of the flip-and-move idiom."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "FALSE",
+      "family": "Stack machines & postfix",
+      "code": "\"Hello, World!\" ß",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "FALSE (Wouter van Oortmerssen, 1993) is a postfix stack language of single-character symbols; the string literal pushes, and ß flushes the output."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Underload",
+      "family": "Stack machines & postfix",
+      "code": "(Hello, World!)S",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Underload keeps a stack of strings: ( … ) pushes, S prints, ~ swaps, : duplicates, * concatenates and ^ executes the top string as code."
+    },
+    {
+      "kind": "expert-two",
+      "lang": "Fractran",
+      "family": "Numbers & lists only",
+      "code": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
+      "note": "// Two-stage round — stage 1 of 2: pick the family. Get it wrong and the round ends immediately. Get it right and you pick the exact language, for the same +100 / −50 stakes.",
+      "fact": "Fractran (John Conway): multiply one integer by the first listed fraction that keeps it whole, repeat. Prime factorisation is the memory."
+    }
+  ],
+  "EXPERT_PAIR": [
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Brainfuck + Brainfuck",
+      "langA": "Brainfuck",
+      "langB": "Brainfuck",
+      "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
+      "codeB": "++++++++[>++++[>++>+++>+++>+<<<<-]\n>]>+>+>->>+[<]<-]>>.>",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both excerpts are Brainfuck — different Hello World constructions (one builds its cells with a ×10 loop, the other with nested loops), but the same eight commands: > < + - . , [ ]."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Ook! + Ook!",
+      "langA": "Ook!",
+      "langB": "Ook!",
+      "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook. Ook. Ook. Ook.",
+      "codeB": "Ook? Ook? Ook! Ook? Ook? Ook.\nOok. Ook. Ook? Ook. Ook. Ook?",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both are Ook! — the same one word with its three endings, . ? and !, paired into Brainfuck’s eight commands. Different stretches of the program, identical alphabet."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Thue + Thue",
+      "langA": "Thue",
+      "langB": "Thue",
+      "codeA": "x::=~Hello, World!\n::=\nx",
+      "codeB": "a::=~Hello,\nb::=~ World!\n::=\nab",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both are Thue: ::= rules on the left, ~ marking output. The second program simply splits the greeting across two rules — same rewriting machine."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Whitespace + Whitespace",
+      "langA": "Whitespace",
+      "langB": "Whitespace",
+      "codeA": "   \t \t   \n  \t\t    \n   \t  \t  ",
+      "codeB": "\t\n    \n   \t \t\t \n  \t   \t ",
+      "note": "// Pairing round — two different excerpts, shown raw. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both are raw Whitespace — spaces, tabs and linefeeds only. The first pushes and prints characters; the second is the tail of the same greeting. Nothing else in either file carries meaning."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Befunge + Befunge",
+      "langA": "Befunge",
+      "langB": "Befunge",
+      "codeA": "\"!dlroW ,olleH\" > v\n                 | : <",
+      "codeB": "        > : v\n        | _ , @",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both are Befunge: the first pushes the reversed string and turns down the right edge; the second is the print loop at the grid’s corner — _ and | steering, , printing, @ ending."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Unlambda vs Lazy K",
+      "langA": "Unlambda",
+      "langB": "Lazy K",
+      "codeA": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "codeB": "``s``s`k``si`k``s``si`k``s",
+      "note": "// Pairing round — two different excerpts, both heavy on backticks. Are they the same language?",
+      "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Iota vs Jot",
+      "langA": "Iota",
+      "langB": "Jot",
+      "codeA": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
+      "codeB": "1111110011110000111110101011\n1100011111000010111110001110",
+      "note": "// Pairing round — two different excerpts, both by the same designer, both combinator calculus. Are they the same language?",
+      "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Brainfuck vs Smallfuck",
+      "langA": "Brainfuck",
+      "langB": "Smallfuck",
+      "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
+      "codeB": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
+      "note": "// Pairing round — two different excerpts, both tape machines with brackets. Are they the same language?",
+      "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Thue vs ///",
+      "langA": "Thue",
+      "langB": "///",
+      "codeA": "x::=~Hello, World!\n::=\nx",
+      "codeB": "/x/Hello, World!/x",
+      "note": "// Pairing round — two different excerpts, both string-rewriting languages. Are they the same language?",
+      "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Chef vs Shakespeare Programming Language",
+      "langA": "Chef",
+      "langB": "Shakespeare Programming Language",
+      "codeA": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
+      "codeB": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
+      "note": "// Pairing round — two different excerpts, both readable English prose. Are they the same language?",
+      "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement."
+    }
+  ]
+}
