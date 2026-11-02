@@ -570,6 +570,162 @@
       ],
       "weakHint": "Deliberately broken English from an old meme era.",
       "fact": "LOLCODE (Adam Lindsay, 2007) takes its syntax straight from LOLCat captions. HAI opens a program and KTHXBYE closes it; VISIBLE prints."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Whitespace",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine — each says almost nothing, in a different almost-nothing way; pick the one that is actually Whitespace.",
+      "snippets": [
+        {
+          "lang": "HQ9+",
+          "code": "H"
+        },
+        {
+          "lang": "Whitespace",
+          "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n(shown with visible symbols — the real file looks blank)"
+        },
+        {
+          "lang": "Unary",
+          "code": "0000000000000000000000000000000000000000…\n(one unbroken run of zeroes — the full program is astronomically long)"
+        },
+        {
+          "lang": "JSFuck",
+          "code": "(![]+[])[+!+[]]+(![]+[])[!+[]+!+[]]\n+([][[]]+[])[+!+[]]+(![]+[])[!+[]+!+[]+!+[]]"
+        }
+      ],
+      "weakHint": "One of these is made of the characters you normally can't see at all.",
+      "fact": "Whitespace (Edwin Brady & Chris Morris, 2003) uses only spaces, tabs and linefeeds — it is shown here with visible substitute symbols, since the real file would look empty. HQ9+ prints with H, Unary is one run of zeroes, and JSFuck is JavaScript in six characters."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Labyrinth",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine two-dimensional grid programs; pick the one that is actually Labyrinth.",
+      "snippets": [
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "Labyrinth",
+          "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . ."
+        },
+        {
+          "lang": "SNUSP",
+          "code": "$_/==!/==\\#==!\n  \\==!/==/==!"
+        }
+      ],
+      "weakHint": "One of these grids is a maze — look for walls and corridors rather than a tidy layout.",
+      "fact": "Labyrinth (Martin Ender) treats its grid as a maze the instruction pointer wanders, steered by walls. Befunge and Hexagony lay their code out geometrically, and SNUSP traces a bouncing path — only Labyrinth's layout is a literal maze."
+    },
+    {
+      "kind": "reverse",
+      "lang": "SNUSP",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine two-dimensional programs; pick the one that is actually SNUSP.",
+      "snippets": [
+        {
+          "lang": "SNUSP",
+          "code": "$_/==!/==\\#==!\n  \\==!/==/==!"
+        },
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "Labyrinth",
+          "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . ."
+        }
+      ],
+      "weakHint": "One of these starts with a currency sign and travels like something bouncing.",
+      "fact": "SNUSP enters at the $ and travels in straight lines, bouncing off / and \\ mirrors — the path is the program. The other three grids execute by pointer movement, maze wandering, or hexagonal wrapping instead."
+    },
+    {
+      "kind": "reverse",
+      "lang": "Thue",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine substitution or rewriting programs; pick the one that is actually Thue.",
+      "snippets": [
+        {
+          "lang": "///",
+          "code": "/x/Hello, World!/x"
+        },
+        {
+          "lang": "Fractran",
+          "code": "17/91   78/85   19/51\n23/38   29/33   77/29"
+        },
+        {
+          "lang": "Thue",
+          "code": "a::=~Hello,\nb::=~ World!\n::=\nab"
+        },
+        {
+          "lang": "Underload",
+          "code": "(Hello, World!)S"
+        }
+      ],
+      "weakHint": "One of these is written as a list of rules with a very distinctive separator.",
+      "fact": "Thue programs are ::= substitution rules over a seed string — this one has two rules that print the two halves of the greeting. /// substitutes with slashes, Fractran rewrites a number with fractions, and Underload manipulates a stack in parentheses."
+    },
+    {
+      "kind": "reverse",
+      "lang": "FALSE",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine stack-machine programs; pick the one that is actually FALSE.",
+      "snippets": [
+        {
+          "lang": "Underload",
+          "code": "(Hello, World!)S"
+        },
+        {
+          "lang": "Smallfuck",
+          "code": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>"
+        },
+        {
+          "lang": "FALSE",
+          "code": "\"Hello, World!\" ß"
+        },
+        {
+          "lang": "Befunge",
+          "code": "        > : v\n        | _ , @"
+        }
+      ],
+      "weakHint": "One of these ends with a single German letter doing the printing.",
+      "fact": "In FALSE, a quoted string pushes itself onto the stack and ß prints the top — the whole Hello World is one line. Underload also uses a parenthesised string, but its machinery is stack combinators in ( ) : ~ ^ a, not FALSE's symbols."
+    },
+    {
+      "kind": "reverse",
+      "lang": "GolfScript",
+      "code": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
+      "note": "// Reverse round — the name is given. All four candidates are genuine — in each of them a quoted string does most of the work; pick the one that is actually GolfScript.",
+      "snippets": [
+        {
+          "lang": "FALSE",
+          "code": "\"Hello, World!\" ß"
+        },
+        {
+          "lang": "Underload",
+          "code": "(Hello, World!)S"
+        },
+        {
+          "lang": "GolfScript",
+          "code": "\"Hello, World!\""
+        },
+        {
+          "lang": "Thue",
+          "code": "x::=~Hello, World!\n::=\nx"
+        }
+      ],
+      "weakHint": "One of these needs nothing after the closing quote at all — what is left over is printed for free.",
+      "fact": "GolfScript prints whatever remains on its stack when the program ends, so its Hello World is the bare quoted string with no print command at all. FALSE still needs its ß, and Underload needs its S."
     }
   ],
   "HARD_WIDE": [
