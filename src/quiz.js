@@ -29,6 +29,24 @@ var qTag=document.getElementById('qTag'), codeImg=document.getElementById('codeI
     srStatus=document.getElementById('srStatus');
 var studyBtn=document.getElementById('studyBtn'), studyView=document.getElementById('studyView');
 
+// Per-mode header chrome: the one-line mode description and the score
+// label ("Score" in Normal, "Points" in the points modes). This table
+// is the single source for both — setMode() applies it on a mode
+// switch and the startup tail applies it once for the default mode.
+// Before this existed the line lived only inside setMode(), so the
+// default (Normal) line never appeared on first load: the shell's
+// #modeNote starts empty and nothing but a tab click ever set it (F1).
+var MODE_INFO = {
+  normal: { line: 'Every program prints Hello, World! — name the language.', scoreLabel: 'Score' },
+  hard: { line: 'Excerpts only · +100 pts per correct · 1 hint per run (−25 pts) · facts at results.', scoreLabel: 'Points' },
+  expert: { line: 'No hints · +100 pts correct · −50 pts wrong · facts at results.', scoreLabel: 'Points' },
+  commands: { line: 'Name what a command does · +100 pts per correct · 1 hint per run (−25 pts) · facts at results.', scoreLabel: 'Points' }
+};
+function applyModeChrome(){
+  modeNote.textContent = MODE_INFO[mode].line;
+  document.getElementById('scoreLabel').textContent = MODE_INFO[mode].scoreLabel;
+}
+
 function pool(){ return mode==='expert' ? EXPERT_ALL : (mode==='hard' ? HARD_ALL : (mode==='commands' ? COMMANDS : QUESTIONS)); }
 function currentQ(){ return pool()[order[idx]]; }
 function total(){ return order.length; }
@@ -176,12 +194,12 @@ function render(){
     qTitle.textContent='Same language — or different? If different, name the second one.';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
-    qTitle.textContent='Which snippet is '+q.lang+'?';
+    qTitle.textContent='Which excerpt is '+q.lang+'?';
   } else if(kind==='wide'){
     qTag.textContent='Hard · 8 options';
     qTitle.textContent='What language is this?';
   } else if(isHard){
-    qTag.textContent='Hard · Fragment';
+    qTag.textContent='Hard · Excerpt';
     qTitle.textContent='What language is this?';
   } else {
     qTag.textContent='Normal';
@@ -430,7 +448,9 @@ function answerExpertFamily(fam, btn){
   if(fam!==q.family){
     answered=true;
     points-=50; streak=0;
-    resultsLog.push({lang:q.lang, picked:fam, correctAnswer:q.lang, correct:false, usedHint:false, fact:q.fact, kind:q.kind});
+    // The review compares like with like: the pick was a family, so
+    // the correct answer names the language AND its family (F7).
+    resultsLog.push({lang:q.lang, picked:fam, correctAnswer:q.lang+' ('+q.family+')', correct:false, usedHint:false, fact:q.fact, kind:q.kind});
     var buttons=optionsEl.querySelectorAll('.opt');
     buttons.forEach(function(b){
       b.disabled=true;
@@ -449,6 +469,8 @@ function answerExpertFamily(fam, btn){
   qTitle.textContent='Family correct — which language exactly?';
   feedbackEl.className='feedback show good';
   feedbackEl.textContent='✓ Family correct — '+q.family+'.';
+  // Announce the new stage like a new question (mirrors answerPair).
+  srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
   optionsEl.innerHTML='';
   optionsEl.className='options wide';
   shuffle(EXPERT_FAMILIES[q.family].slice()).forEach(function(name){
@@ -532,8 +554,19 @@ function answerCommand(picked, btn){
   var correctAnswer = isReverse ? q.symbol : q.effect;
   var correct = picked===correctAnswer;
   if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { streak=0; }
-  resultsLog.push({lang:q.lang+' — '+q.symbol, picked:picked,
-    correctAnswer:correctAnswer, correct:correct, usedHint:hintShown,
+  // Review meta lines stay scannable (F13): for meaning rounds log
+  // the command's short effect form instead of the full effect
+  // sentences that live feedback uses. A distractor pick has no short
+  // form of its own, so it is logged as written; the correct side
+  // always uses the entry's `short` (falling back to the full effect
+  // for any entry that lacks one — currently none do).
+  var logPicked = picked, logCorrect = correctAnswer;
+  if(!isReverse){
+    logCorrect = q.short || q.effect;
+    if(picked===q.effect) logPicked = logCorrect;
+  }
+  resultsLog.push({lang:q.lang+' — '+q.symbol, picked:logPicked,
+    correctAnswer:logCorrect, correct:correct, usedHint:hintShown,
     fact:q.fact, kind:'command'});
   var buttons=optionsEl.querySelectorAll('.opt');
   buttons.forEach(function(b){
@@ -608,7 +641,7 @@ function answer(name, btn){
                    : '✕ Wrong — '+q.langA+' vs '+q.langB+' are '+(q.same ? 'the same language' : 'different languages')+pts;
   } else if(q.kind==='reverse'){
     line = correct ? '✓ Correct — '+q.lang+' (candidate '+correctPos+')'+pts
-                   : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' snippet'+pts;
+                   : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' excerpt'+pts;
   } else if(q.kind==='expert-odd'){
     line = correct ? '✓ Correct — odd one out: '+q.lang+pts
                    : '✕ Wrong — odd one out: '+q.lang+pts;
@@ -735,12 +768,18 @@ function buildStudy(){
 
 // Study is a VIEW, not a fifth mode. Entering it cancels any pending
 // auto-advance (the same clearAutoAdvance path a mode switch uses),
-// hides both quiz views, and leaves the run state untouched —
-// returning via a mode tab goes through setMode(), which starts a
-// run exactly as a mode switch does today.
+// hides both quiz views, and leaves the run state untouched — the
+// quiz view's DOM is only display:none'd, never rebuilt. Returning
+// via the Back button (backToQuiz) therefore resumes the run exactly
+// as left; returning via a mode tab goes through setMode(), which
+// starts a fresh run exactly as a mode switch does today.
 var view = 'quiz';
+// Which screen Study was entered from, so Back can restore it:
+// true = the results screen, false = a run in progress.
+var studyFromResults = false;
 function showStudy(){
   clearAutoAdvance();
+  studyFromResults = document.getElementById('resultsView').classList.contains('show');
   view = 'study';
   document.getElementById('quizView').style.display = 'none';
   document.getElementById('resultsView').classList.remove('show');
@@ -757,28 +796,57 @@ function showStudy(){
   srStatus.textContent = 'Study view. Reference — every Hello World and command in the quiz.';
 }
 
+// Mirror the active mode into the tab classes + aria-pressed (the
+// active mode must not be colour alone). Used by setMode() and by
+// backToQuiz(), which restores the tabs for the mode still in play.
+var MODE_TAB_IDS = { normal:'modeNormalBtn', hard:'modeHardBtn', expert:'modeExpertBtn', commands:'modeCommandsBtn' };
+function syncModeTabs(){
+  Object.keys(MODE_TAB_IDS).forEach(function(m){
+    var b = document.getElementById(MODE_TAB_IDS[m]);
+    b.className = m===mode ? 'active' : '';
+    b.setAttribute('aria-pressed', m===mode ? 'true' : 'false');
+  });
+}
+
+// Back to quiz: hide Study and re-show whichever screen was up when
+// Study was entered, exactly as left — same question, feedback, score
+// and Next state, because nothing rebuilt the quiz DOM meanwhile.
+// Nothing is cancelled or restarted here: the auto-advance timer was
+// already cleared on entering Study, so a round left mid-feedback
+// simply waits for Next.
+function backToQuiz(){
+  view = 'quiz';
+  studyView.classList.remove('show');
+  studyBtn.className = '';
+  studyBtn.setAttribute('aria-pressed', 'false');
+  syncModeTabs();
+  applyModeChrome();
+  if(studyFromResults){
+    document.getElementById('resultsView').classList.add('show');
+    srStatus.textContent = 'Back to the quiz results.';
+  } else {
+    document.getElementById('quizView').style.display = '';
+    srStatus.textContent = 'Back to the quiz. Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
+  }
+}
+document.getElementById('studyBackBtn').addEventListener('click', backToQuiz);
+
 function setMode(m){
+  // Clicking the already-active tab while its run is on screen used
+  // to restart silently (a stray tap wiped score/streak/progress).
+  // Ignore it (F12) — before clearAutoAdvance, so even a pending
+  // auto-advance survives untouched. The same click on the results
+  // screen still restarts (it acts as play-again), and returning
+  // from Study or switching modes behaves as always.
+  if(m===mode && view==='quiz' && !document.getElementById('resultsView').classList.contains('show')) return;
   clearAutoAdvance();
   view = 'quiz';
   studyView.classList.remove('show');
   studyBtn.className = '';
   studyBtn.setAttribute('aria-pressed', 'false');
   mode=m;
-  document.getElementById('modeNormalBtn').className = m==='normal' ? 'active' : '';
-  document.getElementById('modeHardBtn').className = m==='hard' ? 'active' : '';
-  document.getElementById('modeExpertBtn').className = m==='expert' ? 'active' : '';
-  document.getElementById('modeCommandsBtn').className = m==='commands' ? 'active' : '';
-  // The active mode must not be colour alone: mirror it in aria-pressed.
-  document.getElementById('modeNormalBtn').setAttribute('aria-pressed', m==='normal' ? 'true' : 'false');
-  document.getElementById('modeHardBtn').setAttribute('aria-pressed', m==='hard' ? 'true' : 'false');
-  document.getElementById('modeExpertBtn').setAttribute('aria-pressed', m==='expert' ? 'true' : 'false');
-  document.getElementById('modeCommandsBtn').setAttribute('aria-pressed', m==='commands' ? 'true' : 'false');
-  modeNote.textContent = m==='expert'
-    ? 'No hints · +100 correct · −50 wrong · facts at results.'
-    : (m==='hard' ? 'Excerpts only · +100 per correct · 1 hint per run (−25 pts) · facts at results.'
-      : (m==='commands' ? 'What does it do? · +100 per correct · 1 hint per run (−25 pts) · facts at results.'
-                        : 'Every program prints Hello, World! — name the language.'));
-  document.getElementById('scoreLabel').textContent = m==='normal' ? 'Score' : 'Points';
+  syncModeTabs();
+  applyModeChrome();
   startQuiz();
 }
 document.getElementById('modeNormalBtn').addEventListener('click', function(){ setMode('normal'); });
@@ -789,5 +857,9 @@ studyBtn.addEventListener('click', showStudy);
 
 // Start through startQuiz (not a bare render) so the very first run is also
 // a random draw from the pools, not the full pool in shuffled order.
+// applyModeChrome() initialises the default mode's line + score label
+// from MODE_INFO — without it they would only ever be set by a mode-tab
+// click, i.e. Normal's line never appeared on first load (F1).
 buildStudy();
+applyModeChrome();
 startQuiz();

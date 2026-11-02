@@ -46,6 +46,7 @@ __CSS__
     <div class="sr-only" id="srStatus" role="status"></div>
     <article class="card" id="card">
       <div class="card-meta"><span id="qTag"></span><span class="q-prompt" id="qTitle" tabindex="-1"></span></div>
+      <noscript><p class="code-note">This quiz needs JavaScript to run.</p></noscript>
       <div class="code-wrap">
         <pre id="codeEl" aria-label="Hello World program"></pre>
         <img class="code-img" id="codeImg" src="__PIET_DATA_URI__" alt="A Piet program: a dense grid of coloured rectangles — red, yellow, blue, green, magenta and cyan blocks separated by black borders — that prints Hello, World!">
@@ -69,9 +70,13 @@ __CSS__
   </div>
 
   <div class="study" id="studyView">
-    <h2>Languages</h2>
+    <div class="study-head">
+      <button class="btn-hint" id="studyBackBtn" type="button">Back to quiz</button>
+      <p class="study-nav"><a href="#studyLanguages">Languages</a> · <a href="#studyCommands">Commands</a></p>
+    </div>
+    <h2 id="studyLanguages">Languages</h2>
     <div id="studyLangs"></div>
-    <h2>Commands</h2>
+    <h2 id="studyCommands">Commands</h2>
     <div id="studyCmds"></div>
   </div>
 </div>
