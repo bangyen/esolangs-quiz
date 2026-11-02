@@ -281,6 +281,25 @@ class TestCommands(unittest.TestCase):
             self.assertLessEqual(entry["shortest"] * 2, entry["n"],
                                  f"{lang}: answer too often the shortest")
 
+    def test_punctuation_does_not_identify_the_answer(self):
+        # Punctuation register must not be a tell either. The correct
+        # effects were written like specifications, while distractors
+        # originally used almost none of the same marks: parentheses,
+        # em dashes, and semicolons appeared in effects but in zero
+        # distractors, and colons in only two. In total, 37 of 80
+        # questions had a mark that appeared only in the correct
+        # answer. For each mark below, no question may now have that
+        # mark in its effect while none of its distractors has it.
+        for mark in ("(", "—", ":", ";"):
+            offenders = [
+                f"{c['lang']} {c['symbol']}"
+                for c in COMMANDS["COMMANDS"]
+                if mark in c["effect"]
+                and not any(mark in d for d in c["distractors"])
+            ]
+            self.assertEqual(offenders, [],
+                             f"{mark!r} appears only in correct answers")
+
     def test_ask_phrases_unique_per_language(self):
         # The ask phrase IS the reverse question; if two commands in a
         # language shared one, the round would have two right answers.
