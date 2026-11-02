@@ -46,6 +46,14 @@ fact from one round can't help with a later one.
   rounds name an effect and ask which command does it. Like Hard and
   Expert, a finished round advances itself after a short pause.
 
+Alongside the modes, the header's **Study** toggle opens a reference
+view — not a fifth mode, with no scoring or state: every Normal-pool
+language's Hello World and fact, alphabetical, and a command table
+for each Commands language (symbol → effect, verbatim from the same
+data the quiz draws from). Entering Study mid-run cancels any pending
+auto-advance, and picking a mode tab returns to the quiz with a fresh
+run, exactly like a mode switch.
+
 ## How the draws work
 
 Every pool is larger than the number of rounds it serves. Each run draws
@@ -94,7 +102,10 @@ pairing feedback names the candidate position and both languages. They
 also pin the accessibility audit fixes: live-region announcements of
 verdicts and question changes, focus landing on the question prompt
 after a keyboard advance, `aria-pressed` on the mode buttons, and every
-stylesheet text colour pair passing WCAG AA contrast. CI runs
+stylesheet text colour pair passing WCAG AA contrast. They also pin
+the Study view: it renders all 30 Normal languages and all 80 command
+rows from the data files (effects verbatim), and entering it cancels a
+pending auto-advance timer. CI runs
 both on every push and pull request to `main`.
 
 To play a local build, open `index.html` in a browser or serve the repo
