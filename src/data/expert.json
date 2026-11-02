@@ -1070,6 +1070,72 @@
       "codeB": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
       "note": "// Pairing round — two different excerpts, both readable English prose. Are they the same language?",
       "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "COW + COW",
+      "langA": "COW",
+      "langB": "COW",
+      "codeA": "MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO MoO mOo MoO MoO MoO MoO",
+      "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both excerpts are COW — the same MoO/mOo/moO/MoO capitalisation alphabet encoding a tape machine. Different lengths, same cow."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Fractran + Fractran",
+      "langA": "Fractran",
+      "langB": "Fractran",
+      "codeA": "17/91   78/85   19/51\n23/38   29/33   77/29",
+      "codeB": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both are Fractran — the second is the same fraction list written out further. A Fractran program has no other form: an ordered list of fractions is all there ever is."
+    },
+    {
+      "kind": "expert-pair",
+      "same": true,
+      "pairLabel": "Hexagony + Hexagony",
+      "langA": "Hexagony",
+      "langB": "Hexagony",
+      "codeA": " . H e l\nl o ; W o\n r l d ! @\n  . . . .",
+      "codeB": " . H e l\nl o ; W o\n r l d ! @",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Both excerpts are Hexagony: the second is the same hexagonal program without its padding dots. The hexagon — and the ; that prints and @ that halts — is unmistakable once the shape is seen."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Ook! vs COW",
+      "langA": "Ook!",
+      "langB": "COW",
+      "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
+      "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "FALSE vs GolfScript",
+      "langA": "FALSE",
+      "langB": "GolfScript",
+      "codeA": "\"Hello, World!\" ß",
+      "codeB": "\"Hello, World!\"",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all."
+    },
+    {
+      "kind": "expert-pair",
+      "same": false,
+      "pairLabel": "Piet vs Velato",
+      "langA": "Piet",
+      "langB": "Velato",
+      "codeA": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
+      "codeB": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
+      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
+      "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound."
     }
   ]
 }
