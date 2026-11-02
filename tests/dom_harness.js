@@ -36,6 +36,12 @@
 //                 timer) or a wrong name −50; a wrong stage-1 call in
 //                 either direction ends the round at −50 with the
 //                 named-pair feedback
+//   commands*     Commands mode: aria-pressed across all four tabs; a
+//                 fully instrumented flow run (+100 scoring, the single
+//                 −25 hint and its refusal, one 1200 ms timer, the
+//                 results review showing a command fact); and 40 drawn
+//                 runs for the draw simulation (composition 9 meaning
+//                 + 3 reverse, no repeated command, ≤ 3 per language)
 //
 // Timers are fake: setTimeout/clearTimeout are injected into the script
 // scope and recorded in a registry; nothing fires unless fireTimer(id)
@@ -364,5 +370,85 @@ while (Object.keys(pairScen).length < 5 && pairRuns < 20) {
 }
 out.pairing = pairScen;
 out.pairingRuns = pairRuns;
+
+// --- Commands mode --------------------------------------------------------
+// Identify the current round's entry from the page's own injected
+// COMMANDS data, matched by the rendered title + code block (meaning
+// rounds show the symbol, reverse rounds show the ask phrase) — the
+// same no-guessing technique as the two-stage/pairing hunts above.
+const cmdData = JSON.parse(
+  script.match(/var COMMANDS = (\[[\s\S]*?\n\]);/)[1]);
+out.commandsPoolSize = cmdData.length;
+const cmdTitle = () => document.getElementById('qTitle').textContent;
+const cmdEntry = () => {
+  const code = document.getElementById('codeEl').textContent;
+  return cmdData.find(c =>
+    (cmdTitle() === c.lang + ' — what does this command do?' && code === c.symbol) ||
+    (cmdTitle() === 'In ' + c.lang + ', which command ' + c.ask + '?' && code === c.ask));
+};
+const cmdKind = () => qTag.textContent.indexOf('Reverse') >= 0 ? 'reverse' : 'meaning';
+const cmdCorrectBtn = (entry) => optionsEl.children.find(
+  b => b.getAttribute('data-name') === (cmdKind() === 'reverse' ? entry.symbol : entry.effect));
+
+// Flow run, fully instrumented: correct answer = +100 and exactly one
+// 1200 ms timer; the single hint costs 25 and the streak, and a second
+// hint is refused; the results review shows a command fact.
+document.getElementById('modeCommandsBtn').click();       // setMode('commands')
+out.commandsPressed = {
+  normal: document.getElementById('modeNormalBtn').getAttribute('aria-pressed'),
+  hard: document.getElementById('modeHardBtn').getAttribute('aria-pressed'),
+  expert: document.getElementById('modeExpertBtn').getAttribute('aria-pressed'),
+  commands: document.getElementById('modeCommandsBtn').getAttribute('aria-pressed'),
+};
+const cmdFlow = {};
+const cmdDraws = [];
+{
+  const runDraw = [];
+  let firstFact = null;
+  for (let round = 0; round < 12; round++) {
+    const entry = cmdEntry();
+    if (!entry) throw new Error('commands round not identifiable: ' + cmdTitle());
+    if (round === 0) firstFact = entry.fact;
+    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind() });
+    const before = scoreNow();
+    if (round === 1) {
+      document.getElementById('hintBtn').click();          // the run's one hint
+      cmdFlow.hintDelta = scoreNow() - before;             // expect -25
+      cmdFlow.hintStreak = stats().streak;                 // expect '0'
+      cmdFlow.hintsStatAfterHint = stats().hints;          // expect '1 / 1'
+    }
+    if (round === 2) {
+      document.getElementById('hintBtn').click();          // second hint: refused
+      cmdFlow.secondHintDelta = scoreNow() - before;       // expect 0
+    }
+    cmdCorrectBtn(entry).click();
+    if (round === 0) {
+      cmdFlow.firstDelta = scoreNow() - before;            // expect +100
+      cmdFlow.timersAfterFirst = pendingTimers();
+    }
+    nextBtn.click();
+  }
+  cmdDraws.push(runDraw);
+  cmdFlow.finalScore = document.getElementById('finalScore').textContent;
+  cmdFlow.bdCorrect = document.getElementById('bdCorrect').textContent;
+  cmdFlow.reviewHasFact =
+    document.getElementById('reviewEl').innerHTML.indexOf(firstFact) >= 0;
+}
+out.commandsFlow = cmdFlow;
+
+// Draw simulation: 39 more fresh Commands runs, answered correctly.
+for (let run = 0; run < 39; run++) {
+  document.getElementById('modeCommandsBtn').click();
+  const runDraw = [];
+  for (let round = 0; round < 12; round++) {
+    const entry = cmdEntry();
+    if (!entry) throw new Error('commands round not identifiable: ' + cmdTitle());
+    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind() });
+    cmdCorrectBtn(entry).click();
+    nextBtn.click();
+  }
+  cmdDraws.push(runDraw);
+}
+out.commandsDraws = cmdDraws;
 
 console.log(JSON.stringify(out));

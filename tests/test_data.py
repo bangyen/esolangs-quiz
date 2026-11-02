@@ -26,6 +26,7 @@ def load(name):
 NORMAL = load("normal.json")
 HARD = load("hard.json")
 EXPERT = load("expert.json")
+COMMANDS = load("commands.json")
 QUIZ_JS = (ROOT / "src/quiz.js").read_text(encoding="utf-8")
 
 # Draw counts per pool variable, as used by buildOrder() in src/quiz.js.
@@ -179,6 +180,77 @@ class TestExpertPair(unittest.TestCase):
 
     def test_pool_covers_draw(self):
         self.assertGreaterEqual(len(EXPERT["EXPERT_PAIR"]), DRAWS["ep"])
+
+
+class TestCommands(unittest.TestCase):
+    """Commands mode data (src/data/commands.json): 80 commands over
+    10 languages. The distractors carry the difficulty, so they are
+    pinned hard: exactly 3 per command, all four options mutually
+    distinct, and no distractor verbatim-equal to ANY true effect in
+    the same language (a sibling's effect may only appear reworded —
+    otherwise a meaning round would have two defensible answers).
+    Cross-language equality is deliberate and NOT pinned against:
+    Brainfuck vs Brainbool is the built-in same-symbol trap."""
+
+    LANG_COUNTS = {"Brainfuck": 8, "COW": 8, "Ook!": 8, "Befunge": 12,
+                   "Whitespace": 8, "FALSE": 8, "SNUSP": 8, "><>": 6,
+                   "Brainbool": 8, "INTERCAL": 6}
+
+    def _by_lang(self):
+        grouped = {}
+        for c in COMMANDS["COMMANDS"]:
+            grouped.setdefault(c["lang"], []).append(c)
+        return grouped
+
+    def test_pool_total_and_language_counts(self):
+        self.assertEqual(len(COMMANDS["COMMANDS"]), 80)
+        self.assertEqual(
+            {lang: len(cs) for lang, cs in self._by_lang().items()},
+            self.LANG_COUNTS)
+
+    def test_entry_shape(self):
+        for c in COMMANDS["COMMANDS"]:
+            self.assertEqual(c["kind"], "command", c["symbol"])
+            for field in ("lang", "symbol", "effect", "short", "ask",
+                          "weakHint", "fact", "note"):
+                self.assertTrue(c[field].strip(),
+                                f"{c['lang']} {c['symbol']}: empty {field}")
+
+    def test_symbols_unique_per_language(self):
+        for lang, cs in self._by_lang().items():
+            syms = [c["symbol"] for c in cs]
+            self.assertEqual(len(syms), len(set(syms)), lang)
+
+    def test_options_distinct_and_unambiguous(self):
+        for lang, cs in self._by_lang().items():
+            effects = [c["effect"] for c in cs]
+            self.assertEqual(len(effects), len(set(effects)),
+                             f"{lang}: two commands share an effect string")
+            for c in cs:
+                self.assertEqual(len(c["distractors"]), 3,
+                                 f"{lang} {c['symbol']}")
+                options = [c["effect"]] + c["distractors"]
+                self.assertEqual(len(set(options)), 4,
+                                 f"{lang} {c['symbol']}: options not distinct")
+                for d in c["distractors"]:
+                    self.assertNotIn(
+                        d, effects,
+                        f"{lang} {c['symbol']}: distractor is verbatim a "
+                        f"same-language effect: {d!r}")
+
+    def test_reverse_rounds_feasible(self):
+        # A reverse round needs the correct symbol plus 3 siblings.
+        for lang, cs in self._by_lang().items():
+            self.assertGreaterEqual(len(cs), 4, lang)
+
+    def test_ask_phrases_unique_per_language(self):
+        # The ask phrase IS the reverse question; if two commands in a
+        # language shared one, the round would have two right answers.
+        # (Brainbool's + and - both toggle — their asks differ by the
+        # operation, adding vs subtracting modulo 2.)
+        for lang, cs in self._by_lang().items():
+            asks = [c["ask"] for c in cs]
+            self.assertEqual(len(asks), len(set(asks)), lang)
 
 
 if __name__ == "__main__":

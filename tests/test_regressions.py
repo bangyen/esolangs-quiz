@@ -36,6 +36,11 @@
    "Different" is a transition, not a completion — no score, no log
    entry, no finishRound, no timer — and stage 2 (4 name options from
    the entry's own data) is the round's single +100 / −50 point.
+7. Commands mode (fourth tab): 12 rounds drawn from the 80-command
+   pool — 9 meaning + 3 reverse, no command repeated, at most 3
+   rounds per language — scored +100 / 0 with exactly one −25 hint
+   per run, completing through finishRound() so the 1.2 s
+   auto-advance applies (the scheduler's only guard is Normal).
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -318,6 +323,83 @@ class TestDomHarness(unittest.TestCase):
         self.assertEqual(b["delta"], -50)
         self.assertIn("different languages", b["feedback"])
         self.assertEqual(b["pendingAfter"], 1)
+
+
+    # --- Commands mode (harness) ---
+
+    def test_commands_pool_is_injected(self):
+        self.assertEqual(self.out["commandsPoolSize"], 80)
+
+    def test_commands_tab_aria_pressed(self):
+        self.assertEqual(self.out["commandsPressed"],
+                         {"normal": "false", "hard": "false",
+                          "expert": "false", "commands": "true"})
+
+    def test_commands_flow_scoring_hint_and_timer(self):
+        flow = self.out["commandsFlow"]
+        self.assertEqual(flow["firstDelta"], 100)        # +100 correct
+        self.assertEqual(len(flow["timersAfterFirst"]), 1)
+        self.assertEqual(flow["timersAfterFirst"][0]["ms"], 1200)
+        self.assertEqual(flow["hintDelta"], -25)          # the one hint
+        self.assertEqual(flow["hintStreak"], "0")         # costs the streak
+        self.assertEqual(flow["hintsStatAfterHint"], "1 / 1")
+        self.assertEqual(flow["secondHintDelta"], 0)      # second refused
+        # 12 correct answers, one −25 hint: 1200 − 25.
+        self.assertEqual(flow["finalScore"], "1175")
+        self.assertEqual(flow["bdCorrect"], "12 / 12")
+
+    def test_commands_results_review_shows_a_fact(self):
+        self.assertTrue(self.out["commandsFlow"]["reviewHasFact"])
+
+    def test_commands_draw_simulation(self):
+        draws = self.out["commandsDraws"]
+        self.assertEqual(len(draws), 40)
+        for run in draws:
+            self.assertEqual(len(run), 12)
+            kinds = [r["kind"] for r in run]
+            self.assertEqual(kinds.count("meaning"), 9)
+            self.assertEqual(kinds.count("reverse"), 3)
+            keys = [(r["lang"], r["sym"]) for r in run]
+            self.assertEqual(len(set(keys)), 12,
+                             f"repeated command in run: {keys}")
+            per_lang = {}
+            for r in run:
+                per_lang[r["lang"]] = per_lang.get(r["lang"], 0) + 1
+            self.assertLessEqual(max(per_lang.values()), 3,
+                                 f"language cap broken: {per_lang}")
+
+
+class TestCommandsMode(unittest.TestCase):
+    """Commands mode source pins: the fourth tab exists, its mode line
+    states its rules, rounds complete through the shared finishRound()
+    (hence the auto-advance), and the draw enforces its caps."""
+
+    def test_four_mode_tabs_in_the_shell(self):
+        self.assertEqual(len(re.findall(r'id="mode\w+Btn"', BUILT)), 4)
+        self.assertRegex(BUILT, r'id="modeCommandsBtn"[^>]*aria-pressed="false"')
+        self.assertIn("setMode('commands')", SCRIPT)
+
+    def test_mode_line_states_the_rules(self):
+        self.assertIn("What does it do? · +100 per correct · 1 hint per run "
+                      "(−25 pts) · facts at results.", SCRIPT)
+
+    def test_commands_rounds_complete_through_finish_round(self):
+        body = re.search(r"function answerCommand\(picked, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("points+=100", body)
+        self.assertNotIn("points-=", body)
+        self.assertIn("finishRound(correct, line);", body)
+
+    def test_hint_limit_covers_commands(self):
+        self.assertIn("(mode==='hard' || mode==='commands') && hintsUsed>=1", SCRIPT)
+        self.assertIn("mode==='commands') ? (hintsUsed+' / 1')", SCRIPT)
+
+    def test_draw_enforces_language_cap_and_reverse_count(self):
+        body = re.search(r"function pickCommands\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("(perLang[lang]||0)>=3", body)
+        self.assertIn("marked>=3", body)
+        self.assertIn("commandsReverse = designations;", body)
 
 
 class TestPairingFormat(unittest.TestCase):
