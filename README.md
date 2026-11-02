@@ -51,8 +51,9 @@ view — not a fifth mode, with no scoring or state: every Normal-pool
 language's Hello World and fact, alphabetical, and a command table
 for each Commands language (symbol → effect, verbatim from the same
 data the quiz draws from). Entering Study mid-run cancels any pending
-auto-advance, and picking a mode tab returns to the quiz with a fresh
-run, exactly like a mode switch.
+auto-advance; its **Back to quiz** button resumes the run exactly as
+left, while picking a mode tab returns to the quiz with a fresh run,
+exactly like a mode switch.
 
 ## How the draws work
 
