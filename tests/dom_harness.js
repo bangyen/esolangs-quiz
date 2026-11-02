@@ -28,6 +28,14 @@
 //   modeSwitchCancel / restartCancel
 //                 a pending timer is cancelled by setMode / restart, and
 //                 firing the stale handle afterwards is a no-op
+//   pairing       Expert pairing scenarios, collected over fresh Expert
+//                 runs until all five have been seen: a correct Same
+//                 completes at once (+100, no stage 2); a correct
+//                 Different moves to stage 2 with NO score change and
+//                 NO timer, then naming excerpt B scores +100 (one
+//                 timer) or a wrong name −50; a wrong stage-1 call in
+//                 either direction ends the round at −50 with the
+//                 named-pair feedback
 //
 // Timers are fake: setTimeout/clearTimeout are injected into the script
 // scope and recorded in a registry; nothing fires unless fireTimer(id)
@@ -245,5 +253,101 @@ document.getElementById('restartBtn').click();
 out.restartPendingAfter = pendingTimers();
 if (staleAfterRestart) fireTimer(staleAfterRestart.id);
 out.restartAfterStaleFire = { q: stats().q, tag: qTag.textContent };
+
+// --- Expert pairing (two-stage format) -----------------------------------
+// Play fresh Expert runs until all five scenarios have been collected
+// (the pool is 8 same / 8 different, drawn 3 per run with a preference
+// against the previous run's entries, so a handful of runs suffices).
+// The current entry is identified from the page's own injected
+// EXPERT_PAIR data, matched by the displayed excerpts — no guessing.
+const pairData = JSON.parse(
+  script.match(/var EXPERT_PAIR = (\[[\s\S]*?\n\]);/)[1]);
+const pairScen = {};
+const scoreNow = () => parseInt(document.getElementById('statScore').textContent, 10);
+const titleNow = () => document.getElementById('qTitle').textContent;
+const feedbackNow = () => document.getElementById('feedbackEl').innerHTML;
+
+function playGenericRound() {
+  optionsEl.children[0].click();
+  // A correct two-stage family pick swaps in stage 2: complete it too.
+  if (titleNow().indexOf('Family correct') === 0) optionsEl.children[0].click();
+  nextBtn.click();
+}
+
+function handlePairRound() {
+  const entry = pairData.find(e =>
+    document.getElementById('codeEl').textContent ===
+    '— EXCERPT A —\n' + e.codeA + '\n\n— EXCERPT B —\n' + e.codeB);
+  const byName = n => optionsEl.children.find(b => b.getAttribute('data-name') === n);
+  const before = scoreNow();
+  if (!entry) { byName('Yes').click(); nextBtn.click(); return; }
+  if (entry.same) {
+    if (!pairScen.sameCorrect) {
+      byName('Yes').click();
+      pairScen.sameCorrect = {
+        delta: scoreNow() - before,
+        stage2Shown: titleNow() === 'What language is the second excerpt?',
+        pendingAfter: pendingTimers().length,
+      };
+    } else if (!pairScen.wrongDiffCallOnSame) {
+      byName('No').click();
+      pairScen.wrongDiffCallOnSame = {
+        delta: scoreNow() - before,
+        feedback: feedbackNow(),
+        pendingAfter: pendingTimers().length,
+      };
+    } else {
+      byName('Yes').click();
+    }
+  } else {
+    if (!pairScen.diffStage) {
+      byName('No').click();
+      const mid = {
+        midDelta: scoreNow() - before,
+        midPending: pendingTimers().length,
+        midTitle: titleNow(),
+        langB: entry.langB,
+      };
+      byName(entry.langB).click();
+      pairScen.diffStage = Object.assign(mid, {
+        finalDelta: scoreNow() - before,
+        pendingAfter: pendingTimers().length,
+      });
+    } else if (!pairScen.diffWrongName) {
+      byName('No').click();
+      optionsEl.children.find(
+        b => b.getAttribute('data-name') !== entry.langB).click();
+      pairScen.diffWrongName = {
+        finalDelta: scoreNow() - before,
+        feedback: feedbackNow(),
+        pendingAfter: pendingTimers().length,
+        langB: entry.langB,
+      };
+    } else if (!pairScen.wrongSameCallOnDifferent) {
+      byName('Yes').click();
+      pairScen.wrongSameCallOnDifferent = {
+        delta: scoreNow() - before,
+        feedback: feedbackNow(),
+        pendingAfter: pendingTimers().length,
+      };
+    } else {
+      byName('No').click();
+      byName(entry.langB).click();
+    }
+  }
+  nextBtn.click();  // advance (cancels any pending auto-advance timer)
+}
+
+let pairRuns = 0;
+while (Object.keys(pairScen).length < 5 && pairRuns < 20) {
+  pairRuns++;
+  document.getElementById('modeExpertBtn').click();  // fresh Expert run
+  for (let round = 0; round < 15; round++) {
+    if (qTag.textContent.indexOf('Pairing') >= 0) handlePairRound();
+    else playGenericRound();
+  }
+}
+out.pairing = pairScen;
+out.pairingRuns = pairRuns;
 
 console.log(JSON.stringify(out));

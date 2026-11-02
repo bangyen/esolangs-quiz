@@ -153,6 +153,26 @@ class TestExpertPair(unittest.TestCase):
             self.assertIsInstance(q["same"], bool, q["pairLabel"])
             self.assertEqual(q["same"], q["langA"] == q["langB"], q["pairLabel"])
 
+    def test_different_entries_have_second_language_options(self):
+        # A correct "Different" call now leads to stage 2: name the
+        # second excerpt. Each different entry must therefore carry
+        # exactly 4 unique name options, excerpt B's language among
+        # them exactly once, the other three being distractors.
+        for q in EXPERT["EXPERT_PAIR"]:
+            if q["same"]:
+                continue
+            self.assertIn("options", q, q["pairLabel"])
+            self.assertEqual(len(q["options"]), 4, q["pairLabel"])
+            self.assertEqual(len(set(q["options"])), 4, q["pairLabel"])
+            self.assertEqual(q["options"].count(q["langB"]), 1, q["pairLabel"])
+
+    def test_same_entries_have_no_options(self):
+        # Same pairs complete on the stage-1 call; they need (and must
+        # not carry) a stage-2 option list.
+        for q in EXPERT["EXPERT_PAIR"]:
+            if q["same"]:
+                self.assertNotIn("options", q, q["pairLabel"])
+
     def test_pool_split_evenly(self):
         same = sum(1 for q in EXPERT["EXPERT_PAIR"] if q["same"])
         self.assertEqual(same * 2, len(EXPERT["EXPERT_PAIR"]))

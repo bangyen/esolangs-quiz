@@ -31,6 +31,11 @@
    manual Next, restart, mode switch — cancels the pending handle, so
    an advance happens exactly once. Source pins plus harness runs
    with fake timers pin all of it.
+6. Pairing format: a "Different" call must also name the second
+   language. Stage 1 behaves as before except that a correct
+   "Different" is a transition, not a completion — no score, no log
+   entry, no finishRound, no timer — and stage 2 (4 name options from
+   the entry's own data) is the round's single +100 / −50 point.
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -271,6 +276,95 @@ class TestDomHarness(unittest.TestCase):
         after = self.out["restartAfterStaleFire"]
         self.assertEqual(after["q"], "1 / 15")
         self.assertTrue(after["tag"].startswith("Hard"))
+
+    # --- Pairing two-stage format (harness scenarios) ---
+
+    def test_pairing_scenarios_all_collected(self):
+        self.assertEqual(set(self.out["pairing"]),
+                         {"sameCorrect", "wrongDiffCallOnSame", "diffStage",
+                          "diffWrongName", "wrongSameCallOnDifferent"},
+                         f"harness pairing runs: {self.out['pairingRuns']}")
+
+    def test_pairing_same_call_completes_immediately(self):
+        s = self.out["pairing"]["sameCorrect"]
+        self.assertEqual(s["delta"], 100)          # +100 at once
+        self.assertFalse(s["stage2Shown"])         # no stage 2 appears
+        self.assertEqual(s["pendingAfter"], 1)     # round done: one timer
+
+    def test_pairing_different_call_reaches_stage_two_unscored(self):
+        d = self.out["pairing"]["diffStage"]
+        # Stage 1 correct "Different": no score change, no timer, and
+        # the stage-2 question replaces the Same/Different buttons.
+        self.assertEqual(d["midDelta"], 0)
+        self.assertEqual(d["midPending"], 0)
+        self.assertEqual(d["midTitle"], "What language is the second excerpt?")
+        # Naming excerpt B correctly completes the round: exactly +100
+        # in total and exactly one auto-advance timer.
+        self.assertEqual(d["finalDelta"], 100)
+        self.assertEqual(d["pendingAfter"], 1)
+
+    def test_pairing_stage_two_wrong_name_scores_minus_50(self):
+        w = self.out["pairing"]["diffWrongName"]
+        self.assertEqual(w["finalDelta"], -50)
+        self.assertIn("the second excerpt is " + w["langB"], w["feedback"])
+        self.assertEqual(w["pendingAfter"], 1)  # completed: Next/timer work
+
+    def test_pairing_wrong_stage_one_calls_end_the_round(self):
+        a = self.out["pairing"]["wrongDiffCallOnSame"]
+        self.assertEqual(a["delta"], -50)
+        self.assertIn("the same language", a["feedback"])
+        self.assertEqual(a["pendingAfter"], 1)
+        b = self.out["pairing"]["wrongSameCallOnDifferent"]
+        self.assertEqual(b["delta"], -50)
+        self.assertIn("different languages", b["feedback"])
+        self.assertEqual(b["pendingAfter"], 1)
+
+
+class TestPairingFormat(unittest.TestCase):
+    """Pairing format pins: the stage-1 prompt states the full job; a
+    correct "Different" call is a transition, not a completion (it must
+    not score, log, finish the round or schedule the auto-advance);
+    stage 2 is the round's single scoring point and records the full
+    claim ('Different — second: X') in the review log."""
+
+    def test_stage_one_buttons_route_to_the_pairing_handler(self):
+        self.assertIn("answerPair(optDef[0], b)", SCRIPT)
+
+    def test_prompt_states_the_full_job_up_front(self):
+        self.assertIn("Same language — or different? If different, "
+                      "name the second one.", SCRIPT)
+        self.assertIn("What language is the second excerpt?", SCRIPT)
+
+    def test_stage_two_options_come_from_the_entry(self):
+        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("shuffle(q.options.slice())", body)
+
+    def test_correct_different_transition_never_finishes_the_round(self):
+        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertNotIn("finishRound(", body)
+        self.assertNotIn("scheduleAutoAdvance", body)
+        self.assertNotIn("resultsLog.push", body)
+        self.assertNotIn("points+=", body)
+        self.assertNotIn("points-=", body)
+        # A wrong call, or a correct "Same", routes to the ordinary
+        # pairing answer (which does finish the round, as before).
+        self.assertIn("answer(call, btn)", body)
+
+    def test_stage_two_scores_once_and_finishes(self):
+        body = re.search(r"function answerPairSecond\(name, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("points+=100", body)
+        self.assertIn("points-=50", body)
+        self.assertIn("finishRound(correct, line);", body)
+        self.assertIn("the second excerpt is '+q.langB+', not '+name", body)
+
+    def test_review_log_records_the_full_claim(self):
+        body = re.search(r"function answerPairSecond\(name, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("picked:'Different — second: '+name", body)
+        self.assertIn("correctAnswer:'Different — second: '+q.langB", body)
 
 
 class TestAutoAdvancePins(unittest.TestCase):
