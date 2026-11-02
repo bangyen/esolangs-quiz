@@ -439,8 +439,18 @@ const cmdDraws = [];
   cmdDraws.push(runDraw);
   cmdFlow.finalScore = document.getElementById('finalScore').textContent;
   cmdFlow.bdCorrect = document.getElementById('bdCorrect').textContent;
+  // reviewEl.innerHTML is SERIALIZED html: quiz.js builds the review
+  // with escapeHtml(), so a fact containing & < > appears escaped
+  // (&amp; &lt; &gt;) in the markup. Searching for the RAW fact fails
+  // whenever such a command is drawn first (≈2 in 45 suite runs —
+  // SNUSP '>' and the two ><> facts are the live cases). Escape the
+  // needle with the same rules before the containment check; the
+  // assertion still pins the exact fact text of the drawn round.
+  const escapeForHtml = s => s.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
   cmdFlow.reviewHasFact =
-    document.getElementById('reviewEl').innerHTML.indexOf(firstFact) >= 0;
+    document.getElementById('reviewEl').innerHTML
+      .indexOf(escapeForHtml(firstFact)) >= 0;
 }
 out.commandsFlow = cmdFlow;
 
