@@ -18,7 +18,7 @@ fact from one round can't help with a later one.
 | --- | --- | --- | --- | --- | --- |
 | Normal | 12 | Questions 30 → 12 | 4 | Free, unlimited | 1 point per correct answer |
 | Hard | 15 | Fragments 24 → 6 · Reverse 14 → 3 · Wide 18 → 6 | 4 (fragments, reverse) · 8 (wide) | 1 per run, −25 pts and your streak | +100 per correct answer |
-| Expert | 15 | Identification 24 → 6 · Odd-one-out 14 → 3 · Two-stage 16 → 3 · Pairing 16 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
+| Expert | 15 | Identification 24 → 6 · Odd-one-out 14 → 3 · Two-stage 16 → 3 · Discrimination 16 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
 | Commands | 12 | Commands 80 → 12 (9 meaning + 3 reverse) | 4 | 1 per run, −25 pts and your streak | +100 per correct answer |
 
 - **Normal** — famous esolangs (Brainfuck, LOLCODE, Shakespeare, Chef, …),
@@ -33,10 +33,10 @@ fact from one round can't help with a later one.
   Brainbool, Smallfuck, `///`, Underload, Iota, Jot, Lazy K, …), plus
   odd-one-out rounds (four snippets, one not of the family), two-stage
   rounds (commit to a family first — wrong family ends the round — then
-  the exact language), and pairing rounds (two excerpts: same language?
-  A wrong call ends the round — and a correct "different" call only
-  earns its points once you also name the second excerpt's language
-  from four options).
+  the exact language), and discrimination rounds (two excerpts side
+  by side — one in the named language, one in its closest lookalike
+  (Ook! against COW, Jot against Iota, …); tap the excerpt that is
+  the named one).
 - **Commands** — not whole programs but single instructions: 80 commands
   across 10 languages (Brainfuck, COW, Ook!, Befunge, Whitespace, FALSE,
   SNUSP, `><>`, Brainbool, INTERCAL). Meaning rounds show one command and
@@ -87,10 +87,12 @@ python3 -m unittest discover -s tests
 
 The tests pin the pool invariants (unique option sets containing the
 answer exactly once, fragments ≤ 2 lines, exactly one matching reverse
-candidate, two-stage languages in their declared families, an evenly
-split pairing pool whose different pairs each carry four stage-2 name
-options for the second excerpt (same pairs carry none), pool sizes ≥
-draw counts read out of `buildOrder()`), and for Commands: 80 commands
+candidate, two-stage languages in their declared families, a
+discrimination pool of 16 target/lookalike pairs — 16 distinct
+targets, every decoy a declared family-mate or a pinned surface-class
+cousin, both excerpts genuine code, distinct, and within 2.5× of each
+other's length, neither containing the other — pool sizes ≥ draw
+counts read out of `buildOrder()`), and for Commands: 80 commands
 with mutually distinct options, no distractor verbatim-equal to a
 same-language effect, and a unique reverse question per command —
 plus a 40-run draw simulation (always 9 meaning + 3 reverse rounds,
@@ -98,8 +100,10 @@ no repeated command, at most 3 rounds from one language),
 check that the built page is fresh and its script parses, and pin the
 playtest regressions: advancing scrolls the window to the quiz area
 (never the document top, and never via a focused button that a render
-is about to hide), first-load stats match restart stats, and reverse /
-pairing feedback names the candidate position and both languages. They
+is about to hide), first-load stats match restart stats, reverse
+feedback names the candidate position, and discrimination feedback
+names the correct excerpt's position and the language actually
+picked. They
 also pin the accessibility audit fixes: live-region announcements of
 verdicts and question changes, focus landing on the question prompt
 after a keyboard advance, `aria-pressed` on the mode buttons, and every

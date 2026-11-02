@@ -4,10 +4,11 @@ These pin, in code, the invariants the quiz was previously verified
 against by hand after every edit: option sets are unique and contain
 the answer exactly once, Hard fragments are at most 2 lines, reverse
 rounds have exactly one matching candidate, Expert two-stage languages
-belong to their declared family, the pairing pool is evenly split,
-and every pool is at least as large as the number of rounds a run
-draws from it (the draws themselves are read out of buildOrder() in
-src/quiz.js, so a draw change without a pool change fails here).
+belong to their declared family, the discrimination pool pairs each
+target with a genuine lookalike at comparable scale, and every pool
+is at least as large as the number of rounds a run draws from it
+(the draws themselves are read out of buildOrder() in src/quiz.js,
+so a draw change without a pool change fails here).
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -34,12 +35,19 @@ DRAWS = {
     m.group(1): int(m.group(2))
     for m in re.finditer(r"drawFrom\((\w+),\s*(\d+)", QUIZ_JS)
 }
-EXPECTED_DRAWS = {"all": 12, "f": 6, "r": 3, "t": 6, "ei": 6, "eo": 3, "et": 3, "ep": 3}
+EXPECTED_DRAWS = {"all": 12, "f": 6, "r": 3, "t": 6, "ei": 6, "eo": 3, "et": 3}
+
+# The discrimination phase draws through drawDisc(), not drawFrom():
+# an entry consumes both of its languages, so it needs its own picker.
+DISC_DRAW = int(re.search(r"drawDisc\(ed,\s*(\d+)", QUIZ_JS).group(1))
 
 
 class TestDrawCounts(unittest.TestCase):
     def test_draw_counts_match_build_order(self):
         self.assertEqual(DRAWS, EXPECTED_DRAWS)
+
+    def test_discrimination_draw_is_three(self):
+        self.assertEqual(DISC_DRAW, 3)
 
 
 class TestNormal(unittest.TestCase):
@@ -147,39 +155,91 @@ class TestExpertTwo(unittest.TestCase):
         self.assertGreaterEqual(len(EXPERT["EXPERT_TWO"]), DRAWS["et"])
 
 
-class TestExpertPair(unittest.TestCase):
-    def test_pairing_rounds(self):
-        for q in EXPERT["EXPERT_PAIR"]:
-            self.assertEqual(q["kind"], "expert-pair", q["pairLabel"])
-            self.assertIsInstance(q["same"], bool, q["pairLabel"])
-            self.assertEqual(q["same"], q["langA"] == q["langB"], q["pairLabel"])
+def _pool_languages():
+    """Every language the quiz's data pools already use — entry
+    languages and snippet languages across all four data files.
+    Discrimination introduces no new languages: a target or decoy
+    outside this set would be a language the quiz nowhere else knows
+    (and Study could not be consistent with)."""
+    langs = {q["lang"] for q in NORMAL["QUESTIONS"]}
+    langs |= {c["lang"] for c in COMMANDS["COMMANDS"]}
+    for pool in HARD.values():
+        for q in pool:
+            langs.add(q["lang"])
+            langs |= {s["lang"] for s in q.get("snippets", [])}
+    for key in ("EXPERT_ID", "EXPERT_TWO", "EXPERT_ODD"):
+        for q in EXPERT[key]:
+            langs.add(q["lang"])
+            langs |= {s["lang"] for s in q.get("snippets", [])}
+    return langs
 
-    def test_different_entries_have_second_language_options(self):
-        # A correct "Different" call now leads to stage 2: name the
-        # second excerpt. Each different entry must therefore carry
-        # exactly 4 unique name options, excerpt B's language among
-        # them exactly once, the other three being distractors.
-        for q in EXPERT["EXPERT_PAIR"]:
-            if q["same"]:
-                continue
-            self.assertIn("options", q, q["pairLabel"])
-            self.assertEqual(len(q["options"]), 4, q["pairLabel"])
-            self.assertEqual(len(set(q["options"])), 4, q["pairLabel"])
-            self.assertEqual(q["options"].count(q["langB"]), 1, q["pairLabel"])
 
-    def test_same_entries_have_no_options(self):
-        # Same pairs complete on the stage-1 call; they need (and must
-        # not carry) a stage-2 option list.
-        for q in EXPERT["EXPERT_PAIR"]:
-            if q["same"]:
-                self.assertNotIn("options", q, q["pairLabel"])
+POOL_LANGUAGES = _pool_languages()
 
-    def test_pool_split_evenly(self):
-        same = sum(1 for q in EXPERT["EXPERT_PAIR"] if q["same"])
-        self.assertEqual(same * 2, len(EXPERT["EXPERT_PAIR"]))
+# Confusable pairs that no EXPERT_FAMILIES family covers, pinned
+# explicitly with their shared surface class. Every other
+# discrimination pair must share at least one declared family.
+SURFACE_PAIRS = {
+    frozenset(("Chef", "Shakespeare Programming Language")),  # prose joke languages
+    frozenset(("Piet", "Velato")),                            # art/media source languages
+    frozenset(("COW", "Blub")),                               # one-word Brainfuck re-encodings
+    frozenset(("Chicken", "Blub")),                           # one-word vocabularies
+}
+
+
+class TestExpertDisc(unittest.TestCase):
+    """Discrimination rounds (replacing pairing): "Which excerpt is
+    X?" — one excerpt in the target language, one in its closest
+    lookalike, both genuine Hello World code harvested from the
+    pools. The old same-pair failure mode (two excerpts so alike the
+    call was a texture match — one Fractran excerpt literally
+    contained the other) is pinned out by the scale/substring test."""
+
+    def test_no_pairing_pool_remains(self):
+        self.assertNotIn("EXPERT_PAIR", EXPERT)
+
+    def test_discrimination_rounds(self):
+        self.assertEqual(len(EXPERT["EXPERT_DISC"]), 16)
+        for q in EXPERT["EXPERT_DISC"]:
+            self.assertEqual(q["kind"], "expert-disc", q["lang"])
+            for field in ("lang", "decoy", "code", "codeTarget",
+                          "codeDecoy", "note", "fact"):
+                self.assertTrue(q[field].strip(),
+                                f"{q['lang']}: empty {field}")
+
+    def test_targets_distinct_and_decoy_differs(self):
+        targets = [q["lang"] for q in EXPERT["EXPERT_DISC"]]
+        self.assertEqual(len(targets), len(set(targets)))
+        for q in EXPERT["EXPERT_DISC"]:
+            self.assertNotEqual(q["lang"], q["decoy"], q["lang"])
+
+    def test_languages_come_from_the_existing_pools(self):
+        for q in EXPERT["EXPERT_DISC"]:
+            self.assertIn(q["lang"], POOL_LANGUAGES, q["lang"])
+            self.assertIn(q["decoy"], POOL_LANGUAGES, q["decoy"])
+
+    def test_excerpts_are_comparable_in_scale(self):
+        for q in EXPERT["EXPERT_DISC"]:
+            a, b = q["codeTarget"], q["codeDecoy"]
+            self.assertNotEqual(a, b, q["lang"])
+            self.assertNotIn(a, b, q["lang"])
+            self.assertNotIn(b, a, q["lang"])
+            ratio = max(len(a), len(b)) / min(len(a), len(b))
+            self.assertLessEqual(ratio, 2.5,
+                                 f"{q['lang']}: excerpt ratio {ratio:.2f}")
+
+    def test_decoy_is_a_genuine_confusable(self):
+        families = EXPERT["EXPERT_FAMILIES"].values()
+        for q in EXPERT["EXPERT_DISC"]:
+            pair = {q["lang"], q["decoy"]}
+            shares_family = any(pair <= set(members) for members in families)
+            self.assertTrue(
+                shares_family or frozenset(pair) in SURFACE_PAIRS,
+                f"{q['lang']} vs {q['decoy']}: neither family nor "
+                "pinned surface class makes them confusable")
 
     def test_pool_covers_draw(self):
-        self.assertGreaterEqual(len(EXPERT["EXPERT_PAIR"]), DRAWS["ep"])
+        self.assertGreaterEqual(len(EXPERT["EXPERT_DISC"]), DISC_DRAW)
 
 
 class TestCommands(unittest.TestCase):

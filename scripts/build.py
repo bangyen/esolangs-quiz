@@ -28,7 +28,7 @@ DATA_FILES = [
     ("src/data/normal.json", ["QUESTIONS", "DISTRACTORS", "SUBS"]),
     ("src/data/hard.json", ["HARD_FRAGMENTS", "HARD_REVERSE", "HARD_WIDE"]),
     ("src/data/expert.json", ["EXPERT_ID", "EXPERT_ODD",
-                              "EXPERT_FAMILIES", "EXPERT_TWO", "EXPERT_PAIR"]),
+                              "EXPERT_FAMILIES", "EXPERT_TWO", "EXPERT_DISC"]),
     ("src/data/commands.json", ["COMMANDS"]),
 ]
 

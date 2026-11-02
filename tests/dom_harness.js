@@ -28,14 +28,16 @@
 //   modeSwitchCancel / restartCancel
 //                 a pending timer is cancelled by setMode / restart, and
 //                 firing the stale handle afterwards is a no-op
-//   pairing       Expert pairing scenarios, collected over fresh Expert
-//                 runs until all five have been seen: a correct Same
-//                 completes at once (+100, no stage 2); a correct
-//                 Different moves to stage 2 with NO score change and
-//                 NO timer, then naming excerpt B scores +100 (one
-//                 timer) or a wrong name −50; a wrong stage-1 call in
-//                 either direction ends the round at −50 with the
-//                 named-pair feedback
+//   discrimination
+//                 Expert discrimination scenarios, collected over
+//                 fresh Expert runs: a round shows two excerpt blocks
+//                 (the target language and its closest lookalike) and
+//                 completes in ONE click — the correct block scores
+//                 +100, the decoy block −50, each with exactly one
+//                 auto-advance timer; across the collected rounds the
+//                 target must appear in BOTH block positions, and the
+//                 results review of a completed run must carry every
+//                 discrimination claim of that run ("Excerpt N — Lang")
 //   commands*     Commands mode: aria-pressed across all four tabs; a
 //                 fully instrumented flow run (+100 scoring, the single
 //                 −25 hint and its refusal, one 1200 ms timer, the
@@ -264,7 +266,7 @@ for (let step = 0; step < 15 && !twoStage; step++) {
       family: entry.family,
       pendingAfterFamily: pendingTimers(),
       titleAfterFamily: document.getElementById('qTitle').textContent,
-      srAfterFamily: srText(),  // F5: stage 2 must be announced like pairing's
+      srAfterFamily: srText(),  // F5: stage 2 must be announced like a new question
     };
     optionsEl.children[0].click();                         // exact language (stage 2)
     twoStage.pendingAfterComplete = pendingTimers();
@@ -282,13 +284,14 @@ out.expertTwoStage = twoStage;
 // handle afterwards must not touch the fresh run. The current Expert
 // round here is the run's SECOND two-stage round (the hunt above ends
 // on the round after the first two-stage, and buildOrder deals Expert
-// phases in ID / odd / two-stage / pairing order): a blind first click
-// is only a stage-1 family pick, and a CORRECT family pick completes
-// nothing — it swaps in stage 2 and schedules no timer (the same is
-// true of a correct pairing "Different"). So click through a possible
-// stage-2 swap-in: this setup must guarantee a genuinely pending
-// timer, whatever the shuffle dealt. (Regression: this flaked in CI
-// whenever the shuffled first family button was the correct one.)
+// phases in ID / odd / two-stage / discrimination order): a blind
+// first click may be only a stage-1 family pick, and a CORRECT family
+// pick completes nothing — it swaps in stage 2 and schedules no
+// timer. Discrimination rounds, by contrast, complete in one click.
+// So click through a possible stage-2 swap-in: this setup must
+// guarantee a genuinely pending timer, whatever the shuffle dealt.
+// (Regression: this flaked in CI whenever the shuffled first family
+// button was the correct one.)
 optionsEl.children[0].click();                             // answer current Expert round
 if (!pendingTimers().length) optionsEl.children[0].click();  // finish a stage-2 swap-in
 const staleAfterSwitch = pendingTimers()[0];
@@ -313,15 +316,18 @@ out.restartPendingAfter = pendingTimers();
 if (staleAfterRestart) fireTimer(staleAfterRestart.id);
 out.restartAfterStaleFire = { q: stats().q, tag: qTag.textContent };
 
-// --- Expert pairing (two-stage format) -----------------------------------
-// Play fresh Expert runs until all five scenarios have been collected
-// (the pool is 8 same / 8 different, drawn 3 per run with a preference
-// against the previous run's entries, so a handful of runs suffices).
-// The current entry is identified from the page's own injected
-// EXPERT_PAIR data, matched by the displayed excerpts — no guessing.
-const pairData = JSON.parse(
-  script.match(/var EXPERT_PAIR = (\[[\s\S]*?\n\]);/)[1]);
-const pairScen = {};
+// --- Expert discrimination ------------------------------------------------
+// Play fresh Expert runs until the scenarios below have been collected
+// and a full run's results review has been verified (3 discrimination
+// rounds per run, pool of 16, so a handful of runs suffices). The
+// current entry is identified from the page's own injected
+// EXPERT_DISC data, matched by the displayed instruction text — the
+// same no-guessing technique as the two-stage hunt above.
+const discData = JSON.parse(
+  script.match(/var EXPERT_DISC = (\[[\s\S]*?\n\]);/)[1]);
+const discScen = {};
+const discPositions = { first: 0, second: 0 };
+let discReviewOk = false;
 const scoreNow = () => parseInt(document.getElementById('statScore').textContent, 10);
 const titleNow = () => document.getElementById('qTitle').textContent;
 const feedbackNow = () => document.getElementById('feedbackEl').innerHTML;
@@ -333,81 +339,76 @@ function playGenericRound() {
   nextBtn.click();
 }
 
-function handlePairRound() {
-  const entry = pairData.find(e =>
-    document.getElementById('codeEl').textContent ===
-    '— EXCERPT A —\n' + e.codeA + '\n\n— EXCERPT B —\n' + e.codeB);
-  const byName = n => optionsEl.children.find(b => b.getAttribute('data-name') === n);
+function handleDiscRound(record) {
+  const entry = discData.find(e =>
+    e.code === document.getElementById('codeEl').textContent);
+  if (!entry) { optionsEl.children[0].click(); nextBtn.click(); return; }
+  const blocks = optionsEl.children;
+  const targetPos = blocks.findIndex(b => b.getAttribute('data-name') === entry.lang);
+  const decoyPos = 1 - targetPos;
+  if (targetPos === 0) discPositions.first++; else discPositions.second++;
   const before = scoreNow();
-  if (!entry) { byName('Yes').click(); nextBtn.click(); return; }
-  if (entry.same) {
-    if (!pairScen.sameCorrect) {
-      byName('Yes').click();
-      pairScen.sameCorrect = {
-        delta: scoreNow() - before,
-        stage2Shown: titleNow() === 'What language is the second excerpt?',
-        pendingAfter: pendingTimers().length,
-      };
-    } else if (!pairScen.wrongDiffCallOnSame) {
-      byName('No').click();
-      pairScen.wrongDiffCallOnSame = {
-        delta: scoreNow() - before,
-        feedback: feedbackNow(),
-        pendingAfter: pendingTimers().length,
-      };
-    } else {
-      byName('Yes').click();
-    }
+  if (!discScen.correct) {
+    const srBefore = srText();
+    blocks[targetPos].click();
+    discScen.correct = {
+      delta: scoreNow() - before,
+      pendingAfter: pendingTimers().length,
+      feedback: feedbackNow(),
+      srBefore: srBefore,
+      title: titleNow(),
+      tag: qTag.textContent,
+      labels: blocks.map(b => b.getAttribute('aria-label')),
+      blockCount: blocks.length,
+      lang: entry.lang,
+    };
+    record.push({ picked: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang,
+                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
+  } else if (!discScen.wrong) {
+    blocks[decoyPos].click();
+    discScen.wrong = {
+      delta: scoreNow() - before,
+      pendingAfter: pendingTimers().length,
+      feedback: feedbackNow(),
+      lang: entry.lang,
+      decoy: entry.decoy,
+    };
+    record.push({ picked: 'Excerpt ' + (decoyPos + 1) + ' — ' + entry.decoy,
+                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
   } else {
-    if (!pairScen.diffStage) {
-      byName('No').click();
-      const mid = {
-        midDelta: scoreNow() - before,
-        midPending: pendingTimers().length,
-        midTitle: titleNow(),
-        langB: entry.langB,
-      };
-      byName(entry.langB).click();
-      pairScen.diffStage = Object.assign(mid, {
-        finalDelta: scoreNow() - before,
-        pendingAfter: pendingTimers().length,
-      });
-    } else if (!pairScen.diffWrongName) {
-      byName('No').click();
-      optionsEl.children.find(
-        b => b.getAttribute('data-name') !== entry.langB).click();
-      pairScen.diffWrongName = {
-        finalDelta: scoreNow() - before,
-        feedback: feedbackNow(),
-        pendingAfter: pendingTimers().length,
-        langB: entry.langB,
-      };
-    } else if (!pairScen.wrongSameCallOnDifferent) {
-      byName('Yes').click();
-      pairScen.wrongSameCallOnDifferent = {
-        delta: scoreNow() - before,
-        feedback: feedbackNow(),
-        pendingAfter: pendingTimers().length,
-      };
-    } else {
-      byName('No').click();
-      byName(entry.langB).click();
-    }
+    blocks[targetPos].click();
+    record.push({ picked: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang,
+                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
   }
   nextBtn.click();  // advance (cancels any pending auto-advance timer)
 }
 
-let pairRuns = 0;
-while (Object.keys(pairScen).length < 5 && pairRuns < 20) {
-  pairRuns++;
+let discRuns = 0;
+while ((Object.keys(discScen).length < 2 || !discPositions.first ||
+        !discPositions.second || !discReviewOk) && discRuns < 40) {
+  discRuns++;
   document.getElementById('modeExpertBtn').click();  // fresh Expert run
+  const claims = [];
   for (let round = 0; round < 15; round++) {
-    if (qTag.textContent.indexOf('Pairing') >= 0) handlePairRound();
+    if (qTag.textContent.indexOf('Discrimination') >= 0) handleDiscRound(claims);
     else playGenericRound();
   }
+  // The run is complete: its results review must carry every
+  // discrimination claim it dealt, in the "Your answer: … · Correct
+  // answer: …" shape showResults() builds (HTML-escaped like the DOM).
+  const esc = s => s.replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const review = document.getElementById('reviewEl').innerHTML;
+  if (claims.length === 3 && claims.every(c =>
+        review.indexOf(esc('Your answer: ' + c.picked)) >= 0 &&
+        review.indexOf(esc('Correct answer: ' + c.correct)) >= 0)) {
+    discReviewOk = true;
+  }
 }
-out.pairing = pairScen;
-out.pairingRuns = pairRuns;
+out.discrimination = discScen;
+out.discriminationRuns = discRuns;
+out.discPositions = discPositions;
+out.discReviewOk = discReviewOk;
 
 // --- Expert two-stage family error (F7) -----------------------------------
 // A wrong family pick must log a unit-consistent review entry: the
@@ -429,8 +430,8 @@ let famErr = null;
           b => b.getAttribute('data-name') !== entry.family).click();
         famErr = { lang: entry.lang, family: entry.family };
         nextBtn.click();
-      } else if (qTag.textContent.indexOf('Pairing') >= 0) {
-        handlePairRound();
+      } else if (qTag.textContent.indexOf('Discrimination') >= 0) {
+        handleDiscRound([]);
       } else {
         playGenericRound();
       }
@@ -451,7 +452,7 @@ out.expertFamilyError = famErr;
 // Identify the current round's entry from the page's own injected
 // COMMANDS data, matched by the rendered title + code block (meaning
 // rounds show the symbol, reverse rounds show the ask phrase) — the
-// same no-guessing technique as the two-stage/pairing hunts above.
+// same no-guessing technique as the two-stage/discrimination hunts above.
 const cmdData = JSON.parse(
   script.match(/var COMMANDS = (\[[\s\S]*?\n\]);/)[1]);
 out.commandsPoolSize = cmdData.length;

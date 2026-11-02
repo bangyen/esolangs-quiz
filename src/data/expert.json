@@ -959,230 +959,166 @@
       "fact": "Whitespace pushes numbers encoded in spaces and tabs: its programs are quite literally lists of numbers written in an invisible alphabet, which is why it sits in the numbers family here."
     }
   ],
-  "EXPERT_PAIR": [
+  "EXPERT_DISC":   [
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Brainfuck + Brainfuck",
-      "langA": "Brainfuck",
-      "langB": "Brainfuck",
-      "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
-      "codeB": "++++++++[>++++[>++>+++>+++>+<<<<-]\n>]>+>+>->>+[<]<-]>>.>",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both excerpts are Brainfuck — different Hello World constructions (one builds its cells with a ×10 loop, the other with nested loops), but the same eight commands: > < + - . , [ ]."
+      "kind": "expert-disc",
+      "lang": "Unlambda",
+      "decoy": "Lazy K",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Unlambda. The other is Lazy K, a close cousin.\nTap the Unlambda excerpt.",
+      "codeTarget": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "codeDecoy": "``s``s`k``si`k``s``si`k``s",
+      "note": "// Discrimination round — two excerpts, both built from combinators. Which one is Unlambda?",
+      "fact": "Unlambda spells its output out: the .x commands print characters, so .H .e .l is the greeting arriving letter by letter. Lazy K has no print primitive at all — nothing but s, k and i combinators — so its output is encoded, never spelled."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Ook! + Ook!",
-      "langA": "Ook!",
-      "langB": "Ook!",
-      "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook. Ook. Ook. Ook.",
-      "codeB": "Ook? Ook? Ook! Ook? Ook? Ook.\nOok. Ook. Ook? Ook. Ook. Ook?",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both are Ook! — the same one word with its three endings, . ? and !, paired into Brainfuck’s eight commands. Different stretches of the program, identical alphabet."
+      "kind": "expert-disc",
+      "lang": "Jot",
+      "decoy": "Iota",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Jot. The other is Iota, a close cousin.\nTap the Jot excerpt.",
+      "codeTarget": "1111110011110000111110101011\n1100011111000010111110001110",
+      "codeDecoy": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
+      "note": "// Discrimination round — two excerpts, both by the same designer, both combinator calculus. Which one is Jot?",
+      "fact": "Jot is a pure binary string — 0s and 1s and nothing else. Iota, its sibling by the same designer (Chris Barker), builds everything from a single combinator written i, with * for application: look for the i's among the stars."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Thue + Thue",
-      "langA": "Thue",
-      "langB": "Thue",
-      "codeA": "x::=~Hello, World!\n::=\nx",
-      "codeB": "a::=~Hello,\nb::=~ World!\n::=\nab",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both are Thue: ::= rules on the left, ~ marking output. The second program simply splits the greeting across two rules — same rewriting machine."
+      "kind": "expert-disc",
+      "lang": "Brainfuck",
+      "decoy": "Smallfuck",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Brainfuck. The other is Smallfuck, a close cousin.\nTap the Brainfuck excerpt.",
+      "codeTarget": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
+      "codeDecoy": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
+      "note": "// Discrimination round — two excerpts, both tape machines with brackets. Which one is Brainfuck?",
+      "fact": "Brainfuck has eight commands — the + and . everywhere give it away. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *: no + and no . ever appear."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Whitespace + Whitespace",
-      "langA": "Whitespace",
-      "langB": "Whitespace",
-      "codeA": "   \t \t   \n  \t\t    \n   \t  \t  ",
-      "codeB": "\t\n    \n   \t \t\t \n  \t   \t ",
-      "note": "// Pairing round — two different excerpts, shown raw. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both are raw Whitespace — spaces, tabs and linefeeds only. The first pushes and prints characters; the second is the tail of the same greeting. Nothing else in either file carries meaning."
+      "kind": "expert-disc",
+      "lang": "Thue",
+      "decoy": "///",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Thue. The other is ///, a close cousin.\nTap the Thue excerpt.",
+      "codeTarget": "x::=~Hello, World!\n::=\nx",
+      "codeDecoy": "/x/Hello, World!/x",
+      "note": "// Discrimination round — two excerpts, both string-rewriting languages. Which one is Thue?",
+      "fact": "Thue keeps a rule list: ::= separates what is replaced from what replaces it, ~ marks output, and the list is closed off before the data begins. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Befunge + Befunge",
-      "langA": "Befunge",
-      "langB": "Befunge",
-      "codeA": "\"!dlroW ,olleH\" > v\n                 | : <",
-      "codeB": "        > : v\n        | _ , @",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both are Befunge: the first pushes the reversed string and turns down the right edge; the second is the print loop at the grid’s corner — _ and | steering, , printing, @ ending."
+      "kind": "expert-disc",
+      "lang": "Chef",
+      "decoy": "Shakespeare Programming Language",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Chef. The other is Shakespeare Programming Language, a close cousin.\nTap the Chef excerpt.",
+      "codeTarget": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
+      "codeDecoy": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
+      "note": "// Discrimination round — two excerpts, both readable English prose. Which one is Chef?",
+      "fact": "Chef writes recipes: ingredients, mixing bowls, and instructions like “Fold lard into the mixing bowl.” The Shakespeare Programming Language writes dialogue instead — a named character speaks, and “Speak your mind!” is its print statement."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Unlambda vs Lazy K",
-      "langA": "Unlambda",
-      "langB": "Lazy K",
-      "codeA": "``.H.e.l.l.o. .W.o.r.l.d.!",
-      "codeB": "``s``s`k``si`k``s``si`k``s",
-      "note": "// Pairing round — two different excerpts, both heavy on backticks. Are they the same language?",
-      "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out.",
-      "options": [
-        "Lazy K",
-        "Iota",
-        "Jot",
-        "Underload"
-      ]
+      "kind": "expert-disc",
+      "lang": "Ook!",
+      "decoy": "COW",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Ook!. The other is COW, a close cousin.\nTap the Ook! excerpt.",
+      "codeTarget": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
+      "codeDecoy": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
+      "note": "// Discrimination round — two excerpts, both one-word re-encodings of the same tape machine. Which one is Ook!?",
+      "fact": "Both re-encode Brainfuck in a single repeated word. Ook! tells its tokens apart by sentence punctuation — Ook. Ook? Ook! — while COW tells its apart by capitalisation: MoO, mOo, moO and MOO are different commands."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Iota vs Jot",
-      "langA": "Iota",
-      "langB": "Jot",
-      "codeA": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
-      "codeB": "1111110011110000111110101011\n1100011111000010111110001110",
-      "note": "// Pairing round — two different excerpts, both by the same designer, both combinator calculus. Are they the same language?",
-      "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s.",
-      "options": [
-        "Jot",
-        "Lazy K",
-        "Unlambda",
-        "Underload"
-      ]
+      "kind": "expert-disc",
+      "lang": "FALSE",
+      "decoy": "Underload",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is FALSE. The other is Underload, a close cousin.\nTap the FALSE excerpt.",
+      "codeTarget": "\"Hello, World!\" ß",
+      "codeDecoy": "(Hello, World!)S",
+      "note": "// Discrimination round — two stack languages, one terse line each. Which one is FALSE?",
+      "fact": "Both are stack machines whose greetings fit on one line, but they package the string differently: FALSE quotes it and prints with the ß that follows. Underload pushes its string as a parenthesised literal — no quotes at all — and the S after it does the printing."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Brainfuck vs Smallfuck",
-      "langA": "Brainfuck",
-      "langB": "Smallfuck",
-      "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
-      "codeB": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
-      "note": "// Pairing round — two different excerpts, both tape machines with brackets. Are they the same language?",
-      "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *.",
-      "options": [
-        "Smallfuck",
-        "Brainbool",
-        "Ook!",
-        "COW"
-      ]
+      "kind": "expert-disc",
+      "lang": "Piet",
+      "decoy": "Velato",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Piet. The other is Velato, a close cousin.\nTap the Piet excerpt.",
+      "codeTarget": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
+      "codeDecoy": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
+      "note": "// Discrimination round — two art languages: one is seen, the other heard. Which one is Piet?",
+      "fact": "Sibling ideas from David Morgan-Mar's circle of art languages: Piet's source is an image — coloured blocks whose sizes and hue changes are the instructions. Velato's source is a MIDI melody, where the interval from one note to the next is the instruction. Sight versus sound."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Thue vs ///",
-      "langA": "Thue",
-      "langB": "///",
-      "codeA": "x::=~Hello, World!\n::=\nx",
-      "codeB": "/x/Hello, World!/x",
-      "note": "// Pairing round — two different excerpts, both string-rewriting languages. Are they the same language?",
-      "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites.",
-      "options": [
-        "///",
-        "Fractran",
-        "Unlambda",
-        "Iota"
-      ]
+      "kind": "expert-disc",
+      "lang": "COW",
+      "decoy": "Blub",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is COW. The other is Blub, a close cousin.\nTap the COW excerpt.",
+      "codeTarget": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
+      "codeDecoy": "Blub. Blub. Blub! Blub?\nBlub? Blub. Blub. Blub?",
+      "note": "// Discrimination round — two excerpts, both one-word re-encodings of the same tape machine. Which one is COW?",
+      "fact": "Both are one-word Brainfuck re-encodings. COW's single word changes capitalisation — MoO, mOo, moO and MOO are different tokens. Blub's word never changes case; its tokens are told apart by the punctuation that follows it: Blub. Blub? Blub!"
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Chef vs Shakespeare Programming Language",
-      "langA": "Chef",
-      "langB": "Shakespeare Programming Language",
-      "codeA": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
-      "codeB": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
-      "note": "// Pairing round — two different excerpts, both readable English prose. Are they the same language?",
-      "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement.",
-      "options": [
-        "Shakespeare Programming Language",
-        "Rockstar",
-        "ArnoldC",
-        "LOLCODE"
-      ]
+      "kind": "expert-disc",
+      "lang": "Befunge",
+      "decoy": "Hexagony",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Befunge. The other is Hexagony, a close cousin.\nTap the Befunge excerpt.",
+      "codeTarget": "\"!dlroW ,olleH\" > v\n                 | : <",
+      "codeDecoy": " . H e l\nl o ; W o\n r l d ! @\n  . . . .",
+      "note": "// Discrimination round — two excerpts, both played on a two-dimensional grid. Which one is Befunge?",
+      "fact": "Both run on a 2D grid. Befunge's playfield is a rectangle steered by arrows and the _ and | conditionals, printing with , and ending at @. Hexagony's playfield is a hexagon of single characters padded with . no-ops — and its ; is the print command."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "COW + COW",
-      "langA": "COW",
-      "langB": "COW",
-      "codeA": "MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO MoO mOo MoO MoO MoO MoO",
-      "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both excerpts are COW — the same MoO/mOo/moO/MoO capitalisation alphabet encoding a tape machine. Different lengths, same cow."
+      "kind": "expert-disc",
+      "lang": "SNUSP",
+      "decoy": "Befunge",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is SNUSP. The other is Befunge, a close cousin.\nTap the SNUSP excerpt.",
+      "codeTarget": "$_/==!/==\\#==!\n  \\==!/==/==!",
+      "codeDecoy": "        > : v\n        | _ , @",
+      "note": "// Discrimination round — two excerpts, both travel a two-dimensional grid. Which one is SNUSP?",
+      "fact": "SNUSP is a path language: execution starts at the $ and walks a trail of / and \\ mirrors, with ! skipping and = carrying the pointer along. Befunge instead steers a stack machine around its grid with arrow characters — the arrows are the giveaway."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Fractran + Fractran",
-      "langA": "Fractran",
-      "langB": "Fractran",
-      "codeA": "17/91   78/85   19/51\n23/38   29/33   77/29",
-      "codeB": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both are Fractran — the second is the same fraction list written out further. A Fractran program has no other form: an ordered list of fractions is all there ever is."
+      "kind": "expert-disc",
+      "lang": "Lazy K",
+      "decoy": "Underload",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Lazy K. The other is Underload, a close cousin.\nTap the Lazy K excerpt.",
+      "codeTarget": "``s``s`k``si`k``s``si`k``s",
+      "codeDecoy": "(Hello, World!)S",
+      "note": "// Discrimination round — two tiny excerpts, both combinator kin. Which one is Lazy K?",
+      "fact": "Lazy K is pure combinators — s, k and i joined by backtick application, with no literals at all. Underload works a stack with terse punctuation commands, and its whole greeting is one trick: (Hello, World!) pushes the string and S prints it."
     },
     {
-      "kind": "expert-pair",
-      "same": true,
-      "pairLabel": "Hexagony + Hexagony",
-      "langA": "Hexagony",
-      "langB": "Hexagony",
-      "codeA": " . H e l\nl o ; W o\n r l d ! @\n  . . . .",
-      "codeB": " . H e l\nl o ; W o\n r l d ! @",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Both excerpts are Hexagony: the second is the same hexagonal program without its padding dots. The hexagon — and the ; that prints and @ that halts — is unmistakable once the shape is seen."
+      "kind": "expert-disc",
+      "lang": "Fractran",
+      "decoy": "Jot",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Fractran. The other is Jot, a close cousin.\nTap the Fractran excerpt.",
+      "codeTarget": "17/91   78/85   19/51\n23/38   29/33   77/29",
+      "codeDecoy": "1111110011110000111110101011\n1100011111000010111110001110",
+      "note": "// Discrimination round — nothing but numbers in either excerpt. Which one is Fractran?",
+      "fact": "Fractran is an ordered list of fractions — 17/91, 78/85, 19/51 — and nothing else; the machine multiplies by the first fraction that keeps the result whole. Jot is also pure numbers, but a single unbroken binary string of 0s and 1s encoding combinatory logic: no slashes, no list."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Ook! vs COW",
-      "langA": "Ook!",
-      "langB": "COW",
-      "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
-      "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation.",
-      "options": [
-        "COW",
-        "Ook!",
-        "Blub",
-        "Brainfuck"
-      ]
+      "kind": "expert-disc",
+      "lang": "Underload",
+      "decoy": "Unlambda",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Underload. The other is Unlambda, a close cousin.\nTap the Underload excerpt.",
+      "codeTarget": "(Hello, World!)S",
+      "codeDecoy": "``.H.e.l.l.o. .W.o.r.l.d.!",
+      "note": "// Discrimination round — two tiny excerpts, both combinator kin. Which one is Underload?",
+      "fact": "Underload has no print-per-character command: ( … ) pushes a literal string onto its stack and S prints it, so the parentheses are the giveaway. Unlambda goes the other way — its .x commands print one character each, spelled out between the backticks."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "FALSE vs GolfScript",
-      "langA": "FALSE",
-      "langB": "GolfScript",
-      "codeA": "\"Hello, World!\" ß",
-      "codeB": "\"Hello, World!\"",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all.",
-      "options": [
-        "GolfScript",
-        "Underload",
-        "Thue",
-        "Befunge"
-      ]
+      "kind": "expert-disc",
+      "lang": "Hexagony",
+      "decoy": "><>",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Hexagony. The other is ><>, a close cousin.\nTap the Hexagony excerpt.",
+      "codeTarget": " . H e l\nl o ; W o\n r l d ! @",
+      "codeDecoy": "\"!dlroW ,olleH\":l?!;o",
+      "note": "// Discrimination round — two excerpts, both played on a two-dimensional grid. Which one is Hexagony?",
+      "fact": "Hexagony's program is a hexagon of single spaced characters, . padding included, and @ halts it. ><> runs a fish on a wrapping grid of stack commands instead — look for the reversed string literal, the o that prints and the ; that ends the program."
     },
     {
-      "kind": "expert-pair",
-      "same": false,
-      "pairLabel": "Piet vs Velato",
-      "langA": "Piet",
-      "langB": "Velato",
-      "codeA": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
-      "codeB": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
-      "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound.",
-      "options": [
-        "Velato",
-        "Piet",
-        "Rockstar",
-        "Emojicode"
-      ]
+      "kind": "expert-disc",
+      "lang": "Chicken",
+      "decoy": "Blub",
+      "code": "Two excerpts follow, labelled 1–2.\nOne of them is Chicken. The other is Blub, a close cousin.\nTap the Chicken excerpt.",
+      "codeTarget": "chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken",
+      "codeDecoy": "Blub. Blub? Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub?",
+      "note": "// Discrimination round — both vocabularies have exactly one word. Which one is Chicken?",
+      "fact": "Both vocabularies have exactly one word, but they spend it differently: Blub re-encodes Brainfuck, its Blub. Blub? Blub! pairing up into the eight tape commands. Chicken is a stack machine where the count of chickens on each line is the opcode — the line lengths are the program."
     }
   ]
 }

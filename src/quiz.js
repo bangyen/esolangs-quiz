@@ -2,7 +2,7 @@
 // The question pools are NOT defined here: scripts/build.py injects them
 // above this file from src/data/*.json (var QUESTIONS, HARD_*, EXPERT_*).
 
-var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO, EXPERT_PAIR);
+var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO, EXPERT_DISC);
 
 var HARD_ALL = HARD_FRAGMENTS.concat(HARD_REVERSE, HARD_WIDE);
 
@@ -57,9 +57,8 @@ var prevReverseLangs = [];
 var prevExpertId = [];
 var prevExpertOdd = [];
 var prevExpertTwo = [];
-var prevExpertPair = [];
+var prevExpertDisc = [];
 var expertStage = 0;
-var pairStage = 0;
 // Commands mode: the drawn entries (pool indices into COMMANDS), which
 // of them are reverse rounds (parallel to `order`), and the entry keys
 // the previous Commands run served, for the fresh-draw preference.
@@ -83,12 +82,43 @@ function drawFrom(poolIndices, count, prevLangs, poolArr, excludeLangs){
   // used in this run only as a last resort, so no language is asked twice
   // in one run unless the pool leaves no alternative.
   var scored = shuffled.map(function(i){
-    var lang = poolArr[i].pairLabel || poolArr[i].lang;
+    var lang = poolArr[i].lang;
     var s = (prevLangs.indexOf(lang)!==-1 ? 1 : 0) + (excludeLangs.indexOf(lang)!==-1 ? 2 : 0);
     return { i:i, s:s };
   });
   scored.sort(function(a,b){ return a.s-b.s; });
   return scored.slice(0, Math.min(count, poolIndices.length)).map(function(x){ return x.i; });
+}
+// Discrimination draw: like drawFrom (fresh entries first, languages
+// already used this run deprioritised), except an entry consumes BOTH
+// of its languages — the target it names and the decoy it is shown
+// against — for the run's no-language-twice rule: an entry whose
+// target OR decoy is already spent this run is passed over while any
+// non-colliding entry remains, and only fills a slot as a last resort
+// (drawFrom's philosophy) if the pool runs dry.
+function drawDisc(poolIndices, count, prevLangs, poolArr, excludeLangs){
+  excludeLangs = excludeLangs || [];
+  var shuffled = shuffle(poolIndices);
+  var scored = shuffled.map(function(i){
+    var q = poolArr[i];
+    var s = (prevLangs.indexOf(q.lang)!==-1 ? 1 : 0)
+      + (excludeLangs.indexOf(q.lang)!==-1 ? 2 : 0)
+      + (excludeLangs.indexOf(q.decoy)!==-1 ? 2 : 0);
+    return { i:i, s:s };
+  });
+  scored.sort(function(a,b){ return a.s-b.s; });
+  var taken = excludeLangs.slice();
+  var picked = [], rest = [];
+  scored.forEach(function(x){
+    var q = poolArr[x.i];
+    if(picked.length<count && taken.indexOf(q.lang)===-1 && taken.indexOf(q.decoy)===-1){
+      picked.push(x.i); taken.push(q.lang); taken.push(q.decoy);
+    } else {
+      rest.push(x.i);
+    }
+  });
+  rest.forEach(function(i){ if(picked.length<count) picked.push(i); });
+  return picked.slice(0, Math.min(count, poolIndices.length));
 }
 // Commands draw: 12 entries from the 80-command pool, at most 3 from
 // any one language, no command twice, preferring entries the previous
@@ -171,8 +201,8 @@ function buildOrder(){
     return pickCommands();
   }
   if(mode==='expert'){
-    var ei=[], eo=[], et=[], ep=[];
-    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else if(q.kind==='expert-pair') ep.push(i); else ei.push(i); });
+    var ei=[], eo=[], et=[], ed=[];
+    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else if(q.kind==='expert-disc') ed.push(i); else ei.push(i); });
     var eiPicked = drawFrom(ei, 6, prevExpertId, EXPERT_ALL);
     prevExpertId = eiPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     var used = prevExpertId.slice();
@@ -182,9 +212,9 @@ function buildOrder(){
     var etPicked = drawFrom(et, 3, prevExpertTwo, EXPERT_ALL, used);
     prevExpertTwo = etPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     used = used.concat(prevExpertTwo);
-    var epPicked = drawFrom(ep, 3, prevExpertPair, EXPERT_ALL, used);
-    prevExpertPair = epPicked.map(function(i){ return EXPERT_ALL[i].pairLabel; });
-    return eiPicked.concat(eoPicked, etPicked, epPicked);
+    var edPicked = drawDisc(ed, 3, prevExpertDisc, EXPERT_ALL, used);
+    prevExpertDisc = edPicked.map(function(i){ return EXPERT_ALL[i].lang; });
+    return eiPicked.concat(eoPicked, etPicked, edPicked);
   }
   if(mode!=='hard'){
     var all = QUESTIONS.map(function(_,i){return i;});
@@ -206,7 +236,7 @@ function buildOrder(){
 }
 function render(){
   var q = currentQ();
-  answered=false; hintShown=false; expertStage=0; pairStage=0;
+  answered=false; hintShown=false; expertStage=0;
   var isHard = mode==='hard';
   var isExpert = mode==='expert';
   var kind = (isHard || isExpert) ? (q.kind||'fragment') : 'normal';
@@ -227,9 +257,9 @@ function render(){
   } else if(kind==='expert-two'){
     qTag.textContent='Expert · Two-stage · Family';
     qTitle.textContent='Which family is this from?';
-  } else if(kind==='expert-pair'){
-    qTag.textContent='Expert · Pairing';
-    qTitle.textContent='Same language — or different? If different, name the second one.';
+  } else if(kind==='expert-disc'){
+    qTag.textContent='Expert · Discrimination';
+    qTitle.textContent='Which excerpt is '+q.lang+'?';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
     qTitle.textContent='Which excerpt is '+q.lang+'?';
@@ -246,9 +276,6 @@ function render(){
 
   if(kind==='wide' && q.type==='image'){
     codeEl.style.display='none'; codeImg.classList.add('show');
-  } else if(kind==='expert-pair'){
-    codeEl.style.display=''; codeImg.classList.remove('show');
-    codeEl.textContent = '— EXCERPT A —\n' + q.codeA + '\n\n— EXCERPT B —\n' + q.codeB;
   } else if(kind==='cmd-meaning'){
     codeEl.style.display=''; codeImg.classList.remove('show');
     codeEl.textContent = q.symbol;
@@ -284,14 +311,22 @@ function render(){
       b.addEventListener('click', function(){ answer(item.sn.lang, b); });
       optionsEl.appendChild(b);
     });
-  } else if(kind==='expert-pair'){
-    optionsEl.className='options';
-    [['Yes','Yes — same language'],['No','No — different languages']].forEach(function(optDef){
+  } else if(kind==='expert-disc'){
+    // The two excerpt blocks ARE the options (snippet-style buttons,
+    // as in odd-one-out): one is the named target language, the other
+    // its closest lookalike. Their order is shuffled per round, and a
+    // click answers with the clicked excerpt's language — so the
+    // ordinary answer() path scores it (+100 / −50) and completes
+    // the round in one click.
+    optionsEl.className='options snippets';
+    var dsnips = shuffle([{lang:q.lang, code:q.codeTarget}, {lang:q.decoy, code:q.codeDecoy}]);
+    dsnips.forEach(function(item, pos){
       var b=document.createElement('button');
-      b.type='button'; b.className='opt'; b.setAttribute('data-name', optDef[0]);
-      b.innerHTML='<span class="name"></span>';
-      b.querySelector('.name').textContent=optDef[1];
-      b.addEventListener('click', function(){ answerPair(optDef[0], b); });
+      b.type='button'; b.className='opt snippet'; b.setAttribute('data-name', item.lang);
+      b.setAttribute('aria-label', 'Excerpt '+(pos+1));
+      var pre=document.createElement('pre'); pre.textContent=item.code;
+      b.appendChild(pre);
+      b.addEventListener('click', function(){ answer(item.lang, b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='expert-two'){
@@ -484,8 +519,8 @@ function finishRound(correct, lineText){
   nextBtn.classList.add('show');
   updateStats();
   // The single round-completion point: every finished round (any Hard
-  // kind; Expert identification / odd / pairing / two-stage, including
-  // a wrong family pick, which also ends its round in finishRound)
+  // kind; Expert identification / odd / two-stage / discrimination,
+  // including a wrong family pick, which also ends its round in finishRound)
   // passes through here. A correct Expert family pick does NOT — it
   // sets its feedback inline and the round continues — so it can never
   // start the timer. No-op in Normal (see scheduleAutoAdvance).
@@ -522,7 +557,7 @@ function answerExpertFamily(fam, btn){
   qTitle.textContent='Family correct — which language exactly?';
   feedbackEl.className='feedback show good';
   feedbackEl.textContent='✓ Family correct — '+q.family+'.';
-  // Announce the new stage like a new question (mirrors answerPair).
+  // Announce the new stage like a new question (mirrors render()).
   srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
   optionsEl.innerHTML='';
   optionsEl.className='options wide';
@@ -534,65 +569,6 @@ function answerExpertFamily(fam, btn){
     b.addEventListener('click', function(){ answer(name, b); });
     optionsEl.appendChild(b);
   });
-}
-
-// Expert pairing rounds, stage 1: the Same/Different call. A wrong call
-// ends the round at once (−50), and a correct "Same" completes it (+100) —
-// both are exactly the old pairing answer, so they route through answer().
-// A correct "Different" scores NOTHING yet: the round continues to stage 2,
-// where the player must name the second excerpt's language for the same
-// single +100 / −50. The transition below deliberately does not touch
-// answered, the score, the log or finishRound() — so it cannot schedule
-// the auto-advance timer either.
-function answerPair(call, btn){
-  if(answered || pairStage!==0) return;
-  var q=currentQ();
-  var correctCall = q.same ? 'Yes' : 'No';
-  if(call!==correctCall || q.same){ answer(call, btn); return; }
-  pairStage=1;
-  qTag.textContent='Expert · Pairing · Name the second';
-  qTitle.textContent='What language is the second excerpt?';
-  feedbackEl.className='feedback show good';
-  feedbackEl.textContent='✓ Different languages — now name the second excerpt.';
-  // Announce the new stage like a new question (same live region render uses).
-  srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
-  optionsEl.innerHTML='';
-  // Same grid as the other name-the-language stage (two-stage stage 2
-  // and expert-id use 'options wide'); this one had drifted to the
-  // two-column default for the identical task shape.
-  optionsEl.className='options wide';
-  shuffle(q.options.slice()).forEach(function(name){
-    var b=document.createElement('button');
-    b.type='button'; b.className='opt'; b.setAttribute('data-name', name);
-    b.innerHTML='<span class="name"></span>';
-    b.querySelector('.name').textContent=name;
-    b.addEventListener('click', function(){ answerPairSecond(name, b); });
-    optionsEl.appendChild(b);
-  });
-}
-
-// Expert pairing rounds, stage 2: name excerpt B's language. This is the
-// round's only scoring point on the Different path — exactly one +100 or
-// −50 per pairing round, however it was reached.
-function answerPairSecond(name, btn){
-  if(answered || pairStage!==1) return;
-  answered=true;
-  var q=currentQ();
-  var correct = name===q.langB;
-  if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { points-=50; streak=0; }
-  resultsLog.push({lang:q.pairLabel, picked:'Different — second: '+name, correctAnswer:'Different — second: '+q.langB, correct:correct, usedHint:hintShown, fact:q.fact, kind:q.kind});
-  var buttons=optionsEl.querySelectorAll('.opt');
-  buttons.forEach(function(b){
-    b.disabled=true;
-    var n=b.getAttribute('data-name');
-    if(n===q.langB) b.classList.add('correct');
-    else if(b===btn) b.classList.add('wrong');
-    else b.classList.add('dim');
-  });
-  var pts = correct ? ' (+100 pts)' : ' (−50 pts)';
-  var line = correct ? '✓ Correct — the second excerpt is '+q.langB+pts
-                     : '✕ Wrong — the second excerpt is '+q.langB+', not '+name+pts;
-  finishRound(correct, line);
 }
 
 // Commands rounds (both kinds) complete here: meaning rounds are
@@ -648,9 +624,10 @@ function answer(name, btn){
   answered=true;
   var q=currentQ();
   var isExpert = mode==='expert';
-  // For pairing rounds the "correct name" is Yes/No, not a language; for
-  // odd-one-out rounds q.lang already holds the odd language.
-  var correctName = q.kind==='expert-pair' ? (q.same ? 'Yes' : 'No') : q.lang;
+  // For odd-one-out rounds q.lang holds the odd language; for
+  // discrimination rounds it holds the target language, and `name`
+  // is the language of whichever excerpt the player tapped.
+  var correctName = q.lang;
   var correct = name===correctName;
   if(isExpert){
     if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { points-=50; streak=0; }
@@ -670,12 +647,13 @@ function answer(name, btn){
     if(b===btn) pickedPos = i+1;
   });
 
-  var logLang = q.kind==='expert-pair' ? q.pairLabel : (q.kind==='expert-odd' ? q.lang+' — odd one out' : q.lang);
+  var logLang = q.kind==='expert-odd' ? q.lang+' — odd one out' : (q.kind==='expert-disc' ? q.lang+' — discrimination' : q.lang);
   var logPicked = name, logCorrect = correctName;
-  if(q.kind==='expert-pair'){
-    // Name the pair and record the player's actual claim, not just Yes/No.
-    logPicked = name==='Yes' ? 'Same language' : 'Different languages';
-    logCorrect = (q.same ? 'Same language' : 'Different languages')+' ('+q.langA+' vs '+q.langB+')';
+  if(q.kind==='expert-disc'){
+    // Record the claim as a position plus the language it actually
+    // was ("Picked excerpt 2 — that was COW"), not just a name.
+    logPicked = 'Excerpt '+pickedPos+' — '+name;
+    logCorrect = 'Excerpt '+correctPos+' — '+q.lang;
   } else if(q.kind==='reverse'){
     logPicked = name+' (candidate '+pickedPos+')';
     logCorrect = q.lang+' (candidate '+correctPos+')';
@@ -692,9 +670,9 @@ function answer(name, btn){
 
   var pts = isExpert ? (correct ? ' (+100 pts)' : ' (−50 pts)') : (mode==='hard' && correct ? ' (+100 pts)' : '');
   var line;
-  if(q.kind==='expert-pair'){
-    line = correct ? '✓ Correct — '+q.langA+' vs '+q.langB+': '+(q.same ? 'same language' : 'different languages')+pts
-                   : '✕ Wrong — '+q.langA+' vs '+q.langB+' are '+(q.same ? 'the same language' : 'different languages')+pts;
+  if(q.kind==='expert-disc'){
+    line = correct ? '✓ Correct — excerpt '+correctPos+' is '+q.lang+pts
+                   : '✕ Wrong — excerpt '+correctPos+' is '+q.lang+' · you picked the '+name+' excerpt'+pts;
   } else if(q.kind==='reverse'){
     line = correct ? '✓ Correct — '+q.lang+' (candidate '+correctPos+')'+pts
                    : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' excerpt'+pts;

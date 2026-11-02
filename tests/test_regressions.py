@@ -14,7 +14,8 @@
    question 1, score 0, streak 0, hints 0 — in the static placeholders
    and through the script's init path.
 3. Feedback wording: reverse rounds must name the correct candidate's
-   position, pairing rounds must name both languages.
+   position; discrimination rounds must name the correct excerpt's
+   position and the language the player actually picked.
 4. Scoped UI/UX audit fixes (2026-11-01): feedback is a live region and
    question changes are announced (A1); a keyboard advance lands focus
    on the question prompt while a pointer advance keeps the blur +
@@ -31,11 +32,12 @@
    manual Next, restart, mode switch — cancels the pending handle, so
    an advance happens exactly once. Source pins plus harness runs
    with fake timers pin all of it.
-6. Pairing format: a "Different" call must also name the second
-   language. Stage 1 behaves as before except that a correct
-   "Different" is a transition, not a completion — no score, no log
-   entry, no finishRound, no timer — and stage 2 (4 name options from
-   the entry's own data) is the round's single +100 / −50 point.
+6. Discrimination format (replaces pairing): two excerpt blocks —
+   one in the named target language, one in its closest lookalike —
+   and a single click on a block completes the round through the
+   ordinary answer() path (+100 / −50, one finishRound, one timer).
+   There is no same-language case and no stage 2; the review records
+   the picked excerpt's position and the language it actually was.
 7. Commands mode (fourth tab): 12 rounds drawn from the 80-command
    pool — 9 meaning + 3 reverse, no command repeated, at most 3
    rounds per language — scored +100 / 0 with exactly one −25 hint
@@ -54,7 +56,7 @@
    table setMode uses (F1); Study's Back button resumes the run
    exactly as left (F2); UI strings use program/excerpt only (F3);
    the og-image names Commands (F4); the two-stage stage-2 swap is
-   announced like pairing's (F5); a family-error review entry names
+   announced on the live region (F5); a family-error review entry names
    language + family (F7); compact lines use "pts" uniformly (F8);
    Study has section jump links (F10); a <noscript> note covers the
    no-JS shell (F11); clicking the already-active mode tab mid-run
@@ -318,47 +320,48 @@ class TestDomHarness(unittest.TestCase):
         self.assertEqual(after["q"], "1 / 15")
         self.assertTrue(after["tag"].startswith("Hard"))
 
-    # --- Pairing two-stage format (harness scenarios) ---
+    # --- Discrimination rounds (harness scenarios) ---
 
-    def test_pairing_scenarios_all_collected(self):
-        self.assertEqual(set(self.out["pairing"]),
-                         {"sameCorrect", "wrongDiffCallOnSame", "diffStage",
-                          "diffWrongName", "wrongSameCallOnDifferent"},
-                         f"harness pairing runs: {self.out['pairingRuns']}")
+    def test_discrimination_scenarios_all_collected(self):
+        self.assertEqual(set(self.out["discrimination"]),
+                         {"correct", "wrong"},
+                         f"harness discrimination runs: "
+                         f"{self.out['discriminationRuns']}")
+        # A completed run's results review carried every
+        # discrimination claim that run dealt ("Excerpt N — Lang").
+        self.assertTrue(self.out["discReviewOk"])
 
-    def test_pairing_same_call_completes_immediately(self):
-        s = self.out["pairing"]["sameCorrect"]
-        self.assertEqual(s["delta"], 100)          # +100 at once
-        self.assertFalse(s["stage2Shown"])         # no stage 2 appears
-        self.assertEqual(s["pendingAfter"], 1)     # round done: one timer
+    def test_discrimination_target_appears_in_both_positions(self):
+        # Position is shuffled per round: across the collected rounds
+        # the target block must have shown up first AND second.
+        pos = self.out["discPositions"]
+        self.assertGreater(pos["first"], 0)
+        self.assertGreater(pos["second"], 0)
 
-    def test_pairing_different_call_reaches_stage_two_unscored(self):
-        d = self.out["pairing"]["diffStage"]
-        # Stage 1 correct "Different": no score change, no timer, and
-        # the stage-2 question replaces the Same/Different buttons.
-        self.assertEqual(d["midDelta"], 0)
-        self.assertEqual(d["midPending"], 0)
-        self.assertEqual(d["midTitle"], "What language is the second excerpt?")
-        # Naming excerpt B correctly completes the round: exactly +100
-        # in total and exactly one auto-advance timer.
-        self.assertEqual(d["finalDelta"], 100)
-        self.assertEqual(d["pendingAfter"], 1)
+    def test_discrimination_correct_pick_completes_at_plus_100(self):
+        c = self.out["discrimination"]["correct"]
+        self.assertEqual(c["delta"], 100)          # +100 at once
+        self.assertEqual(c["pendingAfter"], 1)     # completed: one timer
+        self.assertEqual(c["tag"], "Expert · Discrimination")
+        self.assertEqual(c["title"], "Which excerpt is " + c["lang"] + "?")
+        # Exactly two blocks, accessibly labelled by position...
+        self.assertEqual(c["blockCount"], 2)
+        self.assertEqual(c["labels"], ["Excerpt 1", "Excerpt 2"])
+        # ...and the round was announced like any other question.
+        self.assertTrue(c["srBefore"].startswith("Question "))
+        self.assertIn(c["title"], c["srBefore"])
+        self.assertIn("excerpt", c["feedback"])
+        self.assertIn("is " + c["lang"], c["feedback"])
 
-    def test_pairing_stage_two_wrong_name_scores_minus_50(self):
-        w = self.out["pairing"]["diffWrongName"]
-        self.assertEqual(w["finalDelta"], -50)
-        self.assertIn("the second excerpt is " + w["langB"], w["feedback"])
+    def test_discrimination_wrong_pick_scores_minus_50_and_names_both(self):
+        w = self.out["discrimination"]["wrong"]
+        self.assertEqual(w["delta"], -50)
         self.assertEqual(w["pendingAfter"], 1)  # completed: Next/timer work
-
-    def test_pairing_wrong_stage_one_calls_end_the_round(self):
-        a = self.out["pairing"]["wrongDiffCallOnSame"]
-        self.assertEqual(a["delta"], -50)
-        self.assertIn("the same language", a["feedback"])
-        self.assertEqual(a["pendingAfter"], 1)
-        b = self.out["pairing"]["wrongSameCallOnDifferent"]
-        self.assertEqual(b["delta"], -50)
-        self.assertIn("different languages", b["feedback"])
-        self.assertEqual(b["pendingAfter"], 1)
+        # The feedback names the correct excerpt's language and the
+        # language the player actually picked (the decoy).
+        self.assertIn("is " + w["lang"], w["feedback"])
+        self.assertIn("you picked the " + w["decoy"] + " excerpt",
+                      w["feedback"])
 
 
     # --- Commands mode (harness) ---
@@ -410,7 +413,7 @@ class TestDomHarness(unittest.TestCase):
 
     def test_two_stage_stage_two_is_announced(self):
         # F5: the family gate's stage swap updates the live region,
-        # like the pairing stage swap does.
+        # as render() announces every new question.
         sr = self.out["expertTwoStage"]["srAfterFamily"]
         self.assertRegex(sr, r"^Question \d+ of 15\. ")
         self.assertIn("Family correct — which language exactly?", sr)
@@ -716,51 +719,61 @@ class TestCommandsMode(unittest.TestCase):
         self.assertNotIn("q.distractors", SCRIPT)
 
 
-class TestPairingFormat(unittest.TestCase):
-    """Pairing format pins: the stage-1 prompt states the full job; a
-    correct "Different" call is a transition, not a completion (it must
-    not score, log, finish the round or schedule the auto-advance);
-    stage 2 is the round's single scoring point and records the full
-    claim ('Different — second: X') in the review log."""
+class TestDiscriminationFormat(unittest.TestCase):
+    """Discrimination format pins: the title names the target; the
+    two excerpt blocks are the options and a click routes through the
+    ordinary answer() (one scoring point, one finishRound — there is
+    no stage machinery left); the review log records the claim as a
+    position plus the language it actually was ('Excerpt 2 — COW');
+    and the draw consumes BOTH of an entry's languages."""
 
-    def test_stage_one_buttons_route_to_the_pairing_handler(self):
-        self.assertIn("answerPair(optDef[0], b)", SCRIPT)
+    def _render_branch(self):
+        return re.search(
+            r"kind==='expert-disc'\)\{(.*?)\} else if\(kind==='expert-two'\)",
+            SCRIPT, re.S).group(1)
 
-    def test_prompt_states_the_full_job_up_front(self):
-        self.assertIn("Same language — or different? If different, "
-                      "name the second one.", SCRIPT)
-        self.assertIn("What language is the second excerpt?", SCRIPT)
+    def test_no_pairing_machinery_remains(self):
+        self.assertNotIn("EXPERT_PAIR", SCRIPT)
+        self.assertNotIn("expert-pair", BUILT)
+        self.assertNotIn("Pairing", SCRIPT)
+        self.assertNotIn("answerPair", SCRIPT)
+        self.assertNotIn("pairStage", SCRIPT)
 
-    def test_stage_two_options_come_from_the_entry(self):
-        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
+    def test_title_and_tag_name_the_target(self):
+        self.assertIn("qTag.textContent='Expert · Discrimination';", SCRIPT)
+        self.assertIn("qTitle.textContent='Which excerpt is '+q.lang+'?';",
+                      SCRIPT)
+
+    def test_blocks_are_the_options_and_route_to_answer(self):
+        body = self._render_branch()
+        # Target and decoy excerpts, shuffled into the two blocks.
+        self.assertIn("{lang:q.lang, code:q.codeTarget}", body)
+        self.assertIn("{lang:q.decoy, code:q.codeDecoy}", body)
+        self.assertIn("shuffle(", body)
+        self.assertIn("b.className='opt snippet'", body)
+        self.assertIn("setAttribute('aria-label', 'Excerpt '+(pos+1))", body)
+        # A click answers with the clicked excerpt's language — the
+        # shared answer() path, so scoring/logging/finishRound are
+        # the same code as every other Expert round.
+        self.assertIn("answer(item.lang, b)", body)
+
+    def test_review_log_records_position_and_actual_language(self):
+        body = re.search(r"function answer\(name, btn\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)
-        self.assertIn("shuffle(q.options.slice())", body)
+        self.assertIn("logPicked = 'Excerpt '+pickedPos+' — '+name;", body)
+        self.assertIn("logCorrect = 'Excerpt '+correctPos+' — '+q.lang;", body)
+        self.assertIn("q.lang+' — discrimination'", body)
 
-    def test_correct_different_transition_never_finishes_the_round(self):
-        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
-                         SCRIPT, re.S).group(1)
-        self.assertNotIn("finishRound(", body)
-        self.assertNotIn("scheduleAutoAdvance", body)
-        self.assertNotIn("resultsLog.push", body)
-        self.assertNotIn("points+=", body)
-        self.assertNotIn("points-=", body)
-        # A wrong call, or a correct "Same", routes to the ordinary
-        # pairing answer (which does finish the round, as before).
-        self.assertIn("answer(call, btn)", body)
-
-    def test_stage_two_scores_once_and_finishes(self):
-        body = re.search(r"function answerPairSecond\(name, btn\)\{(.*?)\n\}",
-                         SCRIPT, re.S).group(1)
-        self.assertIn("points+=100", body)
-        self.assertIn("points-=50", body)
-        self.assertIn("finishRound(correct, line);", body)
-        self.assertIn("the second excerpt is '+q.langB+', not '+name", body)
-
-    def test_review_log_records_the_full_claim(self):
-        body = re.search(r"function answerPairSecond\(name, btn\)\{(.*?)\n\}",
-                         SCRIPT, re.S).group(1)
-        self.assertIn("picked:'Different — second: '+name", body)
-        self.assertIn("correctAnswer:'Different — second: '+q.langB", body)
+    def test_draw_consumes_both_languages(self):
+        body = re.search(
+            r"function drawDisc\(poolIndices, count, prevLangs, poolArr,"
+            r" excludeLangs\)\{(.*?)\n\}", SCRIPT, re.S).group(1)
+        # Both languages are checked against the spent set and both
+        # are added to it when the entry is picked.
+        self.assertIn("excludeLangs.indexOf(q.decoy)", body)
+        self.assertIn("taken.push(q.lang); taken.push(q.decoy);", body)
+        self.assertIn("drawDisc(ed, 3, prevExpertDisc, EXPERT_ALL, used)",
+                      SCRIPT)
 
 
 class TestAutoAdvancePins(unittest.TestCase):
@@ -825,8 +838,13 @@ class TestFeedbackWording(unittest.TestCase):
         self.assertIn("was candidate '+correctPos+'", SCRIPT)
         self.assertIn("you picked the '+name+' excerpt", SCRIPT)
 
-    def test_pairing_feedback_names_both_languages(self):
-        self.assertIn("q.langA+' vs '+q.langB", SCRIPT)
+    def test_discrimination_feedback_names_position_and_pick(self):
+        # The line names the correct excerpt's position and language,
+        # and — when wrong — the language the player actually picked.
+        self.assertIn("'✓ Correct — excerpt '+correctPos+' is '+q.lang+pts",
+                      SCRIPT)
+        self.assertIn("'✕ Wrong — excerpt '+correctPos+' is '+q.lang+"
+                      "' · you picked the '+name+' excerpt'+pts", SCRIPT)
 
     def test_misleading_captions_fixed(self):
         hard = (ROOT / "src/data/hard.json").read_text(encoding="utf-8")
@@ -974,7 +992,7 @@ class TestFullAuditFixes(unittest.TestCase):
         self.assertIn("Normal · Hard · Expert · Commands", svg)
 
     # F5 — the family gate announces its stage swap on srStatus,
-    # mirroring the pairing transition's line.
+    # mirroring render()'s question announcement.
     def test_family_gate_announces_stage_two(self):
         body = re.search(r"function answerExpertFamily\(fam, btn\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)
@@ -1069,12 +1087,15 @@ class TestSymmetryFixes(unittest.TestCase):
                          SCRIPT, re.S).group(1)
         self.assertIn("srStatus.textContent = 'Results — ", body)
 
-    def test_pairing_stage_two_uses_wide_grid(self):
-        # S9: pairing stage 2 is the same task shape as two-stage
-        # stage 2 / expert-id — the wide (one-column) grid.
-        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
-                         SCRIPT, re.S).group(1)
-        self.assertIn("optionsEl.className='options wide';", body)
+    def test_discrimination_blocks_use_snippets_grid(self):
+        # The two excerpt blocks are the same task shape as the
+        # odd-one-out / reverse candidates — the one-column snippets
+        # grid, not the two-column name grid. (This replaces the S9
+        # pin, whose subject — pairing's stage 2 — no longer exists.)
+        body = re.search(
+            r"kind==='expert-disc'\)\{(.*?)\} else if\(kind==='expert-two'\)",
+            SCRIPT, re.S).group(1)
+        self.assertIn("optionsEl.className='options snippets';", body)
 
     def test_study_commands_carry_facts(self):
         # S3 (source side; harness side asserts the facts verbatim).
