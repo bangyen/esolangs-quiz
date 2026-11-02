@@ -25,6 +25,12 @@
    the premise and Hard's states its scoring (N1/N2); the best streak
    is shown on the results screen (N4); the dead REVERSE_PROMPT /
    EXPERT_ODD_PROMPT strings are no longer shipped (N5).
+5. Auto-advance: in Hard/Expert a completed round advances itself
+   after 1200 ms (Normal never does; an Expert family pick is not a
+   completed round). One centralized scheduler, and every exit path —
+   manual Next, restart, mode switch — cancels the pending handle, so
+   an advance happens exactly once. Source pins plus harness runs
+   with fake timers pin all of it.
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -223,6 +229,99 @@ class TestDomHarness(unittest.TestCase):
     def test_mode_buttons_aria_pressed_updates(self):
         self.assertEqual(self.out["modePressed"],
                          {"normal": "false", "hard": "true", "expert": "false"})
+
+    def test_normal_answer_schedules_no_timer(self):
+        self.assertEqual(self.out["normalTimersAfterAnswer"], [])
+
+    def test_hard_answer_schedules_exactly_one_1200ms_timer(self):
+        timers = self.out["hardTimersAfterAnswer"]
+        self.assertEqual(len(timers), 1)
+        self.assertEqual(timers[0]["ms"], 1200)
+
+    def test_hard_timer_advances_exactly_once(self):
+        self.assertEqual(self.out["hardAfterTimerFire"],
+                         {"q": "2 / 15", "pending": 0})
+        self.assertEqual(self.out["hardAfterTimerRefire"], {"q": "2 / 15"})
+
+    def test_manual_next_during_delay_cancels_the_timer(self):
+        self.assertEqual(len(self.out["hardSecondTimer"]), 1)
+        self.assertEqual(self.out["hardAfterManualNext"],
+                         {"q": "3 / 15", "pending": 0})
+        # Firing the cancelled handle later does not advance again.
+        self.assertEqual(self.out["hardAfterStaleFire"], {"q": "3 / 15"})
+
+    def test_expert_two_stage_family_pick_schedules_no_timer(self):
+        two = self.out["expertTwoStage"]
+        self.assertIsNotNone(two, "harness never reached a two-stage round")
+        self.assertEqual(two["pendingAfterFamily"], [])
+        self.assertTrue(two["titleAfterFamily"].startswith("Family correct"))
+        self.assertEqual(len(two["pendingAfterComplete"]), 1)
+        self.assertEqual(two["pendingAfterComplete"][0]["ms"], 1200)
+
+    def test_mode_switch_cancels_a_pending_timer(self):
+        self.assertTrue(self.out["modeSwitchHadTimer"])
+        self.assertEqual(self.out["modeSwitchPendingAfter"], [])
+        after = self.out["modeSwitchAfterStaleFire"]
+        self.assertEqual(after["q"], "1 / 15")
+        self.assertTrue(after["tag"].startswith("Hard"))
+
+    def test_restart_cancels_a_pending_timer(self):
+        self.assertTrue(self.out["restartHadTimer"])
+        self.assertEqual(self.out["restartPendingAfter"], [])
+        after = self.out["restartAfterStaleFire"]
+        self.assertEqual(after["q"], "1 / 15")
+        self.assertTrue(after["tag"].startswith("Hard"))
+
+
+class TestAutoAdvancePins(unittest.TestCase):
+    """Auto-advance (Hard/Expert only, 1.2 s): the scheduling is
+    centralized — one setTimeout call site, reached only from the
+    round-completion point — and every exit path cancels the handle."""
+
+    def test_delay_is_a_named_1200ms_constant(self):
+        self.assertIn("var AUTO_ADVANCE_MS = 1200;", SCRIPT)
+        self.assertIn("}, AUTO_ADVANCE_MS);", SCRIPT)
+
+    def test_single_timer_call_site(self):
+        self.assertEqual(SCRIPT.count("setTimeout("), 1)
+        self.assertEqual(SCRIPT.count("clearTimeout("), 1)
+
+    def test_scheduler_is_normal_guarded_and_clears_first(self):
+        body = re.search(r"function scheduleAutoAdvance\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("if(mode==='normal') return;", body)
+        self.assertLess(body.index("clearAutoAdvance()"),
+                        body.index("setTimeout("))
+
+    def test_scheduled_from_the_round_completion_point_only(self):
+        finish = re.search(r"function finishRound\(correct, lineText\)\{(.*?)\n\}",
+                           SCRIPT, re.S).group(1)
+        self.assertIn("scheduleAutoAdvance();", finish)
+        # The Expert family gate is the one path that shows feedback
+        # WITHOUT completing a round; its only finishRound call is the
+        # wrong-family branch, which precedes the stage-2 swap.
+        gate = re.search(r"function answerExpertFamily\(fam, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertEqual(gate.count("finishRound("), 1)
+        self.assertLess(gate.index("finishRound("), gate.index("expertStage=1"))
+
+    def test_timer_fires_the_pointer_advance_path(self):
+        body = re.search(r"function scheduleAutoAdvance\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("nextBtn.click();", body)
+
+    def test_every_exit_path_cancels(self):
+        handler = re.search(
+            r"nextBtn\.addEventListener\('click', function\(\)\{(.*?)\}\);",
+            SCRIPT, re.S).group(1)
+        self.assertLess(handler.index("clearAutoAdvance()"),
+                        handler.index("render()"))
+        for fn in ("startQuiz", "setMode"):
+            body = re.search(rf"function {fn}\([^)]*\)\{{(.*?)\n\}}",
+                             SCRIPT, re.S)
+            self.assertIsNotNone(body, fn)
+            self.assertIn("clearAutoAdvance();", body.group(1), fn)
+        self.assertIn("function restart(){ clearAutoAdvance();", SCRIPT)
 
 
 class TestFeedbackWording(unittest.TestCase):

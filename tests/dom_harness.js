@@ -13,6 +13,25 @@
 //                 the visually hidden live region's text (A1 announcements)
 //   afterRestart  stats after clicking Play again (restart)
 //   modePressed   aria-pressed on the three mode buttons after setMode('hard')
+//   normalTimersAfterAnswer
+//                 pending fake timers after answering a Normal round
+//                 (auto-advance is Hard/Expert only: must be [])
+//   hard*         Hard auto-advance: one 1200 ms timer after answering;
+//                 firing it advances exactly one round (re-firing the
+//                 consumed handle is a no-op); a manual Next during the
+//                 delay advances once and the cancelled timer firing
+//                 later does not advance again
+//   expertTwoStage
+//                 Expert two-stage: a correct family pick schedules NO
+//                 timer (the round continues); completing the round
+//                 schedules one, and firing it advances
+//   modeSwitchCancel / restartCancel
+//                 a pending timer is cancelled by setMode / restart, and
+//                 firing the stale handle afterwards is a no-op
+//
+// Timers are fake: setTimeout/clearTimeout are injected into the script
+// scope and recorded in a registry; nothing fires unless fireTimer(id)
+// is called, and a cleared or already-fired handle never runs.
 //
 // Stub geometry is fixed: every element's getBoundingClientRect().top is
 // 240 and window.pageYOffset is 900, so a correct advance scroll must be
@@ -86,7 +105,35 @@ const stats = () => ({
   hints: document.getElementById('statHints').textContent,
 });
 
-new Function('document', 'window', script)(document, window);
+// Fake timer registry (see header). pendingTimers() lists handles a real
+// browser would still fire; fireTimer() models the browser firing one —
+// a cleared or consumed handle can never fire.
+const timers = new Map();
+let nextTimerId = 1;
+function fakeSetTimeout(fn, ms) {
+  const id = nextTimerId++;
+  timers.set(id, { fn, ms, cleared: false, fired: false });
+  return id;
+}
+function fakeClearTimeout(id) {
+  const t = timers.get(id);
+  if (t) t.cleared = true;
+}
+function pendingTimers() {
+  return Array.from(timers.entries())
+    .filter(([, t]) => !t.cleared && !t.fired)
+    .map(([id, t]) => ({ id, ms: t.ms }));
+}
+function fireTimer(id) {
+  const t = timers.get(id);
+  if (!t || t.cleared || t.fired) return false;
+  t.fired = true;
+  t.fn();
+  return true;
+}
+
+new Function('document', 'window', 'setTimeout', 'clearTimeout', script)(
+  document, window, fakeSetTimeout, fakeClearTimeout);
 
 const srText = () => document.getElementById('srStatus').textContent;
 
@@ -96,6 +143,7 @@ const out = { afterLoad: stats(), events: null, afterAdvance: null, afterRestart
 
 const nextBtn = document.getElementById('nextBtn');
 document.getElementById('optionsEl').children[0].click();  // answer round 1
+out.normalTimersAfterAnswer = pendingTimers();             // Normal: no auto-advance
 document.activeElement = nextBtn;                          // a real click leaves it focused
 nextBtn.click();                                           // advance (pointer)
 out.events = events.slice();
@@ -122,5 +170,80 @@ out.modePressed = {
   hard: document.getElementById('modeHardBtn').getAttribute('aria-pressed'),
   expert: document.getElementById('modeExpertBtn').getAttribute('aria-pressed'),
 };
+
+// --- Auto-advance (Hard/Expert only) -------------------------------------
+const optionsEl = document.getElementById('optionsEl');
+const qTag = document.getElementById('qTag');
+
+// Hard: answering schedules exactly one 1200 ms timer; firing it
+// advances exactly one round; re-firing the consumed handle is a no-op.
+optionsEl.children[0].click();                             // answer Hard round 1
+out.hardTimersAfterAnswer = pendingTimers();
+const hardTimer = pendingTimers()[0];
+if (hardTimer) fireTimer(hardTimer.id);
+out.hardAfterTimerFire = { q: stats().q, pending: pendingTimers().length };
+if (hardTimer) fireTimer(hardTimer.id);
+out.hardAfterTimerRefire = { q: stats().q };
+
+// Hard: a manual Next during the delay advances once, and the timer it
+// cancelled cannot advance the run again when it would have fired.
+optionsEl.children[0].click();                             // answer Hard round 2
+out.hardSecondTimer = pendingTimers();
+const staleAfterManual = pendingTimers()[0];
+nextBtn.click();                                           // manual advance -> round 3
+out.hardAfterManualNext = { q: stats().q, pending: pendingTimers().length };
+if (staleAfterManual) fireTimer(staleAfterManual.id);
+out.hardAfterStaleFire = { q: stats().q };
+
+// Expert two-stage: play forward until a two-stage round. The correct
+// family is read from the page's own injected EXPERT_TWO data, matched
+// by the displayed code — no guessing.
+const twoData = JSON.parse(
+  script.match(/var EXPERT_TWO = (\[[\s\S]*?\n\]);/)[1]);
+document.getElementById('modeExpertBtn').click();          // setMode('expert')
+let twoStage = null;
+for (let step = 0; step < 15 && !twoStage; step++) {
+  if (qTag.textContent.indexOf('Two-stage') >= 0) {
+    const entry = twoData.find(
+      e => e.code === document.getElementById('codeEl').textContent);
+    const famBtn = optionsEl.children.find(
+      b => b.getAttribute('data-name') === entry.family);
+    famBtn.click();                                        // correct family (stage 1)
+    twoStage = {
+      family: entry.family,
+      pendingAfterFamily: pendingTimers(),
+      titleAfterFamily: document.getElementById('qTitle').textContent,
+    };
+    optionsEl.children[0].click();                         // exact language (stage 2)
+    twoStage.pendingAfterComplete = pendingTimers();
+    const t = pendingTimers()[0];
+    if (t) fireTimer(t.id);
+    twoStage.qAfterTimerFire = stats().q;
+  } else {
+    optionsEl.children[0].click();                         // answer this round
+    nextBtn.click();                                       // manual advance (cancels timer)
+  }
+}
+out.expertTwoStage = twoStage;
+
+// A pending timer is cancelled by a mode switch; firing the stale
+// handle afterwards must not touch the fresh run.
+optionsEl.children[0].click();                             // answer current Expert round
+const staleAfterSwitch = pendingTimers()[0];
+out.modeSwitchHadTimer = !!staleAfterSwitch;
+document.getElementById('modeHardBtn').click();            // setMode('hard')
+out.modeSwitchPendingAfter = pendingTimers();
+if (staleAfterSwitch) fireTimer(staleAfterSwitch.id);
+out.modeSwitchAfterStaleFire = { q: stats().q, tag: qTag.textContent };
+
+// Same for Play again (restart) in Hard, where the answered round's
+// timer is pending at the moment of the restart.
+optionsEl.children[0].click();                             // answer Hard round 1
+const staleAfterRestart = pendingTimers()[0];
+out.restartHadTimer = !!staleAfterRestart;
+document.getElementById('restartBtn').click();
+out.restartPendingAfter = pendingTimers();
+if (staleAfterRestart) fireTimer(staleAfterRestart.id);
+out.restartAfterStaleFire = { q: stats().q, tag: qTag.textContent };
 
 console.log(JSON.stringify(out));
