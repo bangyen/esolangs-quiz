@@ -2917,9 +2917,9 @@ var COMMANDS = [
     "short": "moves the pointer one cell right",
     "ask": "moves the pointer one cell to the right",
     "distractors": [
-      "Shift the pointer one cell leftward",
-      "Raise the current cell by 1",
-      "Write the current cell out as a character"
+      "Move the pointer two cells to the left",
+      "Add 2 to the current cell",
+      "Print the current cell as a number"
     ],
     "weakHint": "It changes where you are, not what anything holds.",
     "fact": "Urban Müller designed Brainfuck in 1993 aiming for the smallest possible compiler — this arrow is half of its entire vocabulary for moving.",
@@ -2933,9 +2933,9 @@ var COMMANDS = [
     "short": "moves the pointer one cell left",
     "ask": "moves the pointer one cell to the left",
     "distractors": [
-      "Shift the pointer one cell rightward",
-      "Lower the current cell by 1",
-      "Take one character of input into the current cell"
+      "Move the pointer two cells to the right",
+      "Subtract 2 from the current cell",
+      "Read one character of input into the next cell"
     ],
     "weakHint": "It changes where you are, not what anything holds.",
     "fact": "Brainfuck's tape is unbounded in both directions in the classic model — this command walks it backwards.",
@@ -2949,9 +2949,9 @@ var COMMANDS = [
     "short": "adds 1 to the current cell",
     "ask": "adds 1 to the current cell",
     "distractors": [
-      "Lower the current cell by 1",
-      "Toggle the current bit",
-      "Shift the pointer one cell rightward"
+      "Subtract 1 from the next cell",
+      "Add 1 to the next cell",
+      "Move the pointer two cells to the right"
     ],
     "weakHint": "The smallest possible change to a value.",
     "fact": "Cells are bytes in the classic language, so enough of these wrap 255 back around to 0.",
@@ -2965,9 +2965,9 @@ var COMMANDS = [
     "short": "subtracts 1 from the current cell",
     "ask": "subtracts 1 from the current cell",
     "distractors": [
-      "Raise the current cell by 1",
-      "Set the current cell to 0",
-      "Shift the pointer one cell leftward"
+      "Add 2 to the current cell",
+      "Set the next cell to 0",
+      "Move the pointer two cells to the left"
     ],
     "weakHint": "The smallest possible change to a value, the other way.",
     "fact": "What happens below 0 is implementation-defined in Brainfuck — wrapping and crashing dialects both exist.",
@@ -2981,9 +2981,9 @@ var COMMANDS = [
     "short": "prints the current cell as a character",
     "ask": "prints the current cell as a character",
     "distractors": [
-      "Take one character of input into the current cell",
+      "Read one character of input into the next cell",
       "Print the current cell as a number",
-      "Raise the current cell by 1"
+      "Add 2 to the current cell"
     ],
     "weakHint": "This one talks to the outside world.",
     "fact": "The cell's byte value is written out as the character with that code — 72 prints H.",
@@ -2997,9 +2997,9 @@ var COMMANDS = [
     "short": "reads a character into the current cell",
     "ask": "reads one character of input into the current cell",
     "distractors": [
-      "Write the current cell out as a character and then set the cell to 0",
-      "Read an integer into the current cell, digit by digit",
-      "Read a single bit of input"
+      "Print the current cell as a number",
+      "Read one line of input into the current cell",
+      "Move the pointer two cells to the right"
     ],
     "weakHint": "This one listens to the outside world.",
     "fact": "At end-of-input, dialects disagree: the cell may become 0, 255, or stay unchanged.",
@@ -3013,9 +3013,9 @@ var COMMANDS = [
     "short": "starts a loop, skipping it if the cell is 0",
     "ask": "begins a loop and skips it entirely when the current cell is 0",
     "distractors": [
-      "Jump back: if the current cell is not 0, return to the matching [",
-      "End the program",
-      "Duplicate the current cell"
+      "End a loop body: if the current cell is 0, jump back to the matching [",
+      "Begin a loop: if the current cell is not 0, jump forward past the matching ]",
+      "Add 1 to the next cell"
     ],
     "weakHint": "It decides whether what follows happens at all.",
     "fact": "Brainfuck has no other control flow: every loop in the language starts exactly here.",
@@ -3029,9 +3029,9 @@ var COMMANDS = [
     "short": "jumps back to the matching [ if the cell is not 0",
     "ask": "jumps back to the matching [ when the current cell is not 0",
     "distractors": [
-      "Skip forward past the matching ] if the current cell is 0: clear the cell on the way out",
-      "Write the current cell out as a character",
-      "Shift the pointer one cell rightward"
+      "Begin a loop: if the current cell is not 0, jump forward past the matching ]",
+      "End a loop body: if the current cell is not 0, jump back to the matching ]",
+      "Print the current cell as a number"
     ],
     "weakHint": "It decides whether what came before happens again.",
     "fact": "A ] with a zero cell simply falls through — the loop test lives at both ends in Brainfuck.",
@@ -3045,9 +3045,9 @@ var COMMANDS = [
     "short": "jumps back to the matching MOO",
     "ask": "ends a loop by jumping back to the matching MOO",
     "distractors": [
-      "Skip forward: pass the matching moo if the cell is 0",
-      "Step the memory pointer one block back",
-      "Execute the value in the cell as an instruction, then move the pointer one block forward"
+      "Loop start: if the current cell is 0, jump forward past the matching MOO",
+      "Move the memory pointer two blocks back",
+      "Loop end: jump forward to the matching MOO, which re-tests the cell"
     ],
     "weakHint": "It belongs with a partner command, and looks backwards for it.",
     "fact": "moo pairs with MOO like Brainfuck's brackets — and the instruction right after a MOO decides which moo it matches, a famous COW trap.",
@@ -3061,9 +3061,9 @@ var COMMANDS = [
     "short": "moves the pointer one block back",
     "ask": "moves the memory pointer one block back",
     "distractors": [
-      "Step the memory pointer one block forward",
-      "Subtract 1 from the current cell",
-      "Copy the current cell into the register"
+      "Move the memory pointer two blocks forward",
+      "Set the current cell to 1",
+      "Loop end: jump back to the matching moo, which re-tests the cell"
     ],
     "weakHint": "Position, not value — and mind the capitalisation.",
     "fact": "COW's commands differ only by case: mOo steps back, while its near-twin moO steps forward.",
@@ -3077,9 +3077,9 @@ var COMMANDS = [
     "short": "moves the pointer one block forward",
     "ask": "moves the memory pointer one block forward",
     "distractors": [
-      "Step the memory pointer one block back and zero the block it leaves",
-      "Add 1 to the current cell",
-      "Print the current cell as a character, followed by a newline"
+      "Move the memory pointer two blocks back",
+      "Read a character from input into the current cell",
+      "Set the current cell to 1"
     ],
     "weakHint": "Position, not value — and mind the capitalisation.",
     "fact": "Sean Heber created COW in 2003; every command is three letters long and a variation of 'moo'.",
@@ -3093,9 +3093,9 @@ var COMMANDS = [
     "short": "reads a character if the cell is 0, otherwise prints it as a character",
     "ask": "reads a character when the cell is 0 and prints the cell as a character otherwise",
     "distractors": [
-      "Print the current cell as an integer; leave its value unchanged",
-      "Read an integer into the current cell",
-      "Zero the current cell outright"
+      "If the current cell is not 0, read a character into it; otherwise print the cell as a character",
+      "If the current cell is 0, print the cell as a character; otherwise read a character into it",
+      "If the current cell is 0, read a character into it; otherwise print the cell as an integer"
     ],
     "weakHint": "One command doing double duty — the cell decides which.",
     "fact": "Moo is COW's only character I/O: the very same token is input or output depending on the cell it finds.",
@@ -3109,9 +3109,9 @@ var COMMANDS = [
     "short": "starts a loop, jumping past it if the cell is 0",
     "ask": "begins a loop and jumps past the matching moo when the cell is 0",
     "distractors": [
-      "Jump back to the matching MOO: whenever it is reached, clear the register on arrival",
-      "Skip the next instruction unconditionally, whatever it is, and carry on with the one after",
-      "Read a character into the current cell from input, storing its code as a number"
+      "Loop end: jump back to the matching moo, which re-tests the cell",
+      "Loop start: if the current cell is not 0, jump forward past the matching moo",
+      "Loop start: if the current cell is 0, jump back past the matching moo"
     ],
     "weakHint": "It belongs with a partner command, and tests the cell first.",
     "fact": "MOO skips the instruction immediately after itself while searching for its moo — so 'OOO MOO moo moo' matches the second moo, not the first.",
@@ -3125,9 +3125,9 @@ var COMMANDS = [
     "short": "sets the current cell to 0",
     "ask": "sets the current cell to 0",
     "distractors": [
-      "Copy the current cell into the register",
-      "Subtract 1 from the current cell",
-      "Print the current cell as an integer"
+      "Set the next cell to 0",
+      "Set the current cell to 1",
+      "Move the memory pointer two blocks back"
     ],
     "weakHint": "It throws the value away entirely.",
     "fact": "OOO is the reset COW adds to Brainfuck's model — no counting down with MOo required.",
@@ -3141,9 +3141,9 @@ var COMMANDS = [
     "short": "copies the cell into the register, or pastes the register back into the cell and clears it",
     "ask": "copies the cell into the empty register, or pastes the register into the cell and clears it",
     "distractors": [
-      "Zero the current cell outright",
-      "Print the current cell as an integer",
-      "Execute the value in the cell as an instruction: run it as code; leave the register untouched"
+      "Register toggle: if the register is empty, copy the cell into it; otherwise paste the register into the cell and keep it",
+      "Register toggle: if the cell is empty, copy the cell into the register; otherwise paste the register into the cell and clear it",
+      "Read a character from input into the current cell"
     ],
     "weakHint": "It involves the one place outside the memory blocks.",
     "fact": "COW has exactly one register, and MMM is its only door — the same command loads it and unloads it.",
@@ -3157,9 +3157,9 @@ var COMMANDS = [
     "short": "reads an integer into the current cell",
     "ask": "reads an integer from input into the current cell",
     "distractors": [
-      "Print the current cell as an integer and then clear the cell",
-      "Read a character into the current cell",
-      "Print the current cell as a character"
+      "Read a character from input into the current cell",
+      "Read an integer from input into the register",
+      "Print the current cell as an integer"
     ],
     "weakHint": "It takes a whole number in — case decides direction.",
     "fact": "oom reads an integer; its capitalised twin OOM prints one. In COW, case is not decoration, it is the instruction set.",
@@ -3173,9 +3173,9 @@ var COMMANDS = [
     "short": "moves the pointer one cell right",
     "ask": "moves the pointer one cell to the right",
     "distractors": [
-      "Shift the pointer one cell to the left (Brainfuck's <)",
-      "Add 1 to the current cell",
-      "Print the current cell as a character and advance the pointer past it"
+      "Move the pointer two cells to the left (Brainfuck's <)",
+      "Add 2 to the current cell (Brainfuck's +)",
+      "Print the next cell as a character (Brainfuck's .)"
     ],
     "weakHint": "Two Ooks, two marks — read them as a pair.",
     "fact": "Ook! was designed by David Madore as a joke gift: Brainfuck, as spoken by an orangutan.",
@@ -3189,9 +3189,9 @@ var COMMANDS = [
     "short": "moves the pointer one cell left",
     "ask": "moves the pointer one cell to the left",
     "distractors": [
-      "Move the pointer one cell to the right, wrapping around at the tape's end",
-      "Lower the current cell by 1 (Brainfuck's -)",
-      "Read one character of input into the current cell and echo it back to the screen"
+      "Move the pointer two cells to the right (Brainfuck's >)",
+      "Subtract 1 from the next cell (Brainfuck's -)",
+      "Read one character of input into the next cell (Brainfuck's ,)"
     ],
     "weakHint": "Two Ooks, two marks — read them as a pair.",
     "fact": "Every Ook! command is exactly two tokens; single Ooks left over are meaningless.",
@@ -3205,9 +3205,9 @@ var COMMANDS = [
     "short": "adds 1 to the current cell",
     "ask": "adds 1 to the current cell",
     "distractors": [
-      "Subtract 1 from the current cell",
-      "Move the pointer one cell to the right and double the value waiting there (Brainfuck's >)",
-      "Print the current cell as a character, then reset it to zero"
+      "Subtract 1 from the next cell (Brainfuck's -)",
+      "Add 2 to the current cell (Brainfuck's +)",
+      "Move the pointer two cells to the right (Brainfuck's >)"
     ],
     "weakHint": "The friendliest-looking pair does arithmetic.",
     "fact": "Ook. Ook. is the only pair made of two identical dotted tokens — and it is the increment.",
@@ -3221,9 +3221,9 @@ var COMMANDS = [
     "short": "subtracts 1 from the current cell",
     "ask": "subtracts 1 from the current cell",
     "distractors": [
-      "Add 1 to the current cell, and move the pointer to the next cell as well (Brainfuck's +)",
-      "Set the current cell to 0 and every cell to its left as well",
-      "Move the pointer one cell to the left, skipping over any zero cells"
+      "Add 2 to the current cell (Brainfuck's +)",
+      "Subtract 1 from the next cell (Brainfuck's -)",
+      "Subtract 2 from the current cell (Brainfuck's -)"
     ],
     "weakHint": "The most emphatic pair does arithmetic.",
     "fact": "Two exclamations make the decrement — Ook!'s punctuation is its entire syntax.",
@@ -3237,9 +3237,9 @@ var COMMANDS = [
     "short": "prints the current cell as a character",
     "ask": "prints the current cell as a character",
     "distractors": [
-      "Read one character of input into the current cell and print it straight back out",
-      "Print the current cell as a number",
-      "Begin a loop (Brainfuck's [)"
+      "Read one character of input into the next cell (Brainfuck's ,)",
+      "Print the current cell as a number (Brainfuck's .)",
+      "Begin a loop: if the current cell is not 0, jump forward past the matching Ook? Ook! (Brainfuck's [)"
     ],
     "weakHint": "This pair talks to the outside world.",
     "fact": "Ook! is a pure reskin: any Brainfuck program translates token for token, and this pair is its full stop.",
@@ -3253,9 +3253,9 @@ var COMMANDS = [
     "short": "reads a character into the current cell",
     "ask": "reads one character of input into the current cell",
     "distractors": [
-      "Write the current cell out as a character (Brainfuck's .)",
-      "Read an integer into the current cell",
-      "End a loop body"
+      "Print the current cell as a number (Brainfuck's .)",
+      "Read one integer of input into the current cell (Brainfuck's ,)",
+      "Move the pointer two cells to the right (Brainfuck's >)"
     ],
     "weakHint": "This pair listens to the outside world.",
     "fact": "Ook. Ook! and Ook! Ook. are mirror images with opposite jobs — input and output.",
@@ -3269,9 +3269,9 @@ var COMMANDS = [
     "short": "starts a loop, skipping it if the cell is 0",
     "ask": "begins a loop and skips it entirely when the current cell is 0",
     "distractors": [
-      "Jump back: if the current cell is not 0, return to the loop's start",
-      "End the program",
-      "Duplicate the current cell (make a second copy)"
+      "End a loop body: if the current cell is not 0, jump back to the matching Ook? Ook! (Brainfuck's ])",
+      "Begin a loop: if the current cell is not 0, jump forward past the matching Ook? Ook! (Brainfuck's [)",
+      "Print the next cell as a character (Brainfuck's .)"
     ],
     "weakHint": "It decides whether what follows happens at all.",
     "fact": "Ook!'s loop brackets are its two mixed question pairs — Ook! Ook? opens, Ook? Ook! closes.",
@@ -3285,9 +3285,9 @@ var COMMANDS = [
     "short": "jumps back if the cell is not 0",
     "ask": "jumps back to the loop start when the current cell is not 0",
     "distractors": [
-      "Skip forward: if the current cell is 0, pass the matching Ook! Ook?",
-      "Write the current cell out as a character (Brainfuck's .)",
-      "Move the pointer one cell to the right"
+      "Begin a loop: if the current cell is 0, jump forward past the matching Ook! Ook? (Brainfuck's [)",
+      "End a loop body: if the current cell is 0, jump back to the matching Ook! Ook? (Brainfuck's ])",
+      "End a loop body: if the current cell is not 0, jump forward to the matching Ook! Ook? (Brainfuck's ])"
     ],
     "weakHint": "It decides whether what came before happens again.",
     "fact": "Because Ook! is Brainfuck in disguise, its loop test lives at both ends, exactly like [ and ].",
@@ -3301,9 +3301,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer right",
     "ask": "sends the instruction pointer to the right",
     "distractors": [
-      "Send the instruction pointer left — onward in that direction",
-      "Push the value 1 onto the stack",
-      "Stop the program dead"
+      "Send the instruction pointer left — for one cell only",
+      "Duplicate the bottom stack value",
+      "Bridge: skip the previous cell entirely, whatever it holds"
     ],
     "weakHint": "It steers; it never touches the stack.",
     "fact": "In Befunge-93 the program counter roams a two-dimensional grid, and these arrows are its steering wheel.",
@@ -3317,9 +3317,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer left",
     "ask": "sends the instruction pointer to the left",
     "distractors": [
-      "Send the instruction pointer right — onward in that direction",
-      "Make a second copy of the top stack value and push it beneath the original",
-      "Skip the next cell entirely, and the one after it too, whatever they hold"
+      "Send the instruction pointer right — for one cell only",
+      "Pop the bottom stack value and discard it",
+      "Pop two values and push their difference"
     ],
     "weakHint": "It steers; it never touches the stack.",
     "fact": "The Befunge-93 grid is a torus in the original spec — fly off one edge and you reappear at the other.",
@@ -3333,9 +3333,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer up",
     "ask": "sends the instruction pointer upward",
     "distractors": [
-      "Send the instruction pointer down — onward in that direction",
-      "Pop a value and print it as a number, then clear the rest of the stack",
-      "Exchange the top two stack values"
+      "Send the instruction pointer down — for one cell only",
+      "Swap the bottom two stack values",
+      "Pop two values and push their quotient"
     ],
     "weakHint": "It steers; it never touches the stack.",
     "fact": "Vertical travel is what makes Befunge programs two-dimensional rather than merely wrapped lines.",
@@ -3349,9 +3349,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer down",
     "ask": "sends the instruction pointer downward",
     "distractors": [
-      "Send the instruction pointer up — back to the top row of the grid",
-      "Pop a value and print it as a character, adding a newline after it",
-      "Throw the top stack value away and push a zero in its place on the stack"
+      "Send the instruction pointer up — for one cell only",
+      "Duplicate the bottom stack value",
+      "Pop the top stack value and keep it"
     ],
     "weakHint": "It steers; it never touches the stack.",
     "fact": "The letter v doubles as the arrow — Befunge's arrows point the way they are drawn.",
@@ -3365,9 +3365,9 @@ var COMMANDS = [
     "short": "adds the top two stack values",
     "ask": "pops two values and pushes their sum",
     "distractors": [
-      "Pop two values and push the result of multiplying them",
-      "Make a second copy of the top stack value",
-      "Push the value 0 onto the stack"
+      "Pop two values and push their quotient",
+      "Duplicate the top two stack values",
+      "Swap the top three stack values"
     ],
     "weakHint": "Two values go in, one comes out.",
     "fact": "Befunge is stack-based: + finds its operands waiting on the stack and leaves the answer there.",
@@ -3381,9 +3381,9 @@ var COMMANDS = [
     "short": "multiplies the top two stack values",
     "ask": "pops two values and pushes their product",
     "distractors": [
-      "Pop two values and push the result of adding them",
-      "Exchange the top two stack values",
-      "Read a number onto the stack"
+      "Pop two values and push their difference",
+      "Duplicate the top two stack values",
+      "Pop the bottom stack value and discard it"
     ],
     "weakHint": "Two values go in, one comes out.",
     "fact": "There is no multiply instruction in Brainfuck at all — Befunge's arithmetic is positively luxurious by comparison.",
@@ -3397,9 +3397,9 @@ var COMMANDS = [
     "short": "duplicates the top stack value",
     "ask": "duplicates the top stack value",
     "distractors": [
-      "Exchange the top two stack values",
-      "Throw the top stack value away",
-      "Store a value into the grid"
+      "Duplicate the top two stack values",
+      "Swap the top three stack values",
+      "Pop the top stack value and keep it"
     ],
     "weakHint": "After this, the stack holds the same value twice.",
     "fact": "The colon is drawn as two dots — two copies of whatever sat on top.",
@@ -3413,9 +3413,9 @@ var COMMANDS = [
     "short": "swaps the top two stack values",
     "ask": "swaps the top two stack values",
     "distractors": [
-      "Make a second copy of the top stack value",
-      "Throw the top stack value away",
-      "Send the instruction pointer up and to the left"
+      "Swap the top three stack values",
+      "Duplicate the top two stack values",
+      "Pop the bottom stack value and discard it"
     ],
     "weakHint": "Nothing is added or lost — only the order changes.",
     "fact": "With only a stack to work with, swapping is how Befunge programs reach the second value down.",
@@ -3429,9 +3429,9 @@ var COMMANDS = [
     "short": "pops and discards the top value",
     "ask": "pops the top stack value and discards it",
     "distractors": [
-      "Make a second copy of the top stack value",
-      "Print the top value as a number",
-      "Stop the program dead"
+      "Pop the top stack value and keep it",
+      "Duplicate the top two stack values",
+      "Bridge: skip the previous cell entirely, whatever it holds"
     ],
     "weakHint": "This one throws information away.",
     "fact": "Every discarded intermediate result in a Befunge program passes under the dollar sign.",
@@ -3445,9 +3445,9 @@ var COMMANDS = [
     "short": "pops a value and goes right on 0, left otherwise",
     "ask": "pops a value and branches right on zero, left otherwise",
     "distractors": [
-      "Travel right if the value was nonzero, left if it was 0",
-      "Bridge: skip the next cell entirely",
-      "Make a second copy of the top stack value"
+      "Pop a value: travel right if it was not 0, left if it was 0",
+      "Push a value: travel right if it was 0, left if it was anything else",
+      "Bridge: skip the previous cell entirely, whatever it holds"
     ],
     "weakHint": "A fork in the road, decided by one popped value.",
     "fact": "The underscore is Befunge's horizontal if — its vertical twin is the pipe, |.",
@@ -3461,9 +3461,9 @@ var COMMANDS = [
     "short": "skips the next cell entirely",
     "ask": "skips the next cell entirely",
     "distractors": [
-      "Stop the program dead: end execution immediately",
-      "Send the instruction pointer in a random direction, never the way it came",
-      "Throw the top stack value away, then duplicate the new top value"
+      "Bridge: skip the previous cell entirely, whatever it holds",
+      "Bridge: skip the next two cells entirely, whatever they hold",
+      "Send the instruction pointer right — for one cell only"
     ],
     "weakHint": "The cell after this one might as well not exist.",
     "fact": "The bridge is how Befunge code hops over a cell it must not execute — often the @ that would end it.",
@@ -3477,9 +3477,9 @@ var COMMANDS = [
     "short": "ends the program",
     "ask": "ends the program",
     "distractors": [
-      "Skip the next cell entirely",
-      "Send the instruction pointer right",
-      "Pop a value and print it as a character"
+      "Bridge: skip the next two cells entirely, whatever they hold",
+      "Send the instruction pointer right — for one cell only",
+      "Pop the top stack value and keep it"
     ],
     "weakHint": "There is no coming back from this cell.",
     "fact": "Every Befunge-93 program must reach an @ to stop; run off without one and the pointer wraps forever.",
@@ -3493,9 +3493,9 @@ var COMMANDS = [
     "short": "pushes a number onto the stack",
     "ask": "pushes a number onto the stack",
     "distractors": [
-      "Make a copy of the top item of the stack",
-      "Exchange the top two items of the stack",
-      "Remove the top item of the stack — throw it away"
+      "Push a number onto the stack — this exact form pushes 1",
+      "Duplicate the bottom item of the stack",
+      "Swap the top three items of the stack"
     ],
     "weakHint": "The opening pair says 'stack'; the rest is a number written in space and tab.",
     "fact": "Whitespace numbers are written in binary — space for 0, tab for 1 — and ended by a linefeed.",
@@ -3509,9 +3509,9 @@ var COMMANDS = [
     "short": "duplicates the top stack item",
     "ask": "duplicates the top item of the stack",
     "distractors": [
-      "Exchange the top two items of the stack",
-      "Remove the top item of the stack and throw it away",
-      "Push the number 0 onto the stack"
+      "Duplicate the bottom item of the stack",
+      "Swap the top three items of the stack",
+      "Pop and keep the top item of the stack"
     ],
     "weakHint": "One prefix says 'stack', and the item count grows.",
     "fact": "Whitespace instructions are prefix-coded: space-space starts most stack operations.",
@@ -3525,9 +3525,9 @@ var COMMANDS = [
     "short": "swaps the top two stack items",
     "ask": "swaps the top two items of the stack",
     "distractors": [
-      "Make a copy of the top item of the stack",
-      "Remove the top item of the stack and throw it away",
-      "Add the top two numbers"
+      "Swap the top three items of the stack",
+      "Duplicate the top two items of the stack",
+      "Pop and discard the bottom item of the stack"
     ],
     "weakHint": "Nothing is created or destroyed — just reordered.",
     "fact": "In an invisible language, swap and duplicate differ by a single tab-versus-space — a classic Whitespace bug source.",
@@ -3541,9 +3541,9 @@ var COMMANDS = [
     "short": "pops and discards the top stack item",
     "ask": "pops and discards the top item of the stack",
     "distractors": [
-      "Make a copy of the top item of the stack and tuck it underneath the original",
-      "Exchange the top two items of the stack, then discard the smaller one",
-      "Print the top item as a character"
+      "Pop and keep the top item of the stack",
+      "Duplicate the top two items of the stack",
+      "Pop two numbers and push their quotient"
     ],
     "weakHint": "This one throws information away.",
     "fact": "Whitespace was released on 1 April 2003 by Edwin Brady and Chris Morris — and was not entirely a joke.",
@@ -3558,8 +3558,8 @@ var COMMANDS = [
     "ask": "pops two numbers and pushes their sum",
     "distractors": [
       "Pop two numbers and push their difference",
-      "Make a copy of the top item of the stack",
-      "Print the top number"
+      "Pop two numbers and push their quotient",
+      "Duplicate the top two items of the stack"
     ],
     "weakHint": "The leading tab moves you out of stack territory into arithmetic.",
     "fact": "Whitespace groups its instructions by prefix: tab-space begins every arithmetic operation.",
@@ -3573,9 +3573,9 @@ var COMMANDS = [
     "short": "prints the top number as a character",
     "ask": "pops a number and prints it as a character",
     "distractors": [
-      "Pop a number and output it as a number",
-      "Read a character and push its code",
-      "Remove the top item of the stack and throw it away"
+      "Pop a character and print it as a character",
+      "Read a number and push its code onto the stack",
+      "Pop and keep the top item of the stack"
     ],
     "weakHint": "This one talks to the outside world.",
     "fact": "Tab-linefeed begins every Whitespace I/O instruction; the third character picks input versus output.",
@@ -3589,9 +3589,9 @@ var COMMANDS = [
     "short": "prints the top number as a number",
     "ask": "pops a number and prints it as a number",
     "distractors": [
-      "Pop a number and output it as a character",
-      "Read a number from input",
-      "Push a number onto the stack"
+      "Pop a character and print it as a number",
+      "Read a number and push its code onto the stack",
+      "Push a number onto the stack — this exact form pushes 1"
     ],
     "weakHint": "Same doorway as printing a character — one glyph decides the format.",
     "fact": "Output-character and output-number differ only in their final space-versus-tab.",
@@ -3605,9 +3605,9 @@ var COMMANDS = [
     "short": "reads a character and pushes its code",
     "ask": "reads a character and pushes its code onto the stack",
     "distractors": [
-      "Pop a number and output it as a character, with a newline following it",
-      "Read a number and push it",
-      "Make a copy of the top item of the stack"
+      "Read a number and push its code onto the stack",
+      "Pop a character and print it as a character",
+      "Pop a character and print it as a number"
     ],
     "weakHint": "This one listens to the outside world.",
     "fact": "Whitespace input reads a single character whose code lands on the stack, ready for arithmetic.",
@@ -3621,9 +3621,9 @@ var COMMANDS = [
     "short": "adds the top two numbers",
     "ask": "pops two numbers and pushes their sum",
     "distractors": [
-      "Pop two numbers and push the result of multiplying them",
-      "Make a copy of the top stack item",
-      "Negate the top number"
+      "Pop two numbers and push their difference",
+      "Pop two numbers and push their quotient",
+      "Duplicate the bottom stack item"
     ],
     "weakHint": "Two values go in, one comes out.",
     "fact": "FALSE (1993) predates Brainfuck and inspired it — its whole arithmetic set is single characters like this.",
@@ -3637,9 +3637,9 @@ var COMMANDS = [
     "short": "multiplies the top two numbers",
     "ask": "pops two numbers and pushes their product",
     "distractors": [
-      "Pop two numbers and push the result of adding them",
-      "Exchange the top two stack items",
-      "Print the top number as an integer"
+      "Pop two numbers and push their difference",
+      "Pop three numbers and push their product",
+      "Swap the top three stack items"
     ],
     "weakHint": "Two values go in, one comes out.",
     "fact": "Wouter van Oortmerssen fit FALSE's original compiler into 1024 bytes of assembly.",
@@ -3653,9 +3653,9 @@ var COMMANDS = [
     "short": "negates the top number",
     "ask": "negates the top number",
     "distractors": [
-      "Throw the top stack item away",
-      "Take the bitwise NOT — flip each bit",
-      "Subtract the top two numbers and keep the result in a variable"
+      "Negate the top number — multiply it by 1",
+      "Negate the bottom number — multiply it by -1",
+      "Drop the bottom stack item"
     ],
     "weakHint": "One value, flipped in sign — this is how FALSE writes negatives.",
     "fact": "FALSE has no negative literals: -3 is written 3_ , the underscore supplying the minus sign.",
@@ -3669,9 +3669,9 @@ var COMMANDS = [
     "short": "duplicates the top stack item",
     "ask": "duplicates the top stack item",
     "distractors": [
-      "Throw the top stack item away",
-      "Exchange the top two stack items",
-      "Store the top item into a variable"
+      "Duplicate the bottom stack item",
+      "Duplicate the top two stack items",
+      "Swap the top three stack items"
     ],
     "weakHint": "After this, the top item exists twice.",
     "fact": "FALSE's stack trio is $ % \\ — duplicate, drop, swap — borrowed from Forth's DUP DROP SWAP.",
@@ -3685,9 +3685,9 @@ var COMMANDS = [
     "short": "drops the top stack item",
     "ask": "drops the top stack item",
     "distractors": [
-      "Make a copy of the top stack item",
-      "Exchange the top two stack items",
-      "Print the top item as a character"
+      "Drop the bottom stack item",
+      "Duplicate the top two stack items",
+      "Push the character code of the character after the apostrophe (here, a = 96)"
     ],
     "weakHint": "This one throws information away.",
     "fact": "In FALSE's Turing-completeness proof, % is the optional convenience — everything else in $%\\[]! carries the load.",
@@ -3701,9 +3701,9 @@ var COMMANDS = [
     "short": "swaps the top two stack items",
     "ask": "swaps the top two stack items",
     "distractors": [
-      "Make a copy of the top stack item",
-      "Throw the top stack item away",
-      "Rotate the top three stack items"
+      "Swap the top three stack items",
+      "Duplicate the bottom stack item",
+      "Drop the bottom stack item"
     ],
     "weakHint": "Nothing is added or lost — only the order changes.",
     "fact": "The backslash swap, the dollar duplicate and the percent drop are FALSE's complete basic stack kit.",
@@ -3717,9 +3717,9 @@ var COMMANDS = [
     "short": "pushes the character code of the following character",
     "ask": "pushes the character code of the character that follows it",
     "distractors": [
-      "Print the following character literally (without converting it to a code)",
-      "Read a character from input",
-      "Begin a string literal"
+      "Push the character code of the character after the apostrophe (here, a = 96)",
+      "Push the character code of the character before the apostrophe (here, a = 97)",
+      "Push the character code of the apostrophe itself (here, a = 39)"
     ],
     "weakHint": "The apostrophe reaches for the very next character in the source.",
     "fact": "Character literals in FALSE are written 'a — the quote turns the next glyph into its own code.",
@@ -3733,9 +3733,9 @@ var COMMANDS = [
     "short": "flushes the I/O buffers",
     "ask": "flushes the input and output buffers",
     "distractors": [
-      "End the program and print the final stack before stopping",
-      "Print the top item as a character, converting it to uppercase first",
-      "Read a character from input"
+      "Flush the input buffer",
+      "Flush the input and output stacks",
+      "Push the character code of the character after the apostrophe (here, a = 96)"
     ],
     "weakHint": "Nothing is computed — this is housekeeping for the streams.",
     "fact": "The Eszett is FALSE's only non-ASCII command, there to force buffered output to actually appear.",
@@ -3749,9 +3749,9 @@ var COMMANDS = [
     "short": "reflects travel: right becomes up, up becomes right",
     "ask": "reflects the direction of travel, turning rightward motion upward",
     "distractors": [
-      "Reflect travel the other way: heading right turns down",
-      "Skip the next character in the path",
-      "Raise the current tape cell by 1"
+      "Reflect the direction of travel like a \\ mirror: heading right turns down, heading down turns left",
+      "Reflect the direction of travel like a / mirror: heading right turns down, heading up turns right",
+      "Skip the next character in the path, but only if the current cell is not 0"
     ],
     "weakHint": "A mirror — which way it bends you depends on how you arrive.",
     "fact": "SNUSP replaces Brainfuck's brackets with geometry: loops are made by bouncing the path with / and \\.",
@@ -3765,9 +3765,9 @@ var COMMANDS = [
     "short": "reflects travel: right becomes down, down becomes right",
     "ask": "reflects the direction of travel, turning rightward motion downward",
     "distractors": [
-      "Reflect travel the other way: heading right turns up",
-      "Skip the next character if the cell is 0",
-      "Lower the current tape cell by 1"
+      "Reflect the direction of travel like a / mirror: heading right turns up, heading up turns left",
+      "Reflect the direction of travel like a \\ mirror: heading right turns down, heading down turns left",
+      "Skip the next two characters in the path, unconditionally"
     ],
     "weakHint": "A mirror — which way it bends you depends on how you arrive.",
     "fact": "The two mirrors have names in the spec: / is RULD and \\ is LURD, after the turns they make.",
@@ -3781,9 +3781,9 @@ var COMMANDS = [
     "short": "adds 1 to the current tape cell",
     "ask": "adds 1 to the current tape cell",
     "distractors": [
-      "Lower the current tape cell by 1",
-      "Move the tape pointer one cell right",
-      "Skip the next character in the path"
+      "Subtract 1 from the next tape cell",
+      "Add 2 to the current tape cell",
+      "Move the tape pointer two cells to the right"
     ],
     "weakHint": "The smallest possible change to a value.",
     "fact": "Core SNUSP is Brainfuck laid over a 2D path — its + is Brainfuck's +, cell for cell.",
@@ -3797,9 +3797,9 @@ var COMMANDS = [
     "short": "subtracts 1 from the current tape cell",
     "ask": "subtracts 1 from the current tape cell",
     "distractors": [
-      "Raise the current tape cell by 1",
-      "Move the tape pointer one cell left",
-      "Print the current tape cell as a character"
+      "Subtract 1 from the next tape cell",
+      "Subtract 2 from the current tape cell",
+      "Move the tape pointer two cells to the left"
     ],
     "weakHint": "The smallest possible change to a value, the other way.",
     "fact": "SNUSP's data tape is one-dimensional Brainfuck tape; only the code is two-dimensional.",
@@ -3813,9 +3813,9 @@ var COMMANDS = [
     "short": "moves the tape pointer right",
     "ask": "moves the tape pointer one cell to the right",
     "distractors": [
-      "Shift the tape pointer one cell leftward, wrapping to the far end of the tape",
-      "Send the instruction pointer to the right",
-      "Raise the current tape cell by 1"
+      "Move the tape pointer two cells to the right",
+      "Move the tape pointer two cells to the left",
+      "Add 1 to the next tape cell"
     ],
     "weakHint": "This moves the data pointer — the path itself is unmoved.",
     "fact": "The trap in SNUSP: > moves the memory pointer, while the instruction pointer's travels are steered by mirrors.",
@@ -3829,9 +3829,9 @@ var COMMANDS = [
     "short": "moves the tape pointer left",
     "ask": "moves the tape pointer one cell to the left",
     "distractors": [
-      "Shift the tape pointer one cell rightward and raise the cell it lands on",
-      "Send the instruction pointer to the left and back to the start of the line",
-      "Lower the current tape cell by 1"
+      "Move the tape pointer two cells to the left",
+      "Move the tape pointer two cells to the right",
+      "Skip the next character in the path, but only if the current cell is not 0"
     ],
     "weakHint": "This moves the data pointer — the path itself is unmoved.",
     "fact": "SNUSP was designed by Daniel Brockman in 2003 as a structured answer to PATH.",
@@ -3845,9 +3845,9 @@ var COMMANDS = [
     "short": "skips the next character",
     "ask": "skips the next character in the path",
     "distractors": [
-      "Skip the next character only if the cell is 0, and skip two if it is not",
-      "End the program, printing the whole tape before it stops",
-      "Reflect the direction of travel as if off a mirror in the path"
+      "Skip the next two characters in the path, unconditionally",
+      "Skip the next character in the path, but only if the current cell is 1",
+      "Add 2 to the current tape cell"
     ],
     "weakHint": "Whatever comes next simply doesn't happen.",
     "fact": "SKIP is half of SNUSP's conditional machinery — paired with a mirror, it builds loops and branches.",
@@ -3861,9 +3861,9 @@ var COMMANDS = [
     "short": "skips the next character if the cell is 0",
     "ask": "skips the next character in the path when the current cell is 0",
     "distractors": [
-      "Skip the next character unconditionally, and the one after it for good measure",
-      "Jump back to the start of the line and begin the whole program again from there",
-      "Read a character into the current cell and print it back as confirmation"
+      "Skip the next character in the path, but only if the cell is 1",
+      "Skip the next character in the path, but only if the cell is not 0",
+      "Skip the next two characters in the path, unconditionally"
     ],
     "weakHint": "A skip with a condition attached — the cell decides.",
     "fact": "? is SKIPZ in the spec; together / \\ ! and ? do all the work of Brainfuck's [ and ].",
@@ -3877,9 +3877,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer right",
     "ask": "sends the instruction pointer to the right",
     "distractors": [
-      "Send the instruction pointer left — onward in that direction",
-      "Pop the top value and write it out as a character",
-      "Stop the program dead"
+      "Send the instruction pointer left — for a single cell, then it stops",
+      "Pop the top value and print it as a number",
+      "Push the top value and print it as a character"
     ],
     "weakHint": "It steers the swimmer; the stack is untouched.",
     "fact": "In ><> (Fish), code is a pond the pointer swims through — and the grid wraps around at the edges.",
@@ -3893,9 +3893,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer left",
     "ask": "sends the instruction pointer to the left",
     "distractors": [
-      "Send the instruction pointer right — onward in that direction",
-      "Duplicate the top stack value and place the copy second from the top",
-      "Skip the next cell entirely, leaping over it in the current direction"
+      "Send the instruction pointer right — for one cell only",
+      "Pop the top value and print it as a number",
+      "Send the instruction pointer down — for one cell only"
     ],
     "weakHint": "It steers the swimmer; the stack is untouched.",
     "fact": "Fish's arrows face the way they send you, like Befunge's — but here the fish does the travelling.",
@@ -3909,9 +3909,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer up",
     "ask": "sends the instruction pointer upward",
     "distractors": [
-      "Send the instruction pointer down",
-      "Pop a value and print it as a number, clearing the stack afterwards",
-      "Swap the top two stack values — exchange their order"
+      "Send the instruction pointer down — for a single cell, then it stops",
+      "Push the top value and print it as a character",
+      "Send the instruction pointer right — for one cell only"
     ],
     "weakHint": "It steers the swimmer; the stack is untouched.",
     "fact": "Vertical swimming is what lets Fish programs loop back over their own lines.",
@@ -3925,9 +3925,9 @@ var COMMANDS = [
     "short": "sends the instruction pointer down",
     "ask": "sends the instruction pointer downward",
     "distractors": [
-      "Send the instruction pointer up and nudge the stack one place over",
-      "Pop a value and print it as a character, then discard the next value too",
-      "Pop the top value — discard it along with the one directly beneath it"
+      "Send the instruction pointer up — for one cell only",
+      "Pop the top value and print it as a number",
+      "Send the instruction pointer left — for one cell only"
     ],
     "weakHint": "It steers the swimmer; the stack is untouched.",
     "fact": "A Fish program with no direction changes at all still wraps off the right edge and continues.",
@@ -3941,9 +3941,9 @@ var COMMANDS = [
     "short": "ends the program",
     "ask": "ends the program",
     "distractors": [
-      "Skip the next cell entirely",
-      "Send the instruction pointer right",
-      "Pop a value and print it as a number"
+      "Pop the top value and print it as a number",
+      "Push the top value and print it as a character",
+      "Send the instruction pointer right — for one cell only"
     ],
     "weakHint": "This is the only way a Fish stops on purpose.",
     "fact": "Reaching the end of the code is NOT the end in ><> — the pointer wraps, so ; is a necessity, not a formality.",
@@ -3958,8 +3958,8 @@ var COMMANDS = [
     "ask": "pops the top value and prints it as a character",
     "distractors": [
       "Pop the top value and print it as a number",
-      "Push the character code of the next cell",
-      "Read a character onto the stack"
+      "Push the top value and print it as a character",
+      "Pop the bottom value and print it as a character"
     ],
     "weakHint": "This one talks to the outside world — and consumes the value.",
     "fact": "Fish has two output commands: o prints the top value as a character, n as a number — and both pop it.",
@@ -3973,9 +3973,9 @@ var COMMANDS = [
     "short": "moves the pointer one bit-cell right",
     "ask": "moves the pointer one cell to the right",
     "distractors": [
-      "Move the pointer one cell to the left and flip the bit in the cell it reaches",
-      "Toggle the current bit — flip 0 to 1 or 1 to 0",
-      "Print the current bit, followed by the bits of all the cells to its right"
+      "Move the pointer one cell to the left — each cell holds a single byte",
+      "Move the pointer two cells to the right — each cell holds a single bit",
+      "Output the current byte, as a 0 or a 1"
     ],
     "weakHint": "It changes where you are, not what anything holds.",
     "fact": "Brainbool (2005) shrinks Brainfuck's byte cells to single bits — the tape is a row of switches.",
@@ -3989,9 +3989,9 @@ var COMMANDS = [
     "short": "moves the pointer one bit-cell left",
     "ask": "moves the pointer one cell to the left",
     "distractors": [
-      "Move the pointer one cell to the right and set the bit it lands on to 1",
-      "Toggle the current bit — flip 0 to 1 or 1 to 0",
-      "Read a bit into the current cell"
+      "Move the pointer one cell to the right — each cell holds a single byte",
+      "Move the pointer two cells to the left — each cell holds a single bit",
+      "Read a single byte of input into the current cell"
     ],
     "weakHint": "It changes where you are, not what anything holds.",
     "fact": "Everything in Brainbool is the Brainfuck you know, at one-eighth the width.",
@@ -4005,9 +4005,9 @@ var COMMANDS = [
     "short": "toggles the current bit",
     "ask": "toggles the current bit by adding 1 modulo 2",
     "distractors": [
-      "Add 1 to the current byte, wrapping at 256",
-      "Set the current bit to 1",
-      "Move the pointer one cell to the right — one step along the tape"
+      "Toggle the current bit — add 1 modulo 3, so 0 becomes 1 and 1 becomes 2",
+      "Toggle the next bit — add 1 modulo 2, so 0 becomes 1 and 1 becomes 0",
+      "Move the pointer one cell to the right — each cell holds a single byte"
     ],
     "weakHint": "There is no 'up' from 1 in a one-bit world.",
     "fact": "In Brainbool + and - are the same operation in disguise: with modulo-2 cells, adding and subtracting both just flip.",
@@ -4021,9 +4021,9 @@ var COMMANDS = [
     "short": "toggles the current bit",
     "ask": "toggles the current bit by subtracting 1 modulo 2",
     "distractors": [
-      "Subtract 1 from the current byte, wrapping at 256",
-      "Set the current bit to 0",
-      "Move the pointer one cell to the left — one step along the tape"
+      "Toggle the current bit — subtract 1 modulo 3, which flips it just like + does",
+      "Toggle the next bit — subtract 1 modulo 2, which flips it just like + does",
+      "Move the pointer one cell to the left — each cell holds a single byte"
     ],
     "weakHint": "There is no 'down' from 0 in a one-bit world.",
     "fact": "Because - toggles exactly like +, Brainbool programs use whichever sign reads better — the machine cannot tell them apart.",
@@ -4037,9 +4037,9 @@ var COMMANDS = [
     "short": "outputs the current bit",
     "ask": "outputs the current bit",
     "distractors": [
-      "Output the current byte as a character",
-      "Read a bit into the current cell",
-      "Toggle the current bit"
+      "Output the current byte, as a 0 or a 1",
+      "Output the current bit, as a character",
+      "Read a single byte of input into the current cell"
     ],
     "weakHint": "What comes out is a single binary digit.",
     "fact": "A Brainbool Hello World must spell every letter out bit by bit — output is literally binary.",
@@ -4053,9 +4053,9 @@ var COMMANDS = [
     "short": "reads one bit of input",
     "ask": "reads a single bit of input into the current cell",
     "distractors": [
-      "Read a whole byte of input into the current cell, all eight bits at once",
-      "Output the current bit",
-      "Toggle the current bit"
+      "Read a single byte of input into the current cell",
+      "Read eight bits of input into the current cell",
+      "Output the current bit, as a character"
     ],
     "weakHint": "What comes in is a single binary digit.",
     "fact": "Brainbool input is bit-serial: eight reads to assemble what Brainfuck gets in one , .",
@@ -4069,9 +4069,9 @@ var COMMANDS = [
     "short": "starts a loop, skipping it if the bit is 0",
     "ask": "begins a loop and skips it entirely when the current bit is 0",
     "distractors": [
-      "Jump back if the current bit is 1: do not test the bit again at the top",
-      "End the program at once, printing every bit stored on the tape on the way out",
-      "Toggle the current bit, and the bits in the cells on either side of it too"
+      "Begin a loop: if the current bit is 1, jump forward past the matching ]",
+      "End a loop body: if the current bit is 1, jump back to the matching ]",
+      "Toggle the current bit — add 1 modulo 3, so 0 becomes 1 and 1 becomes 2"
     ],
     "weakHint": "It decides whether what follows happens at all.",
     "fact": "A Brainbool loop runs while its bit is 1 — with bits, 'nonzero' and 'true' are the same thing.",
@@ -4085,9 +4085,9 @@ var COMMANDS = [
     "short": "jumps back to the matching [ if the bit is 1",
     "ask": "jumps back to the matching [ when the current bit is 1",
     "distractors": [
-      "Skip forward if the current bit is 0, landing two cells past the matching ]",
-      "Output the current bit: write a 0 or a 1",
-      "Move the pointer one cell to the right and read a bit into the cell there"
+      "End a loop body: if the current bit is 0, jump back to the matching [",
+      "End a loop body: if the current bit is 1, jump back to the matching ]",
+      "Begin a loop: if the current bit is 1, jump forward past the matching ]"
     ],
     "weakHint": "It decides whether what came before happens again.",
     "fact": "Brainbool keeps Brainfuck's two-ended loop test — the bit is checked at both brackets.",
@@ -4101,9 +4101,9 @@ var COMMANDS = [
     "short": "prints a variable — numbers emerge as Roman numerals",
     "ask": "prints a variable's value, with numbers rendered as Roman numerals",
     "distractors": [
-      "Read a value typed as English digit names into a variable, converting it to Roman numerals",
-      "Print the variable exactly as stored — in decimal, not Roman numerals",
-      "Stop the program immediately"
+      "Print the value of ,1 in INTERCAL's output format — numbers come out as decimal digits",
+      "Print the value of ,2 in INTERCAL's output format — numbers come out as Roman numerals",
+      "Read a value into ,1 — the number must be typed out as Roman numerals, like VI V"
     ],
     "weakHint": "Despite the name, this one talks — it does not listen.",
     "fact": "INTERCAL's I/O names are backwards on purpose: READ OUT writes to the terminal, and its numbers come out in Roman numerals with butchered spacing.",
@@ -4117,9 +4117,9 @@ var COMMANDS = [
     "short": "reads a value typed as English digit names",
     "ask": "reads a value into a variable, the digits typed out as English words",
     "distractors": [
-      "Print a variable as Roman numerals in the special output format, and then wipe the variable clean",
-      "Store a constant into the variable, replacing the value it held before the statement ran",
-      "Disable the variable — leave it unusable until it is remembered"
+      "Read a value into ,1 — the number must be typed out as Roman numerals, like VI V",
+      "Read a value into ,2 — the number must be typed out as English digit names, like SIX FIVE",
+      "Print the value of ,1 in INTERCAL's output format — numbers come out as decimal digits"
     ],
     "weakHint": "Despite the name, this one listens — it does not talk.",
     "fact": "WRITE IN is INTERCAL's input, and it accepts only digits spelled in English — SIX FIVE FIVE THREE FIVE, never 65535.",
@@ -4133,9 +4133,9 @@ var COMMANDS = [
     "short": "ends the program at once",
     "ask": "ends the program at once",
     "distractors": [
-      "Return from the current routine",
-      "Disable every statement until reinstated",
-      "Discard the top return address"
+      "End the current routine at once",
+      "End the program at the next line",
+      "Disable every statement until reinstated"
     ],
     "weakHint": "The politest possible way to stop.",
     "fact": "GIVE UP is INTERCAL's only clean exit — a program that never gives up simply runs off its own end and errors.",
@@ -4149,9 +4149,9 @@ var COMMANDS = [
     "short": "hijacks control after line 101 runs — a GOTO in reverse",
     "ask": "arranges for execution to continue at this statement whenever the labelled line finishes",
     "distractors": [
-      "Jump immediately to line 101, saving a return address",
-      "Disable line 101: skip it until it is reinstated",
-      "Discard the return address for line 101"
+      "Steal control: whenever line 101 starts executing, continue here instead of at the next line",
+      "Steal control: whenever line 102 finishes executing, continue here instead of at the next line",
+      "Re-enable a line, or a whole kind of statement, previously disabled by GIVE UP"
     ],
     "weakHint": "Nothing moves now — the trap springs when the other line runs.",
     "fact": "COME FROM is C-INTERCAL's famous reversed GOTO: the destination declares where control comes from, not where it goes.",
@@ -4165,9 +4165,9 @@ var COMMANDS = [
     "short": "disables the labelled line (or statement kind) until reinstated",
     "ask": "disables a labelled line, or a whole kind of statement, until it is reinstated",
     "distractors": [
-      "Re-enable a line disabled earlier — restore it so it runs again",
-      "Steal control when the labelled line finishes",
-      "Make writes to a variable be silently ignored"
+      "Disable variable ,1 — or a whole kind of statement — so it is silently skipped until reinstated",
+      "Disable line 102 — or a whole kind of statement — so it is silently skipped until reinstated",
+      "Re-enable a line, or a whole kind of statement, previously disabled by GIVE UP"
     ],
     "weakHint": "The targeted code does not run — and does not complain.",
     "fact": "You can ABSTAIN FROM a gerund, like CALCULATING or COMING FROM, switching off a whole verb of the language at once.",
@@ -4181,9 +4181,9 @@ var COMMANDS = [
     "short": "re-enables what ABSTAIN disabled",
     "ask": "re-enables a line or statement kind disabled by ABSTAIN",
     "distractors": [
-      "Disable the labelled line until further notice, and every line that follows it as well",
-      "Resume execution at a saved return address, and throw away every other address on the return stack",
-      "Restore variables pushed onto the STASH, bringing every saved copy back at once"
+      "Re-enable a variable, or a whole kind of statement, previously disabled by ABSTAIN",
+      "Re-enable a line, or a whole kind of statement, previously disabled by COME FROM",
+      "Disable line 102 — or a whole kind of statement — so it is silently skipped until reinstated"
     ],
     "weakHint": "It undoes somebody else's disabling — nothing more.",
     "fact": "REINSTATE can itself be abstained from, making every abstention in the program permanent — INTERCAL at its most INTERCAL.",
