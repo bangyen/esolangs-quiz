@@ -42,6 +42,14 @@
 //                 results review showing a command fact); and 40 drawn
 //                 runs for the draw simulation (composition 9 meaning
 //                 + 3 reverse, no repeated command, ≤ 3 per language)
+//   study*        Study view: the rendered reference content (language
+//                 entries and command groups, read straight off the
+//                 built DOM); entering Study with a Hard auto-advance
+//                 timer pending cancels it (firing the stale handle
+//                 afterwards changes nothing and leaves Study up);
+//                 aria-pressed across all five header controls in and
+//                 out of Study; returning via a mode tab hides Study,
+//                 shows the quiz and starts a normal run
 //
 // Timers are fake: setTimeout/clearTimeout are injected into the script
 // scope and recorded in a registry; nothing fires unless fireTimer(id)
@@ -450,5 +458,58 @@ for (let run = 0; run < 39; run++) {
   cmdDraws.push(runDraw);
 }
 out.commandsDraws = cmdDraws;
+
+// --- Study view -----------------------------------------------------------
+// The reference content is rendered once at load; read it straight off
+// the built DOM (section = h3 + code-wrap>pre + fact paragraph for
+// languages; h3 + table for commands, header row then one row per
+// command in stored order).
+out.studyLangEntries = document.getElementById('studyLangs').children.map(sec => ({
+  name: sec.children[0].textContent,
+  code: sec.children[1].children[0].textContent,
+  fact: sec.children[2].textContent,
+}));
+out.studyCmdGroups = document.getElementById('studyCmds').children.map(sec => ({
+  lang: sec.children[0].textContent,
+  rows: sec.children[1].children.slice(1).map(
+    tr => [tr.children[0].textContent, tr.children[1].textContent]),
+}));
+const pressedAll = () => ({
+  normal: document.getElementById('modeNormalBtn').getAttribute('aria-pressed'),
+  hard: document.getElementById('modeHardBtn').getAttribute('aria-pressed'),
+  expert: document.getElementById('modeExpertBtn').getAttribute('aria-pressed'),
+  commands: document.getElementById('modeCommandsBtn').getAttribute('aria-pressed'),
+  study: document.getElementById('studyBtn').getAttribute('aria-pressed'),
+});
+const studyShown = () => document.getElementById('studyView').classList.contains('show');
+
+// Entering Study mid-run cancels a pending auto-advance timer: answer
+// a Hard fragment (always completes its round, so a timer is pending),
+// switch to Study, and firing the stale handle must do nothing.
+document.getElementById('modeHardBtn').click();           // fresh Hard run
+optionsEl.children[0].click();                            // answer round 1
+const studyStale = pendingTimers()[0];
+document.getElementById('studyBtn').click();              // enter Study
+out.studyEnter = {
+  hadTimer: !!studyStale,
+  pendingAfter: pendingTimers(),
+  pressed: pressedAll(),
+  studyShown: studyShown(),
+  quizDisplay: document.getElementById('quizView').style.display,
+  modeNote: document.getElementById('modeNote').textContent,
+  sr: srText(),
+};
+if (studyStale) fireTimer(studyStale.id);
+out.studyAfterStaleFire = { q: stats().q, studyShown: studyShown() };
+
+// Returning via a mode tab: Study hides, the quiz view is back, the
+// pressed states flip back, and a fresh run starts normally.
+document.getElementById('modeNormalBtn').click();
+out.studyReturn = {
+  q: stats().q,
+  studyShown: studyShown(),
+  quizDisplay: document.getElementById('quizView').style.display,
+  pressed: pressedAll(),
+};
 
 console.log(JSON.stringify(out));

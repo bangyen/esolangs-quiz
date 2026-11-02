@@ -41,6 +41,14 @@
    rounds per language — scored +100 / 0 with exactly one −25 hint
    per run, completing through finishRound() so the 1.2 s
    auto-advance applies (the scheduler's only guard is Normal).
+8. Study view (a view switch in the header, not a fifth mode): the
+   reference content is rendered from the same pools — every Normal
+   language (alphabetical, with its Hello World and fact) and every
+   Commands language with each command's effect verbatim — entering
+   Study cancels a pending auto-advance timer through the same
+   clearAutoAdvance path as a mode switch, aria-pressed stays
+   coherent across all five header controls, and returning via a
+   mode tab starts a run as a mode switch does.
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -351,6 +359,68 @@ class TestDomHarness(unittest.TestCase):
     def test_commands_results_review_shows_a_fact(self):
         self.assertTrue(self.out["commandsFlow"]["reviewHasFact"])
 
+    # --- Study view (harness) ---
+
+    def test_study_renders_every_normal_language(self):
+        entries = self.out["studyLangEntries"]
+        questions = json.loads(
+            (ROOT / "src/data/normal.json").read_text(encoding="utf-8"))["QUESTIONS"]
+        expected = sorted(questions, key=lambda q: q["lang"])
+        self.assertEqual([e["name"] for e in entries],
+                         [q["lang"] for q in expected])
+        for entry, q in zip(entries, expected):
+            self.assertEqual(entry["code"], q["code"],
+                             f"study code for {q['lang']}")
+            self.assertEqual(entry["fact"], q["fact"],
+                             f"study fact for {q['lang']}")
+
+    def test_study_renders_every_command_effect_verbatim(self):
+        groups = self.out["studyCmdGroups"]
+        commands = json.loads(
+            (ROOT / "src/data/commands.json").read_text(encoding="utf-8"))["COMMANDS"]
+        by_lang = {}
+        for c in commands:
+            by_lang.setdefault(c["lang"], []).append(c)
+        self.assertEqual([g["lang"] for g in groups], sorted(by_lang))
+        total = 0
+        for g in groups:
+            self.assertEqual(
+                g["rows"],
+                [[c["symbol"], c["effect"]] for c in by_lang[g["lang"]]],
+                f"study rows for {g['lang']}")
+            total += len(g["rows"])
+        self.assertEqual(total, len(commands))
+
+    def test_entering_study_cancels_a_pending_timer(self):
+        enter = self.out["studyEnter"]
+        self.assertTrue(enter["hadTimer"])
+        self.assertEqual(enter["pendingAfter"], [])
+        # Firing the stale handle afterwards advances nothing and
+        # leaves the Study view up.
+        after = self.out["studyAfterStaleFire"]
+        self.assertEqual(after["q"], "1 / 15")
+        self.assertTrue(after["studyShown"])
+
+    def test_study_pressed_states_and_announcement(self):
+        enter = self.out["studyEnter"]
+        self.assertEqual(enter["pressed"],
+                         {"normal": "false", "hard": "false",
+                          "expert": "false", "commands": "false",
+                          "study": "true"})
+        self.assertTrue(enter["studyShown"])
+        self.assertEqual(enter["quizDisplay"], "none")
+        self.assertTrue(enter["sr"].startswith("Study view."))
+
+    def test_returning_from_study_starts_a_run(self):
+        ret = self.out["studyReturn"]
+        self.assertEqual(ret["q"], "1 / 12")
+        self.assertFalse(ret["studyShown"])
+        self.assertEqual(ret["quizDisplay"], "")
+        self.assertEqual(ret["pressed"],
+                         {"normal": "true", "hard": "false",
+                          "expert": "false", "commands": "false",
+                          "study": "false"})
+
     def test_commands_draw_simulation(self):
         draws = self.out["commandsDraws"]
         self.assertEqual(len(draws), 40)
@@ -367,6 +437,55 @@ class TestDomHarness(unittest.TestCase):
                 per_lang[r["lang"]] = per_lang.get(r["lang"], 0) + 1
             self.assertLessEqual(max(per_lang.values()), 3,
                                  f"language cap broken: {per_lang}")
+
+
+class TestStudyView(unittest.TestCase):
+    """Study view source pins: the toggle and view exist in the shell
+    with sane heading structure, the content renders from the pools
+    (no authored copies), entering Study cancels the auto-advance
+    timer, setMode leaves Study coherently, and the quiz keys are
+    inert while studying."""
+
+    def test_toggle_and_view_structure(self):
+        self.assertRegex(BUILT, r'id="studyBtn"[^>]*aria-pressed="false"[^>]*>Study<')
+        self.assertRegex(BUILT, r'<div class="study" id="studyView">')
+        self.assertIn("<h2>Languages</h2>", BUILT)
+        self.assertIn("<h2>Commands</h2>", BUILT)
+        self.assertIn(".study{display:none", STYLE)
+        self.assertIn(".study.show{display:block", STYLE)
+
+    def test_study_renders_from_the_pools(self):
+        body = re.search(r"function buildStudy\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("QUESTIONS.slice().sort(byLang)", body)
+        self.assertIn("q.code", body)
+        self.assertIn("q.fact", body)
+        self.assertIn("COMMANDS.forEach", body)
+        # Effects reach the table verbatim — no rewording layer.
+        self.assertIn("tdE.textContent = c.effect;", body)
+
+    def test_entering_study_cancels_auto_advance(self):
+        body = re.search(r"function showStudy\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("clearAutoAdvance();", body)
+        self.assertIn("studyView.classList.add('show')", body)
+        self.assertIn("setAttribute('aria-pressed', 'true')", body)
+
+    def test_set_mode_leaves_study(self):
+        body = re.search(r"function setMode\(m\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("studyView.classList.remove('show')", body)
+        self.assertIn("studyBtn.setAttribute('aria-pressed', 'false')", body)
+
+    def test_study_mode_line_and_announcement(self):
+        self.assertIn("Reference — every Hello World and command in the quiz.",
+                      SCRIPT)
+        body = re.search(r"function showStudy\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("srStatus.textContent = 'Study view.", body)
+
+    def test_quiz_keys_are_inert_in_study(self):
+        self.assertIn("if(view==='study') return;", SCRIPT)
 
 
 class TestCommandsMode(unittest.TestCase):
