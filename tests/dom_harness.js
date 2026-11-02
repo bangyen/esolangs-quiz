@@ -205,6 +205,8 @@ const qTag = document.getElementById('qTag');
 // advances exactly one round; re-firing the consumed handle is a no-op.
 optionsEl.children[0].click();                             // answer Hard round 1
 out.hardTimersAfterAnswer = pendingTimers();
+out.hardHintDisabledAfterAnswer =
+  document.getElementById('hintBtn').disabled;             // S6: expect true
 const hardTimer = pendingTimers()[0];
 if (hardTimer) fireTimer(hardTimer.id);
 out.hardAfterTimerFire = { q: stats().q, pending: pendingTimers().length };
@@ -220,6 +222,26 @@ nextBtn.click();                                           // manual advance -> 
 out.hardAfterManualNext = { q: stats().q, pending: pendingTimers().length };
 if (staleAfterManual) fireTimer(staleAfterManual.id);
 out.hardAfterStaleFire = { q: stats().q };
+
+// S7: a KEYBOARD player's timer advance must land focus on the new
+// prompt, like their manual Enter advance does. Answer this round by
+// digit key (the keydown handler records the keyboard modality), then
+// fire the pending timer and watch the focus events.
+const kbEvStart = events.length;
+document._handlers.keydown({ key: '1', preventDefault() {} });  // answer by key
+out.kbAnswerByKey = {
+  timers: pendingTimers().length,
+  hintDisabled: document.getElementById('hintBtn').disabled,
+};
+const kbTimer = pendingTimers()[0];
+if (kbTimer) fireTimer(kbTimer.id);
+out.kbAfterTimerFire = {
+  q: stats().q,
+  focusTargets: events.slice(kbEvStart)
+    .filter(e => e.kind === 'focus').map(e => e.target),
+  focusId: document.activeElement
+    ? (document.activeElement.id || document.activeElement.tagName) : null,
+};
 
 // Expert two-stage: play forward until a two-stage round. The correct
 // family is read from the page's own injected EXPERT_TWO data, matched
@@ -484,6 +506,7 @@ const cmdDraws = [];
   cmdDraws.push(runDraw);
   cmdFlow.finalScore = document.getElementById('finalScore').textContent;
   cmdFlow.bdCorrect = document.getElementById('bdCorrect').textContent;
+  cmdFlow.srAtResults = srText();                          // S2: results announced
   // reviewEl.innerHTML is SERIALIZED html: quiz.js builds the review
   // with escapeHtml(), so a fact containing & < > appears escaped
   // (&amp; &lt; &gt;) in the markup. Searching for the RAW fact fails
@@ -532,8 +555,13 @@ out.studyLangEntries = document.getElementById('studyLangs').children.map(sec =>
 }));
 out.studyCmdGroups = document.getElementById('studyCmds').children.map(sec => ({
   lang: sec.children[0].textContent,
-  rows: sec.children[1].children.slice(1).map(
-    tr => [tr.children[0].textContent, tr.children[1].textContent]),
+  rows: sec.children[1].children.slice(1)
+    .filter(tr => tr.className !== 'fact-row')
+    .map(tr => [tr.children[0].textContent, tr.children[1].textContent]),
+  // S3: each command row is followed by a muted fact row (colspan cell).
+  facts: sec.children[1].children.slice(1)
+    .filter(tr => tr.className === 'fact-row')
+    .map(tr => tr.children[0].textContent),
 }));
 const pressedAll = () => ({
   normal: document.getElementById('modeNormalBtn').getAttribute('aria-pressed'),

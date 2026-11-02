@@ -91,7 +91,7 @@
   .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
   .btn-hint{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;min-height:44px}
   .btn-hint:disabled{opacity:.45;cursor:default}
-  .btn-next{appearance:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;min-height:44px;display:none}
+  .btn-next{appearance:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;min-height:44px;display:none;margin-left:auto}
   .btn-next.show{display:inline-block}
   /* Results */
   .results{display:none;margin-top:26px}
@@ -124,6 +124,7 @@
   .cmd-table th{text-align:left;font-weight:600;color:var(--muted);font-size:12.5px;padding:5px 12px 5px 0;border-bottom:1px solid var(--line)}
   .cmd-table td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
   .cmd-table td.sym{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+  .cmd-table .fact-row td{color:var(--muted);font-size:13.5px;line-height:1.55;border-bottom:1px solid var(--line);padding-top:0}
   /* Keyboard focus must be visible; programmatic focus on the question
      prompt (tabindex="-1") is a landing point, not a tab stop, so it
      stays unoutlined. */
@@ -4562,11 +4563,18 @@ function focusQuestionPrompt(){
 // and every other path out of a round (manual Next, restart, mode
 // switch, a new run) clears it too, so a stale timer can never advance
 // a fresh run or double-advance the current one. The timer fires the
-// Next button itself, so a timer advance is literally the pointer
-// advance path (blur, measured scroll, no focus jump) — never the
-// keyboard path, and never a second copy of the advance logic.
+// Next button itself, so a timer advance is the same advance logic —
+// never a second copy. Its FOCUS behaviour follows the player's last
+// input modality (tracked below): a keyboard player's timer advance
+// lands focus on the new prompt exactly like their manual Enter
+// advance does; a pointer player's does not move focus. (Originally
+// the timer always took the pointer path, so keyboard players — whose
+// advances in the auto-advance modes are mostly automatic — lost the
+// focus landing on nearly every round.)
 var AUTO_ADVANCE_MS = 1200;
 var autoAdvanceTimer = null;
+var lastInputModality = 'pointer';
+document.addEventListener('pointerdown', function(){ lastInputModality='pointer'; });
 function clearAutoAdvance(){
   if(autoAdvanceTimer!==null){ clearTimeout(autoAdvanceTimer); autoAdvanceTimer=null; }
 }
@@ -4575,6 +4583,7 @@ function scheduleAutoAdvance(){
   clearAutoAdvance();
   autoAdvanceTimer=setTimeout(function(){
     autoAdvanceTimer=null;
+    advanceByKeyboard = lastInputModality==='keyboard';
     nextBtn.click();
   }, AUTO_ADVANCE_MS);
 }
@@ -4619,6 +4628,11 @@ function finishRound(correct, lineText){
   }
   feedbackEl.innerHTML = html;
   progressBar.style.width=Math.round(((idx+1)/total())*100)+'%';
+  // The round is over: Hint must LOOK over too. Until now it stayed
+  // enabled-looking but inert (its handler guards on `answered`),
+  // while the hint-used state rendered disabled — two renderings of
+  // "no hint available". render() restores the right state next round.
+  hintBtn.disabled=true;
   nextBtn.classList.add('show');
   updateStats();
   // The single round-completion point: every finished round (any Hard
@@ -4695,7 +4709,10 @@ function answerPair(call, btn){
   // Announce the new stage like a new question (same live region render uses).
   srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
   optionsEl.innerHTML='';
-  optionsEl.className='options';
+  // Same grid as the other name-the-language stage (two-stage stage 2
+  // and expert-id use 'options wide'); this one had drifted to the
+  // two-column default for the identical task shape.
+  optionsEl.className='options wide';
   shuffle(q.options.slice()).forEach(function(name){
     var b=document.createElement('button');
     b.type='button'; b.className='opt'; b.setAttribute('data-name', name);
@@ -4859,6 +4876,7 @@ nextBtn.addEventListener('click', function(){
 });
 
 document.addEventListener('keydown', function(e){
+  lastInputModality='keyboard';
   // In the Study view the quiz keys (digits to answer, Enter to
   // advance) must not reach the hidden run.
   if(view==='study') return;
@@ -4885,6 +4903,10 @@ function showResults(){
   document.getElementById('bdCorrect').textContent = count+' / '+total();
   document.getElementById('bdBestStreak').textContent = bestStreak;
   document.getElementById('restartBtn').textContent = 'Play again';
+  // Every other transition announces itself on the live region
+  // (questions, stage swaps, Study, Back) — results was the one
+  // silent arrival, leaving SR players at the last verdict.
+  srStatus.textContent = 'Results — '+(isPoints ? points+' pts' : score+' / '+total())+', '+count+' of '+total()+' correct.';
 
   var rev=document.getElementById('reviewEl');
   var html = '<h2>Review</h2>';
@@ -4951,6 +4973,16 @@ function buildStudy(){
       var tdE = document.createElement('td'); tdE.textContent = c.effect;
       tr.appendChild(tdS); tr.appendChild(tdE);
       table.appendChild(tr);
+      // Study's Languages entries show each language's fact; the
+      // Commands entries used to omit the commands' facts entirely,
+      // though every command carries one and the quiz itself surfaces
+      // it in the results review. A muted fact row under each command
+      // (the effect cell stays verbatim — the fact is not folded in).
+      var fr = document.createElement('tr'); fr.className = 'fact-row';
+      var tdF = document.createElement('td'); tdF.colSpan = 2;
+      tdF.textContent = c.fact;
+      fr.appendChild(tdF);
+      table.appendChild(fr);
     });
     sec.appendChild(h); sec.appendChild(table);
     cmdBox.appendChild(sec);

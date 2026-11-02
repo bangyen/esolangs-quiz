@@ -280,6 +280,22 @@ class TestDomHarness(unittest.TestCase):
         # Firing the cancelled handle later does not advance again.
         self.assertEqual(self.out["hardAfterStaleFire"], {"q": "3 / 15"})
 
+    def test_hint_button_disabled_when_round_completes(self):
+        # S6: post-answer the Hint button must render disabled, like
+        # the hint-used state — not enabled-looking but inert.
+        self.assertTrue(self.out["hardHintDisabledAfterAnswer"])
+        self.assertTrue(self.out["kbAnswerByKey"]["hintDisabled"])
+
+    def test_keyboard_timer_advance_lands_focus_on_prompt(self):
+        # S7: answering by digit key records the keyboard modality, so
+        # the timer advance lands focus on the new prompt — the same
+        # landing a manual Enter advance gives.
+        self.assertEqual(self.out["kbAnswerByKey"]["timers"], 1)
+        after = self.out["kbAfterTimerFire"]
+        self.assertEqual(after["q"], "4 / 15")
+        self.assertEqual(after["focusTargets"], ["qTitle"])
+        self.assertEqual(after["focusId"], "qTitle")
+
     def test_expert_two_stage_family_pick_schedules_no_timer(self):
         two = self.out["expertTwoStage"]
         self.assertIsNotNone(two, "harness never reached a two-stage round")
@@ -370,6 +386,13 @@ class TestDomHarness(unittest.TestCase):
 
     def test_commands_results_review_shows_a_fact(self):
         self.assertTrue(self.out["commandsFlow"]["reviewHasFact"])
+
+    def test_results_screen_is_announced(self):
+        # S2: showResults writes the live region like every other
+        # transition (the Commands run ends 1175 pts, 12/12 correct).
+        sr = self.out["commandsFlow"]["srAtResults"]
+        self.assertTrue(sr.startswith("Results — 1175 pts"), sr)
+        self.assertIn("12 of 12 correct.", sr)
 
     def test_commands_review_uses_short_effect_forms(self):
         # F13: every meaning round's review meta line carries the
@@ -463,6 +486,12 @@ class TestDomHarness(unittest.TestCase):
                 g["rows"],
                 [[c["symbol"], c["effect"]] for c in by_lang[g["lang"]]],
                 f"study rows for {g['lang']}")
+            # S3: every command's fact rides along as its own row,
+            # verbatim, in the same stored order.
+            self.assertEqual(
+                g["facts"],
+                [c["fact"] for c in by_lang[g["lang"]]],
+                f"study facts for {g['lang']}")
             total += len(g["rows"])
         self.assertEqual(total, len(commands))
 
@@ -714,10 +743,16 @@ class TestAutoAdvancePins(unittest.TestCase):
         self.assertEqual(gate.count("finishRound("), 1)
         self.assertLess(gate.index("finishRound("), gate.index("expertStage=1"))
 
-    def test_timer_fires_the_pointer_advance_path(self):
+    def test_timer_fires_next_with_modality_focus(self):
         body = re.search(r"function scheduleAutoAdvance\(\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)
         self.assertIn("nextBtn.click();", body)
+        # S7: the timer advance takes the keyboard focus landing when
+        # the player's last input was the keyboard.
+        self.assertIn("advanceByKeyboard = lastInputModality==='keyboard';",
+                      body)
+        self.assertIn("lastInputModality='keyboard';", SCRIPT)
+        self.assertIn("addEventListener('pointerdown'", SCRIPT)
 
     def test_every_exit_path_cancels(self):
         handler = re.search(
@@ -955,3 +990,44 @@ class TestFullAuditFixes(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestSymmetryFixes(unittest.TestCase):
+    """Symmetry-audit source pins (notes/audit-symmetry-2026-11-02.md):
+    the oversights whose fixes are one-liners still need pins, or the
+    next refactor drifts them back."""
+
+    def test_next_button_pinned_right(self):
+        # S1: Expert hides Hint, so a space-between row would strand
+        # Next at the left (Hint's spot). margin-left:auto pins it
+        # right in every mode.
+        rule = re.search(r"\.btn-next\{(.*?)\}", STYLE).group(1)
+        self.assertIn("margin-left:auto", rule)
+
+    def test_finish_round_disables_hint(self):
+        # S6 (source side; the harness side is
+        # test_hint_button_disabled_when_round_completes).
+        body = re.search(r"function finishRound\(correct, lineText\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("hintBtn.disabled=true;", body)
+
+    def test_show_results_announces(self):
+        # S2 (source side; harness side is test_results_screen_is_announced).
+        body = re.search(r"function showResults\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("srStatus.textContent = 'Results — ", body)
+
+    def test_pairing_stage_two_uses_wide_grid(self):
+        # S9: pairing stage 2 is the same task shape as two-stage
+        # stage 2 / expert-id — the wide (one-column) grid.
+        body = re.search(r"function answerPair\(call, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("optionsEl.className='options wide';", body)
+
+    def test_study_commands_carry_facts(self):
+        # S3 (source side; harness side asserts the facts verbatim).
+        body = re.search(r"function buildStudy\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("fr.className = 'fact-row';", body)
+        self.assertIn("tdF.textContent = c.fact;", body)
+        self.assertIn(".fact-row td{", STYLE)

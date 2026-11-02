@@ -72,7 +72,7 @@
   .actions{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:18px}
   .btn-hint{appearance:none;border:1px solid var(--line);background:transparent;color:var(--ink);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;min-height:44px}
   .btn-hint:disabled{opacity:.45;cursor:default}
-  .btn-next{appearance:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;min-height:44px;display:none}
+  .btn-next{appearance:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;min-height:44px;display:none;margin-left:auto}
   .btn-next.show{display:inline-block}
   /* Results */
   .results{display:none;margin-top:26px}
@@ -105,6 +105,7 @@
   .cmd-table th{text-align:left;font-weight:600;color:var(--muted);font-size:12.5px;padding:5px 12px 5px 0;border-bottom:1px solid var(--line)}
   .cmd-table td{padding:5px 12px 5px 0;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
   .cmd-table td.sym{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;white-space:pre-wrap;word-break:break-word}
+  .cmd-table .fact-row td{color:var(--muted);font-size:13.5px;line-height:1.55;border-bottom:1px solid var(--line);padding-top:0}
   /* Keyboard focus must be visible; programmatic focus on the question
      prompt (tabindex="-1") is a landing point, not a tab stop, so it
      stays unoutlined. */
