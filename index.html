@@ -2681,169 +2681,6 @@ var EXPERT_TWO = [
   }
 ];
 
-var EXPERT_DISC = [
-  {
-    "kind": "expert-disc",
-    "lang": "Unlambda",
-    "decoy": "Lazy K",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Unlambda. The other is Lazy K, a close cousin.\nTap the Unlambda excerpt.",
-    "codeTarget": "``.H.e.l.l.o. .W.o.r.l.d.!",
-    "codeDecoy": "``s``s`k``si`k``s``si`k``s",
-    "note": "// Discrimination round — two excerpts, both built from combinators. Which one is Unlambda?",
-    "fact": "Unlambda spells its output out: the .x commands print characters, so .H .e .l is the greeting arriving letter by letter. Lazy K has no print primitive at all — nothing but s, k and i combinators — so its output is encoded, never spelled."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Jot",
-    "decoy": "Iota",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Jot. The other is Iota, a close cousin.\nTap the Jot excerpt.",
-    "codeTarget": "1111110011110000111110101011\n1100011111000010111110001110",
-    "codeDecoy": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
-    "note": "// Discrimination round — two excerpts, both by the same designer, both combinator calculus. Which one is Jot?",
-    "fact": "Jot is a pure binary string — 0s and 1s and nothing else. Iota, its sibling by the same designer (Chris Barker), builds everything from a single combinator written i, with * for application: look for the i's among the stars."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Brainfuck",
-    "decoy": "Smallfuck",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Brainfuck. The other is Smallfuck, a close cousin.\nTap the Brainfuck excerpt.",
-    "codeTarget": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
-    "codeDecoy": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
-    "note": "// Discrimination round — two excerpts, both tape machines with brackets. Which one is Brainfuck?",
-    "fact": "Brainfuck has eight commands — the + and . everywhere give it away. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *: no + and no . ever appear."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Thue",
-    "decoy": "///",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Thue. The other is ///, a close cousin.\nTap the Thue excerpt.",
-    "codeTarget": "x::=~Hello, World!\n::=\nx",
-    "codeDecoy": "/x/Hello, World!/x",
-    "note": "// Discrimination round — two excerpts, both string-rewriting languages. Which one is Thue?",
-    "fact": "Thue keeps a rule list: ::= separates what is replaced from what replaces it, ~ marks output, and the list is closed off before the data begins. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Chef",
-    "decoy": "Shakespeare Programming Language",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Chef. The other is Shakespeare Programming Language, a close cousin.\nTap the Chef excerpt.",
-    "codeTarget": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
-    "codeDecoy": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
-    "note": "// Discrimination round — two excerpts, both readable English prose. Which one is Chef?",
-    "fact": "Chef writes recipes: ingredients, mixing bowls, and instructions like “Fold lard into the mixing bowl.” The Shakespeare Programming Language writes dialogue instead — a named character speaks, and “Speak your mind!” is its print statement."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Ook!",
-    "decoy": "COW",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Ook!. The other is COW, a close cousin.\nTap the Ook! excerpt.",
-    "codeTarget": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
-    "codeDecoy": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
-    "note": "// Discrimination round — two excerpts, both one-word re-encodings of the same tape machine. Which one is Ook!?",
-    "fact": "Both re-encode Brainfuck in a single repeated word. Ook! tells its tokens apart by sentence punctuation — Ook. Ook? Ook! — while COW tells its apart by capitalisation: MoO, mOo, moO and MOO are different commands."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "FALSE",
-    "decoy": "Underload",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is FALSE. The other is Underload, a close cousin.\nTap the FALSE excerpt.",
-    "codeTarget": "\"Hello, World!\" ß",
-    "codeDecoy": "(Hello, World!)S",
-    "note": "// Discrimination round — two stack languages, one terse line each. Which one is FALSE?",
-    "fact": "Both are stack machines whose greetings fit on one line, but they package the string differently: FALSE quotes it and prints with the ß that follows. Underload pushes its string as a parenthesised literal — no quotes at all — and the S after it does the printing."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Piet",
-    "decoy": "Velato",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Piet. The other is Velato, a close cousin.\nTap the Piet excerpt.",
-    "codeTarget": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
-    "codeDecoy": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
-    "note": "// Discrimination round — two art languages: one is seen, the other heard. Which one is Piet?",
-    "fact": "Sibling ideas from David Morgan-Mar's circle of art languages: Piet's source is an image — coloured blocks whose sizes and hue changes are the instructions. Velato's source is a MIDI melody, where the interval from one note to the next is the instruction. Sight versus sound."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "COW",
-    "decoy": "Blub",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is COW. The other is Blub, a close cousin.\nTap the COW excerpt.",
-    "codeTarget": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
-    "codeDecoy": "Blub. Blub. Blub! Blub?\nBlub? Blub. Blub. Blub?",
-    "note": "// Discrimination round — two excerpts, both one-word re-encodings of the same tape machine. Which one is COW?",
-    "fact": "Both are one-word Brainfuck re-encodings. COW's single word changes capitalisation — MoO, mOo, moO and MOO are different tokens. Blub's word never changes case; its tokens are told apart by the punctuation that follows it: Blub. Blub? Blub!"
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Befunge",
-    "decoy": "Hexagony",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Befunge. The other is Hexagony, a close cousin.\nTap the Befunge excerpt.",
-    "codeTarget": "\"!dlroW ,olleH\" > v\n                 | : <",
-    "codeDecoy": " . H e l\nl o ; W o\n r l d ! @\n  . . . .",
-    "note": "// Discrimination round — two excerpts, both played on a two-dimensional grid. Which one is Befunge?",
-    "fact": "Both run on a 2D grid. Befunge's playfield is a rectangle steered by arrows and the _ and | conditionals, printing with , and ending at @. Hexagony's playfield is a hexagon of single characters padded with . no-ops — and its ; is the print command."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "SNUSP",
-    "decoy": "Befunge",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is SNUSP. The other is Befunge, a close cousin.\nTap the SNUSP excerpt.",
-    "codeTarget": "$_/==!/==\\#==!\n  \\==!/==/==!",
-    "codeDecoy": "        > : v\n        | _ , @",
-    "note": "// Discrimination round — two excerpts, both travel a two-dimensional grid. Which one is SNUSP?",
-    "fact": "SNUSP is a path language: execution starts at the $ and walks a trail of / and \\ mirrors, with ! skipping and = carrying the pointer along. Befunge instead steers a stack machine around its grid with arrow characters — the arrows are the giveaway."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Lazy K",
-    "decoy": "Underload",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Lazy K. The other is Underload, a close cousin.\nTap the Lazy K excerpt.",
-    "codeTarget": "``s``s`k``si`k``s``si`k``s",
-    "codeDecoy": "(Hello, World!)S",
-    "note": "// Discrimination round — two tiny excerpts, both combinator kin. Which one is Lazy K?",
-    "fact": "Lazy K is pure combinators — s, k and i joined by backtick application, with no literals at all. Underload works a stack with terse punctuation commands, and its whole greeting is one trick: (Hello, World!) pushes the string and S prints it."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Fractran",
-    "decoy": "Jot",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Fractran. The other is Jot, a close cousin.\nTap the Fractran excerpt.",
-    "codeTarget": "17/91   78/85   19/51\n23/38   29/33   77/29",
-    "codeDecoy": "1111110011110000111110101011\n1100011111000010111110001110",
-    "note": "// Discrimination round — nothing but numbers in either excerpt. Which one is Fractran?",
-    "fact": "Fractran is an ordered list of fractions — 17/91, 78/85, 19/51 — and nothing else; the machine multiplies by the first fraction that keeps the result whole. Jot is also pure numbers, but a single unbroken binary string of 0s and 1s encoding combinatory logic: no slashes, no list."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Underload",
-    "decoy": "Unlambda",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Underload. The other is Unlambda, a close cousin.\nTap the Underload excerpt.",
-    "codeTarget": "(Hello, World!)S",
-    "codeDecoy": "``.H.e.l.l.o. .W.o.r.l.d.!",
-    "note": "// Discrimination round — two tiny excerpts, both combinator kin. Which one is Underload?",
-    "fact": "Underload has no print-per-character command: ( … ) pushes a literal string onto its stack and S prints it, so the parentheses are the giveaway. Unlambda goes the other way — its .x commands print one character each, spelled out between the backticks."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Hexagony",
-    "decoy": "><>",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Hexagony. The other is ><>, a close cousin.\nTap the Hexagony excerpt.",
-    "codeTarget": " . H e l\nl o ; W o\n r l d ! @",
-    "codeDecoy": "\"!dlroW ,olleH\":l?!;o",
-    "note": "// Discrimination round — two excerpts, both played on a two-dimensional grid. Which one is Hexagony?",
-    "fact": "Hexagony's program is a hexagon of single spaced characters, . padding included, and @ halts it. ><> runs a fish on a wrapping grid of stack commands instead — look for the reversed string literal, the o that prints and the ; that ends the program."
-  },
-  {
-    "kind": "expert-disc",
-    "lang": "Chicken",
-    "decoy": "Blub",
-    "code": "Two excerpts follow, labelled 1–2.\nOne of them is Chicken. The other is Blub, a close cousin.\nTap the Chicken excerpt.",
-    "codeTarget": "chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken",
-    "codeDecoy": "Blub. Blub? Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub?",
-    "note": "// Discrimination round — both vocabularies have exactly one word. Which one is Chicken?",
-    "fact": "Both vocabularies have exactly one word, but they spend it differently: Blub re-encodes Brainfuck, its Blub. Blub? Blub! pairing up into the eight tape commands. Chicken is a stack machine where the count of chickens on each line is the opcode — the line lengths are the program."
-  }
-];
-
 var COMMANDS = [
   {
     "kind": "command",
@@ -3731,7 +3568,7 @@ var COMMANDS = [
 // The question pools are NOT defined here: scripts/build.py injects them
 // above this file from src/data/*.json (var QUESTIONS, HARD_*, EXPERT_*).
 
-var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO, EXPERT_DISC);
+var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO);
 
 var HARD_ALL = HARD_FRAGMENTS.concat(HARD_REVERSE, HARD_WIDE);
 
@@ -3786,7 +3623,6 @@ var prevReverseLangs = [];
 var prevExpertId = [];
 var prevExpertOdd = [];
 var prevExpertTwo = [];
-var prevExpertDisc = [];
 var expertStage = 0;
 // Commands mode: the drawn entries (pool indices into COMMANDS), which
 // of them are reverse rounds (parallel to `order`), and the entry keys
@@ -3817,37 +3653,6 @@ function drawFrom(poolIndices, count, prevLangs, poolArr, excludeLangs){
   });
   scored.sort(function(a,b){ return a.s-b.s; });
   return scored.slice(0, Math.min(count, poolIndices.length)).map(function(x){ return x.i; });
-}
-// Discrimination draw: like drawFrom (fresh entries first, languages
-// already used this run deprioritised), except an entry consumes BOTH
-// of its languages — the target it names and the decoy it is shown
-// against — for the run's no-language-twice rule: an entry whose
-// target OR decoy is already spent this run is passed over while any
-// non-colliding entry remains, and only fills a slot as a last resort
-// (drawFrom's philosophy) if the pool runs dry.
-function drawDisc(poolIndices, count, prevLangs, poolArr, excludeLangs){
-  excludeLangs = excludeLangs || [];
-  var shuffled = shuffle(poolIndices);
-  var scored = shuffled.map(function(i){
-    var q = poolArr[i];
-    var s = (prevLangs.indexOf(q.lang)!==-1 ? 1 : 0)
-      + (excludeLangs.indexOf(q.lang)!==-1 ? 2 : 0)
-      + (excludeLangs.indexOf(q.decoy)!==-1 ? 2 : 0);
-    return { i:i, s:s };
-  });
-  scored.sort(function(a,b){ return a.s-b.s; });
-  var taken = excludeLangs.slice();
-  var picked = [], rest = [];
-  scored.forEach(function(x){
-    var q = poolArr[x.i];
-    if(picked.length<count && taken.indexOf(q.lang)===-1 && taken.indexOf(q.decoy)===-1){
-      picked.push(x.i); taken.push(q.lang); taken.push(q.decoy);
-    } else {
-      rest.push(x.i);
-    }
-  });
-  rest.forEach(function(i){ if(picked.length<count) picked.push(i); });
-  return picked.slice(0, Math.min(count, poolIndices.length));
 }
 // Commands draw: 12 entries from the 80-command pool, at most 3 from
 // any one language, no command twice, preferring entries the previous
@@ -3930,20 +3735,17 @@ function buildOrder(){
     return pickCommands();
   }
   if(mode==='expert'){
-    var ei=[], eo=[], et=[], ed=[];
-    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else if(q.kind==='expert-disc') ed.push(i); else ei.push(i); });
+    var ei=[], eo=[], et=[];
+    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else ei.push(i); });
     var eiPicked = drawFrom(ei, 6, prevExpertId, EXPERT_ALL);
     prevExpertId = eiPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     var used = prevExpertId.slice();
-    var eoPicked = drawFrom(eo, 3, prevExpertOdd, EXPERT_ALL, used);
+    var eoPicked = drawFrom(eo, 4, prevExpertOdd, EXPERT_ALL, used);
     prevExpertOdd = eoPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     used = used.concat(prevExpertOdd);
-    var etPicked = drawFrom(et, 3, prevExpertTwo, EXPERT_ALL, used);
+    var etPicked = drawFrom(et, 5, prevExpertTwo, EXPERT_ALL, used);
     prevExpertTwo = etPicked.map(function(i){ return EXPERT_ALL[i].lang; });
-    used = used.concat(prevExpertTwo);
-    var edPicked = drawDisc(ed, 3, prevExpertDisc, EXPERT_ALL, used);
-    prevExpertDisc = edPicked.map(function(i){ return EXPERT_ALL[i].lang; });
-    return eiPicked.concat(eoPicked, etPicked, edPicked);
+    return eiPicked.concat(eoPicked, etPicked);
   }
   if(mode!=='hard'){
     var all = QUESTIONS.map(function(_,i){return i;});
@@ -3986,9 +3788,6 @@ function render(){
   } else if(kind==='expert-two'){
     qTag.textContent='Expert · Two-stage · Family';
     qTitle.textContent='Which family is this from?';
-  } else if(kind==='expert-disc'){
-    qTag.textContent='Expert · Discrimination';
-    qTitle.textContent='Which excerpt is '+q.lang+'?';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
     qTitle.textContent='Which excerpt is '+q.lang+'?';
@@ -4038,24 +3837,6 @@ function render(){
       var pre=document.createElement('pre'); pre.textContent=item.sn.code;
       b.appendChild(pre);
       b.addEventListener('click', function(){ answer(item.sn.lang, b); });
-      optionsEl.appendChild(b);
-    });
-  } else if(kind==='expert-disc'){
-    // The two excerpt blocks ARE the options (snippet-style buttons,
-    // as in odd-one-out): one is the named target language, the other
-    // its closest lookalike. Their order is shuffled per round, and a
-    // click answers with the clicked excerpt's language — so the
-    // ordinary answer() path scores it (+100 / −50) and completes
-    // the round in one click.
-    optionsEl.className='options snippets';
-    var dsnips = shuffle([{lang:q.lang, code:q.codeTarget}, {lang:q.decoy, code:q.codeDecoy}]);
-    dsnips.forEach(function(item, pos){
-      var b=document.createElement('button');
-      b.type='button'; b.className='opt snippet'; b.setAttribute('data-name', item.lang);
-      b.setAttribute('aria-label', 'Excerpt '+(pos+1));
-      var pre=document.createElement('pre'); pre.textContent=item.code;
-      b.appendChild(pre);
-      b.addEventListener('click', function(){ answer(item.lang, b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='expert-two'){
@@ -4248,8 +4029,8 @@ function finishRound(correct, lineText){
   nextBtn.classList.add('show');
   updateStats();
   // The single round-completion point: every finished round (any Hard
-  // kind; Expert identification / odd / two-stage / discrimination,
-  // including a wrong family pick, which also ends its round in finishRound)
+  // kind; Expert identification / odd / two-stage, including a wrong
+  // family pick, which also ends its round in finishRound)
   // passes through here. A correct Expert family pick does NOT — it
   // sets its feedback inline and the round continues — so it can never
   // start the timer. No-op in Normal (see scheduleAutoAdvance).
@@ -4353,9 +4134,7 @@ function answer(name, btn){
   answered=true;
   var q=currentQ();
   var isExpert = mode==='expert';
-  // For odd-one-out rounds q.lang holds the odd language; for
-  // discrimination rounds it holds the target language, and `name`
-  // is the language of whichever excerpt the player tapped.
+  // For odd-one-out rounds q.lang holds the odd language.
   var correctName = q.lang;
   var correct = name===correctName;
   if(isExpert){
@@ -4376,14 +4155,9 @@ function answer(name, btn){
     if(b===btn) pickedPos = i+1;
   });
 
-  var logLang = q.kind==='expert-odd' ? q.lang+' — odd one out' : (q.kind==='expert-disc' ? q.lang+' — discrimination' : q.lang);
+  var logLang = q.kind==='expert-odd' ? q.lang+' — odd one out' : q.lang;
   var logPicked = name, logCorrect = correctName;
-  if(q.kind==='expert-disc'){
-    // Record the claim as a position plus the language it actually
-    // was ("Picked excerpt 2 — that was COW"), not just a name.
-    logPicked = 'Excerpt '+pickedPos+' — '+name;
-    logCorrect = 'Excerpt '+correctPos+' — '+q.lang;
-  } else if(q.kind==='reverse'){
+  if(q.kind==='reverse'){
     logPicked = name+' (candidate '+pickedPos+')';
     logCorrect = q.lang+' (candidate '+correctPos+')';
   }
@@ -4399,10 +4173,7 @@ function answer(name, btn){
 
   var pts = isExpert ? (correct ? ' (+100 pts)' : ' (−50 pts)') : (mode==='hard' && correct ? ' (+100 pts)' : '');
   var line;
-  if(q.kind==='expert-disc'){
-    line = correct ? '✓ Correct — excerpt '+correctPos+' is '+q.lang+pts
-                   : '✕ Wrong — excerpt '+correctPos+' is '+q.lang+' · you picked the '+name+' excerpt'+pts;
-  } else if(q.kind==='reverse'){
+  if(q.kind==='reverse'){
     line = correct ? '✓ Correct — '+q.lang+' (candidate '+correctPos+')'+pts
                    : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' excerpt'+pts;
   } else if(q.kind==='expert-odd'){

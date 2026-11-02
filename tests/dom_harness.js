@@ -28,16 +28,11 @@
 //   modeSwitchCancel / restartCancel
 //                 a pending timer is cancelled by setMode / restart, and
 //                 firing the stale handle afterwards is a no-op
-//   discrimination
-//                 Expert discrimination scenarios, collected over
-//                 fresh Expert runs: a round shows two excerpt blocks
-//                 (the target language and its closest lookalike) and
-//                 completes in ONE click — the correct block scores
-//                 +100, the decoy block −50, each with exactly one
-//                 auto-advance timer; across the collected rounds the
-//                 target must appear in BOTH block positions, and the
-//                 results review of a completed run must carry every
-//                 discrimination claim of that run ("Excerpt N — Lang")
+//   expertDraws   500 drawn Expert runs for the draw simulation
+//                 (composition 6 identification + 4 odd-one-out +
+//                 5 two-stage every run, and no language repeated
+//                 within a run — each round's entry identified from
+//                 the page's own injected pools by its code)
 //   commands*     Commands mode: aria-pressed across all four tabs; a
 //                 fully instrumented flow run (+100 scoring, the single
 //                 −25 hint and its refusal, one 1200 ms timer, the
@@ -284,11 +279,10 @@ out.expertTwoStage = twoStage;
 // handle afterwards must not touch the fresh run. The current Expert
 // round here is the run's SECOND two-stage round (the hunt above ends
 // on the round after the first two-stage, and buildOrder deals Expert
-// phases in ID / odd / two-stage / discrimination order): a blind
+// phases in ID / odd / two-stage order, two-stage last): a blind
 // first click may be only a stage-1 family pick, and a CORRECT family
 // pick completes nothing — it swaps in stage 2 and schedules no
-// timer. Discrimination rounds, by contrast, complete in one click.
-// So click through a possible stage-2 swap-in: this setup must
+// timer. So click through a possible stage-2 swap-in: this setup must
 // guarantee a genuinely pending timer, whatever the shuffle dealt.
 // (Regression: this flaked in CI whenever the shuffled first family
 // button was the correct one.)
@@ -316,18 +310,10 @@ out.restartPendingAfter = pendingTimers();
 if (staleAfterRestart) fireTimer(staleAfterRestart.id);
 out.restartAfterStaleFire = { q: stats().q, tag: qTag.textContent };
 
-// --- Expert discrimination ------------------------------------------------
-// Play fresh Expert runs until the scenarios below have been collected
-// and a full run's results review has been verified (3 discrimination
-// rounds per run, pool of 16, so a handful of runs suffices). The
-// current entry is identified from the page's own injected
-// EXPERT_DISC data, matched by the displayed instruction text — the
-// same no-guessing technique as the two-stage hunt above.
-const discData = JSON.parse(
-  script.match(/var EXPERT_DISC = (\[[\s\S]*?\n\]);/)[1]);
-const discScen = {};
-const discPositions = { first: 0, second: 0 };
-let discReviewOk = false;
+// --- Expert round helpers -------------------------------------------------
+// Shared by the family-error hunt and the draw simulation below:
+// read the scoreboard back, and play a round with blind answers (a
+// correct two-stage family pick swaps in stage 2 — complete it too).
 const scoreNow = () => parseInt(document.getElementById('statScore').textContent, 10);
 const titleNow = () => document.getElementById('qTitle').textContent;
 const feedbackNow = () => document.getElementById('feedbackEl').innerHTML;
@@ -338,92 +324,6 @@ function playGenericRound() {
   if (titleNow().indexOf('Family correct') === 0) optionsEl.children[0].click();
   nextBtn.click();
 }
-
-// feedbackNow() reads innerHTML — the SERIALIZED form, in which a
-// language name containing & < > (e.g. Hexagony's decoy) comes
-// back escaped (&gt;&lt;&gt;), while the scenario records below
-// carry the RAW lang/decoy names from the data. Comparing the two
-// failed whenever the shuffle dealt that one entry into the
-// wrong-pick slot (~1 run in 10). Decode the entities so the
-// recorded feedback is the line the app actually composed; the
-// Python assertions then pin that raw text exactly, whichever
-// entry is dealt. (The mirror image of the escaped-needle review
-// checks elsewhere in this file.) &amp; decodes last so an escaped
-// literal entity round-trips instead of double-decoding.
-const feedbackText = () => feedbackNow()
-  .replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  .replace(/&amp;/g, '&');
-
-function handleDiscRound(record) {
-  const entry = discData.find(e =>
-    e.code === document.getElementById('codeEl').textContent);
-  if (!entry) { optionsEl.children[0].click(); nextBtn.click(); return; }
-  const blocks = optionsEl.children;
-  const targetPos = blocks.findIndex(b => b.getAttribute('data-name') === entry.lang);
-  const decoyPos = 1 - targetPos;
-  if (targetPos === 0) discPositions.first++; else discPositions.second++;
-  const before = scoreNow();
-  if (!discScen.correct) {
-    const srBefore = srText();
-    blocks[targetPos].click();
-    discScen.correct = {
-      delta: scoreNow() - before,
-      pendingAfter: pendingTimers().length,
-      feedback: feedbackText(),
-      srBefore: srBefore,
-      title: titleNow(),
-      tag: qTag.textContent,
-      labels: blocks.map(b => b.getAttribute('aria-label')),
-      blockCount: blocks.length,
-      lang: entry.lang,
-    };
-    record.push({ picked: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang,
-                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
-  } else if (!discScen.wrong) {
-    blocks[decoyPos].click();
-    discScen.wrong = {
-      delta: scoreNow() - before,
-      pendingAfter: pendingTimers().length,
-      feedback: feedbackText(),
-      lang: entry.lang,
-      decoy: entry.decoy,
-    };
-    record.push({ picked: 'Excerpt ' + (decoyPos + 1) + ' — ' + entry.decoy,
-                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
-  } else {
-    blocks[targetPos].click();
-    record.push({ picked: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang,
-                  correct: 'Excerpt ' + (targetPos + 1) + ' — ' + entry.lang });
-  }
-  nextBtn.click();  // advance (cancels any pending auto-advance timer)
-}
-
-let discRuns = 0;
-while ((Object.keys(discScen).length < 2 || !discPositions.first ||
-        !discPositions.second || !discReviewOk) && discRuns < 40) {
-  discRuns++;
-  document.getElementById('modeExpertBtn').click();  // fresh Expert run
-  const claims = [];
-  for (let round = 0; round < 15; round++) {
-    if (qTag.textContent.indexOf('Discrimination') >= 0) handleDiscRound(claims);
-    else playGenericRound();
-  }
-  // The run is complete: its results review must carry every
-  // discrimination claim it dealt, in the "Your answer: … · Correct
-  // answer: …" shape showResults() builds (HTML-escaped like the DOM).
-  const esc = s => s.replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const review = document.getElementById('reviewEl').innerHTML;
-  if (claims.length === 3 && claims.every(c =>
-        review.indexOf(esc('Your answer: ' + c.picked)) >= 0 &&
-        review.indexOf(esc('Correct answer: ' + c.correct)) >= 0)) {
-    discReviewOk = true;
-  }
-}
-out.discrimination = discScen;
-out.discriminationRuns = discRuns;
-out.discPositions = discPositions;
-out.discReviewOk = discReviewOk;
 
 // --- Expert two-stage family error (F7) -----------------------------------
 // A wrong family pick must log a unit-consistent review entry: the
@@ -445,8 +345,6 @@ let famErr = null;
           b => b.getAttribute('data-name') !== entry.family).click();
         famErr = { lang: entry.lang, family: entry.family };
         nextBtn.click();
-      } else if (qTag.textContent.indexOf('Discrimination') >= 0) {
-        handleDiscRound([]);
       } else {
         playGenericRound();
       }
@@ -463,11 +361,49 @@ let famErr = null;
 }
 out.expertFamilyError = famErr;
 
+// --- Expert draw simulation -------------------------------------------------
+// 500 fresh Expert runs, played out with blind answers. Each round's
+// entry is identified from the page's own injected pools — the tag
+// selects the pool, the displayed code the entry within it (odd
+// entries all share one generic prompt as their code, so they are
+// matched by the snippet languages on the option buttons instead) —
+// so the Python tests can assert the composition (6 identification +
+// 4 odd-one-out + 5 two-stage) and the no-language-twice rule over
+// exactly what buildOrder dealt.
+const idData = JSON.parse(
+  script.match(/var EXPERT_ID = (\[[\s\S]*?\n\]);/)[1]);
+const oddData = JSON.parse(
+  script.match(/var EXPERT_ODD = (\[[\s\S]*?\n\]);/)[1]);
+const expertDraws = [];
+for (let run = 0; run < 500; run++) {
+  document.getElementById('modeExpertBtn').click();  // fresh Expert run
+  const drawn = [];
+  for (let round = 0; round < 15; round++) {
+    const code = document.getElementById('codeEl').textContent;
+    const tag = qTag.textContent;
+    let entry;
+    if (tag.indexOf('Odd one out') >= 0) {
+      const names = optionsEl.children
+        .map(b => b.getAttribute('data-name')).sort().join('|');
+      entry = oddData.find(e => e.snippets
+        .map(s => s.lang).sort().join('|') === names);
+    } else {
+      const poolSim = tag.indexOf('Identification') >= 0 ? idData : twoData;
+      entry = poolSim.find(e => e.code === code);
+    }
+    if (!entry) throw new Error('expert round not identifiable: ' + tag);
+    drawn.push([entry.kind, entry.lang]);
+    playGenericRound();
+  }
+  expertDraws.push(drawn);
+}
+out.expertDraws = expertDraws;
+
 // --- Commands mode --------------------------------------------------------
 // Identify the current round's entry from the page's own injected
 // COMMANDS data, matched by the rendered title + code block (meaning
 // rounds show the symbol, reverse rounds show the ask phrase) — the
-// same no-guessing technique as the two-stage/discrimination hunts above.
+// same no-guessing technique as the two-stage hunt above.
 const cmdData = JSON.parse(
   script.match(/var COMMANDS = (\[[\s\S]*?\n\]);/)[1]);
 out.commandsPoolSize = cmdData.length;

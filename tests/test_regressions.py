@@ -14,8 +14,7 @@
    question 1, score 0, streak 0, hints 0 — in the static placeholders
    and through the script's init path.
 3. Feedback wording: reverse rounds must name the correct candidate's
-   position; discrimination rounds must name the correct excerpt's
-   position and the language the player actually picked.
+   position.
 4. Scoped UI/UX audit fixes (2026-11-01): feedback is a live region and
    question changes are announced (A1); a keyboard advance lands focus
    on the question prompt while a pointer advance keeps the blur +
@@ -32,12 +31,12 @@
    manual Next, restart, mode switch — cancels the pending handle, so
    an advance happens exactly once. Source pins plus harness runs
    with fake timers pin all of it.
-6. Discrimination format (replaces pairing): two excerpt blocks —
-   one in the named target language, one in its closest lookalike —
-   and a single click on a block completes the round through the
-   ordinary answer() path (+100 / −50, one finishRound, one timer).
-   There is no same-language case and no stage 2; the review records
-   the picked excerpt's position and the language it actually was.
+6. Expert composition: three round types only — identification,
+   odd-one-out, two-stage — drawn 6 / 4 / 5 per 15-round run. The
+   fourth type (pairing, then its replacement discrimination) was
+   removed for collapsing into an easier identification question;
+   a 500-run harness draw simulation pins the composition and the
+   no-language-twice rule across the whole run.
 7. Commands mode (fourth tab): 12 rounds drawn from the 80-command
    pool — 9 meaning + 3 reverse, no command repeated, at most 3
    rounds per language — scored +100 / 0 with exactly one −25 hint
@@ -68,6 +67,7 @@ Run:  python3 -m unittest discover -s tests
 """
 import json
 import re
+from collections import Counter
 import shutil
 import subprocess
 import unittest
@@ -320,49 +320,23 @@ class TestDomHarness(unittest.TestCase):
         self.assertEqual(after["q"], "1 / 15")
         self.assertTrue(after["tag"].startswith("Hard"))
 
-    # --- Discrimination rounds (harness scenarios) ---
+    # --- Expert draw simulation (harness) ---
 
-    def test_discrimination_scenarios_all_collected(self):
-        self.assertEqual(set(self.out["discrimination"]),
-                         {"correct", "wrong"},
-                         f"harness discrimination runs: "
-                         f"{self.out['discriminationRuns']}")
-        # A completed run's results review carried every
-        # discrimination claim that run dealt ("Excerpt N — Lang").
-        self.assertTrue(self.out["discReviewOk"])
-
-    def test_discrimination_target_appears_in_both_positions(self):
-        # Position is shuffled per round: across the collected rounds
-        # the target block must have shown up first AND second.
-        pos = self.out["discPositions"]
-        self.assertGreater(pos["first"], 0)
-        self.assertGreater(pos["second"], 0)
-
-    def test_discrimination_correct_pick_completes_at_plus_100(self):
-        c = self.out["discrimination"]["correct"]
-        self.assertEqual(c["delta"], 100)          # +100 at once
-        self.assertEqual(c["pendingAfter"], 1)     # completed: one timer
-        self.assertEqual(c["tag"], "Expert · Discrimination")
-        self.assertEqual(c["title"], "Which excerpt is " + c["lang"] + "?")
-        # Exactly two blocks, accessibly labelled by position...
-        self.assertEqual(c["blockCount"], 2)
-        self.assertEqual(c["labels"], ["Excerpt 1", "Excerpt 2"])
-        # ...and the round was announced like any other question.
-        self.assertTrue(c["srBefore"].startswith("Question "))
-        self.assertIn(c["title"], c["srBefore"])
-        self.assertIn("excerpt", c["feedback"])
-        self.assertIn("is " + c["lang"], c["feedback"])
-
-    def test_discrimination_wrong_pick_scores_minus_50_and_names_both(self):
-        w = self.out["discrimination"]["wrong"]
-        self.assertEqual(w["delta"], -50)
-        self.assertEqual(w["pendingAfter"], 1)  # completed: Next/timer work
-        # The feedback names the correct excerpt's language and the
-        # language the player actually picked (the decoy).
-        self.assertIn("is " + w["lang"], w["feedback"])
-        self.assertIn("you picked the " + w["decoy"] + " excerpt",
-                      w["feedback"])
-
+    def test_expert_draws_are_6_4_5_with_no_repeated_language(self):
+        # 500 simulated Expert runs: the composition is exactly
+        # 6 identification + 4 odd-one-out + 5 two-stage every time,
+        # and no language is spent twice within a run (each entry
+        # spends its `lang` — for odd-one-out, the odd language —
+        # under the draw's existing accounting).
+        draws = self.out["expertDraws"]
+        self.assertEqual(len(draws), 500)
+        for run in draws:
+            kinds = Counter(kind for kind, _ in run)
+            self.assertEqual(kinds, Counter({"expert-id": 6,
+                                             "expert-odd": 4,
+                                             "expert-two": 5}), run)
+            langs = [lang for _, lang in run]
+            self.assertEqual(len(langs), len(set(langs)), run)
 
     # --- Commands mode (harness) ---
 
@@ -719,61 +693,23 @@ class TestCommandsMode(unittest.TestCase):
         self.assertNotIn("q.distractors", SCRIPT)
 
 
-class TestDiscriminationFormat(unittest.TestCase):
-    """Discrimination format pins: the title names the target; the
-    two excerpt blocks are the options and a click routes through the
-    ordinary answer() (one scoring point, one finishRound — there is
-    no stage machinery left); the review log records the claim as a
-    position plus the language it actually was ('Excerpt 2 — COW');
-    and the draw consumes BOTH of an entry's languages."""
+class TestNoFourthExpertType(unittest.TestCase):
+    """The fourth Expert round type is gone: pairing, and then its
+    replacement discrimination, were both removed (discrimination
+    collapsed into an easier identification question — binary, both
+    languages named). No pool, picker, render branch, or review
+    string for either may remain in the shipped page."""
 
-    def _render_branch(self):
-        return re.search(
-            r"kind==='expert-disc'\)\{(.*?)\} else if\(kind==='expert-two'\)",
-            SCRIPT, re.S).group(1)
-
-    def test_no_pairing_machinery_remains(self):
+    def test_no_discrimination_or_pairing_machinery_remains(self):
+        self.assertNotIn("EXPERT_DISC", BUILT)
+        self.assertNotIn("expert-disc", BUILT)
+        self.assertNotIn("drawDisc", SCRIPT)
+        self.assertNotIn("Discrimination", SCRIPT)
+        self.assertNotIn("prevExpertDisc", SCRIPT)
         self.assertNotIn("EXPERT_PAIR", SCRIPT)
         self.assertNotIn("expert-pair", BUILT)
-        self.assertNotIn("Pairing", SCRIPT)
         self.assertNotIn("answerPair", SCRIPT)
         self.assertNotIn("pairStage", SCRIPT)
-
-    def test_title_and_tag_name_the_target(self):
-        self.assertIn("qTag.textContent='Expert · Discrimination';", SCRIPT)
-        self.assertIn("qTitle.textContent='Which excerpt is '+q.lang+'?';",
-                      SCRIPT)
-
-    def test_blocks_are_the_options_and_route_to_answer(self):
-        body = self._render_branch()
-        # Target and decoy excerpts, shuffled into the two blocks.
-        self.assertIn("{lang:q.lang, code:q.codeTarget}", body)
-        self.assertIn("{lang:q.decoy, code:q.codeDecoy}", body)
-        self.assertIn("shuffle(", body)
-        self.assertIn("b.className='opt snippet'", body)
-        self.assertIn("setAttribute('aria-label', 'Excerpt '+(pos+1))", body)
-        # A click answers with the clicked excerpt's language — the
-        # shared answer() path, so scoring/logging/finishRound are
-        # the same code as every other Expert round.
-        self.assertIn("answer(item.lang, b)", body)
-
-    def test_review_log_records_position_and_actual_language(self):
-        body = re.search(r"function answer\(name, btn\)\{(.*?)\n\}",
-                         SCRIPT, re.S).group(1)
-        self.assertIn("logPicked = 'Excerpt '+pickedPos+' — '+name;", body)
-        self.assertIn("logCorrect = 'Excerpt '+correctPos+' — '+q.lang;", body)
-        self.assertIn("q.lang+' — discrimination'", body)
-
-    def test_draw_consumes_both_languages(self):
-        body = re.search(
-            r"function drawDisc\(poolIndices, count, prevLangs, poolArr,"
-            r" excludeLangs\)\{(.*?)\n\}", SCRIPT, re.S).group(1)
-        # Both languages are checked against the spent set and both
-        # are added to it when the entry is picked.
-        self.assertIn("excludeLangs.indexOf(q.decoy)", body)
-        self.assertIn("taken.push(q.lang); taken.push(q.decoy);", body)
-        self.assertIn("drawDisc(ed, 3, prevExpertDisc, EXPERT_ALL, used)",
-                      SCRIPT)
 
 
 class TestAutoAdvancePins(unittest.TestCase):
@@ -837,14 +773,6 @@ class TestFeedbackWording(unittest.TestCase):
     def test_reverse_feedback_names_candidate_position(self):
         self.assertIn("was candidate '+correctPos+'", SCRIPT)
         self.assertIn("you picked the '+name+' excerpt", SCRIPT)
-
-    def test_discrimination_feedback_names_position_and_pick(self):
-        # The line names the correct excerpt's position and language,
-        # and — when wrong — the language the player actually picked.
-        self.assertIn("'✓ Correct — excerpt '+correctPos+' is '+q.lang+pts",
-                      SCRIPT)
-        self.assertIn("'✕ Wrong — excerpt '+correctPos+' is '+q.lang+"
-                      "' · you picked the '+name+' excerpt'+pts", SCRIPT)
 
     def test_misleading_captions_fixed(self):
         hard = (ROOT / "src/data/hard.json").read_text(encoding="utf-8")
@@ -1086,16 +1014,6 @@ class TestSymmetryFixes(unittest.TestCase):
         body = re.search(r"function showResults\(\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)
         self.assertIn("srStatus.textContent = 'Results — ", body)
-
-    def test_discrimination_blocks_use_snippets_grid(self):
-        # The two excerpt blocks are the same task shape as the
-        # odd-one-out / reverse candidates — the one-column snippets
-        # grid, not the two-column name grid. (This replaces the S9
-        # pin, whose subject — pairing's stage 2 — no longer exists.)
-        body = re.search(
-            r"kind==='expert-disc'\)\{(.*?)\} else if\(kind==='expert-two'\)",
-            SCRIPT, re.S).group(1)
-        self.assertIn("optionsEl.className='options snippets';", body)
 
     def test_study_commands_carry_facts(self):
         # S3 (source side; harness side asserts the facts verbatim).

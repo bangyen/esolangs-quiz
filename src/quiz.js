@@ -2,7 +2,7 @@
 // The question pools are NOT defined here: scripts/build.py injects them
 // above this file from src/data/*.json (var QUESTIONS, HARD_*, EXPERT_*).
 
-var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO, EXPERT_DISC);
+var EXPERT_ALL = EXPERT_ID.concat(EXPERT_ODD, EXPERT_TWO);
 
 var HARD_ALL = HARD_FRAGMENTS.concat(HARD_REVERSE, HARD_WIDE);
 
@@ -57,7 +57,6 @@ var prevReverseLangs = [];
 var prevExpertId = [];
 var prevExpertOdd = [];
 var prevExpertTwo = [];
-var prevExpertDisc = [];
 var expertStage = 0;
 // Commands mode: the drawn entries (pool indices into COMMANDS), which
 // of them are reverse rounds (parallel to `order`), and the entry keys
@@ -88,37 +87,6 @@ function drawFrom(poolIndices, count, prevLangs, poolArr, excludeLangs){
   });
   scored.sort(function(a,b){ return a.s-b.s; });
   return scored.slice(0, Math.min(count, poolIndices.length)).map(function(x){ return x.i; });
-}
-// Discrimination draw: like drawFrom (fresh entries first, languages
-// already used this run deprioritised), except an entry consumes BOTH
-// of its languages — the target it names and the decoy it is shown
-// against — for the run's no-language-twice rule: an entry whose
-// target OR decoy is already spent this run is passed over while any
-// non-colliding entry remains, and only fills a slot as a last resort
-// (drawFrom's philosophy) if the pool runs dry.
-function drawDisc(poolIndices, count, prevLangs, poolArr, excludeLangs){
-  excludeLangs = excludeLangs || [];
-  var shuffled = shuffle(poolIndices);
-  var scored = shuffled.map(function(i){
-    var q = poolArr[i];
-    var s = (prevLangs.indexOf(q.lang)!==-1 ? 1 : 0)
-      + (excludeLangs.indexOf(q.lang)!==-1 ? 2 : 0)
-      + (excludeLangs.indexOf(q.decoy)!==-1 ? 2 : 0);
-    return { i:i, s:s };
-  });
-  scored.sort(function(a,b){ return a.s-b.s; });
-  var taken = excludeLangs.slice();
-  var picked = [], rest = [];
-  scored.forEach(function(x){
-    var q = poolArr[x.i];
-    if(picked.length<count && taken.indexOf(q.lang)===-1 && taken.indexOf(q.decoy)===-1){
-      picked.push(x.i); taken.push(q.lang); taken.push(q.decoy);
-    } else {
-      rest.push(x.i);
-    }
-  });
-  rest.forEach(function(i){ if(picked.length<count) picked.push(i); });
-  return picked.slice(0, Math.min(count, poolIndices.length));
 }
 // Commands draw: 12 entries from the 80-command pool, at most 3 from
 // any one language, no command twice, preferring entries the previous
@@ -201,20 +169,17 @@ function buildOrder(){
     return pickCommands();
   }
   if(mode==='expert'){
-    var ei=[], eo=[], et=[], ed=[];
-    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else if(q.kind==='expert-disc') ed.push(i); else ei.push(i); });
+    var ei=[], eo=[], et=[];
+    EXPERT_ALL.forEach(function(q,i){ if(q.kind==='expert-odd') eo.push(i); else if(q.kind==='expert-two') et.push(i); else ei.push(i); });
     var eiPicked = drawFrom(ei, 6, prevExpertId, EXPERT_ALL);
     prevExpertId = eiPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     var used = prevExpertId.slice();
-    var eoPicked = drawFrom(eo, 3, prevExpertOdd, EXPERT_ALL, used);
+    var eoPicked = drawFrom(eo, 4, prevExpertOdd, EXPERT_ALL, used);
     prevExpertOdd = eoPicked.map(function(i){ return EXPERT_ALL[i].lang; });
     used = used.concat(prevExpertOdd);
-    var etPicked = drawFrom(et, 3, prevExpertTwo, EXPERT_ALL, used);
+    var etPicked = drawFrom(et, 5, prevExpertTwo, EXPERT_ALL, used);
     prevExpertTwo = etPicked.map(function(i){ return EXPERT_ALL[i].lang; });
-    used = used.concat(prevExpertTwo);
-    var edPicked = drawDisc(ed, 3, prevExpertDisc, EXPERT_ALL, used);
-    prevExpertDisc = edPicked.map(function(i){ return EXPERT_ALL[i].lang; });
-    return eiPicked.concat(eoPicked, etPicked, edPicked);
+    return eiPicked.concat(eoPicked, etPicked);
   }
   if(mode!=='hard'){
     var all = QUESTIONS.map(function(_,i){return i;});
@@ -257,9 +222,6 @@ function render(){
   } else if(kind==='expert-two'){
     qTag.textContent='Expert · Two-stage · Family';
     qTitle.textContent='Which family is this from?';
-  } else if(kind==='expert-disc'){
-    qTag.textContent='Expert · Discrimination';
-    qTitle.textContent='Which excerpt is '+q.lang+'?';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
     qTitle.textContent='Which excerpt is '+q.lang+'?';
@@ -309,24 +271,6 @@ function render(){
       var pre=document.createElement('pre'); pre.textContent=item.sn.code;
       b.appendChild(pre);
       b.addEventListener('click', function(){ answer(item.sn.lang, b); });
-      optionsEl.appendChild(b);
-    });
-  } else if(kind==='expert-disc'){
-    // The two excerpt blocks ARE the options (snippet-style buttons,
-    // as in odd-one-out): one is the named target language, the other
-    // its closest lookalike. Their order is shuffled per round, and a
-    // click answers with the clicked excerpt's language — so the
-    // ordinary answer() path scores it (+100 / −50) and completes
-    // the round in one click.
-    optionsEl.className='options snippets';
-    var dsnips = shuffle([{lang:q.lang, code:q.codeTarget}, {lang:q.decoy, code:q.codeDecoy}]);
-    dsnips.forEach(function(item, pos){
-      var b=document.createElement('button');
-      b.type='button'; b.className='opt snippet'; b.setAttribute('data-name', item.lang);
-      b.setAttribute('aria-label', 'Excerpt '+(pos+1));
-      var pre=document.createElement('pre'); pre.textContent=item.code;
-      b.appendChild(pre);
-      b.addEventListener('click', function(){ answer(item.lang, b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='expert-two'){
@@ -519,8 +463,8 @@ function finishRound(correct, lineText){
   nextBtn.classList.add('show');
   updateStats();
   // The single round-completion point: every finished round (any Hard
-  // kind; Expert identification / odd / two-stage / discrimination,
-  // including a wrong family pick, which also ends its round in finishRound)
+  // kind; Expert identification / odd / two-stage, including a wrong
+  // family pick, which also ends its round in finishRound)
   // passes through here. A correct Expert family pick does NOT — it
   // sets its feedback inline and the round continues — so it can never
   // start the timer. No-op in Normal (see scheduleAutoAdvance).
@@ -624,9 +568,7 @@ function answer(name, btn){
   answered=true;
   var q=currentQ();
   var isExpert = mode==='expert';
-  // For odd-one-out rounds q.lang holds the odd language; for
-  // discrimination rounds it holds the target language, and `name`
-  // is the language of whichever excerpt the player tapped.
+  // For odd-one-out rounds q.lang holds the odd language.
   var correctName = q.lang;
   var correct = name===correctName;
   if(isExpert){
@@ -647,14 +589,9 @@ function answer(name, btn){
     if(b===btn) pickedPos = i+1;
   });
 
-  var logLang = q.kind==='expert-odd' ? q.lang+' — odd one out' : (q.kind==='expert-disc' ? q.lang+' — discrimination' : q.lang);
+  var logLang = q.kind==='expert-odd' ? q.lang+' — odd one out' : q.lang;
   var logPicked = name, logCorrect = correctName;
-  if(q.kind==='expert-disc'){
-    // Record the claim as a position plus the language it actually
-    // was ("Picked excerpt 2 — that was COW"), not just a name.
-    logPicked = 'Excerpt '+pickedPos+' — '+name;
-    logCorrect = 'Excerpt '+correctPos+' — '+q.lang;
-  } else if(q.kind==='reverse'){
+  if(q.kind==='reverse'){
     logPicked = name+' (candidate '+pickedPos+')';
     logCorrect = q.lang+' (candidate '+correctPos+')';
   }
@@ -670,10 +607,7 @@ function answer(name, btn){
 
   var pts = isExpert ? (correct ? ' (+100 pts)' : ' (−50 pts)') : (mode==='hard' && correct ? ' (+100 pts)' : '');
   var line;
-  if(q.kind==='expert-disc'){
-    line = correct ? '✓ Correct — excerpt '+correctPos+' is '+q.lang+pts
-                   : '✕ Wrong — excerpt '+correctPos+' is '+q.lang+' · you picked the '+name+' excerpt'+pts;
-  } else if(q.kind==='reverse'){
+  if(q.kind==='reverse'){
     line = correct ? '✓ Correct — '+q.lang+' (candidate '+correctPos+')'+pts
                    : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' excerpt'+pts;
   } else if(q.kind==='expert-odd'){
