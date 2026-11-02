@@ -5,7 +5,14 @@
 //   events        ordered scroll-related events during answer -> Next,
 //                 with the Next button holding focus, as a real click does
 //   afterAdvance  stats after advancing to round 2
+//   keyboardEvents / afterKeyboardAdvance
+//                 events and focus state for an Enter-key advance to
+//                 round 3: the scroll must still be scrollTo(1140), and
+//                 focus must then land on the question prompt (qTitle)
+//   srAfterLoad / srAfterAdvance
+//                 the visually hidden live region's text (A1 announcements)
 //   afterRestart  stats after clicking Play again (restart)
+//   modePressed   aria-pressed on the three mode buttons after setMode('hard')
 //
 // Stub geometry is fixed: every element's getBoundingClientRect().top is
 // 240 and window.pageYOffset is 900, so a correct advance scroll must be
@@ -32,7 +39,10 @@ function makeEl(tag, id) {
       events.push({ kind: 'blur', target: this.id || this.tagName });
       if (document.activeElement === this) document.activeElement = null;
     },
-    focus() {},
+    focus() {
+      events.push({ kind: 'focus', target: this.id || this.tagName });
+      document.activeElement = this;
+    },
     click() { if (this._handlers.click) this._handlers.click(); },
     getBoundingClientRect() { return { top: 240, left: 0, width: 600, height: 40 }; },
   };
@@ -58,9 +68,10 @@ function makeEl(tag, id) {
 const byId = {};
 const document = {
   activeElement: null,
+  _handlers: {},
   getElementById(id) { if (!byId[id]) byId[id] = makeEl('div', id); return byId[id]; },
   createElement(tag) { return makeEl(tag); },
-  addEventListener(t, fn) {},
+  addEventListener(t, fn) { this._handlers[t] = fn; },
 };
 const window = {
   matchMedia() { return { matches: false }; },
@@ -77,16 +88,39 @@ const stats = () => ({
 
 new Function('document', 'window', script)(document, window);
 
-const out = { afterLoad: stats(), events: null, afterAdvance: null, afterRestart: null };
+const srText = () => document.getElementById('srStatus').textContent;
+
+const out = { afterLoad: stats(), events: null, afterAdvance: null, afterRestart: null,
+              keyboardEvents: null, afterKeyboardAdvance: null,
+              srAfterLoad: srText(), srAfterAdvance: null, modePressed: null };
 
 const nextBtn = document.getElementById('nextBtn');
 document.getElementById('optionsEl').children[0].click();  // answer round 1
 document.activeElement = nextBtn;                          // a real click leaves it focused
-nextBtn.click();                                           // advance
+nextBtn.click();                                           // advance (pointer)
 out.events = events.slice();
 out.afterAdvance = stats();
+out.srAfterAdvance = srText();
+
+// Advance round 2 -> 3 by keyboard: answer, focus on <body>, press Enter.
+document.getElementById('optionsEl').children[0].click();  // answer round 2
+document.activeElement = null;
+const evStart = events.length;
+document._handlers.keydown({ key: 'Enter', preventDefault() {} });
+out.keyboardEvents = events.slice(evStart);
+out.afterKeyboardAdvance = {
+  q: stats().q,
+  focusId: document.activeElement ? (document.activeElement.id || document.activeElement.tagName) : null,
+};
 
 document.getElementById('restartBtn').click();
 out.afterRestart = stats();
+
+document.getElementById('modeHardBtn').click();            // setMode('hard')
+out.modePressed = {
+  normal: document.getElementById('modeNormalBtn').getAttribute('aria-pressed'),
+  hard: document.getElementById('modeHardBtn').getAttribute('aria-pressed'),
+  expert: document.getElementById('modeExpertBtn').getAttribute('aria-pressed'),
+};
 
 console.log(JSON.stringify(out));

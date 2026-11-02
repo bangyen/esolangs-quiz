@@ -15,6 +15,16 @@
    and through the script's init path.
 3. Feedback wording: reverse rounds must name the correct candidate's
    position, pairing rounds must name both languages.
+4. Scoped UI/UX audit fixes (2026-11-01): feedback is a live region and
+   question changes are announced (A1); a keyboard advance lands focus
+   on the question prompt while a pointer advance keeps the blur +
+   measured-scroll behaviour above (A2); mode buttons carry
+   aria-pressed (A3); every CSS text pair passes WCAG AA contrast,
+   computed from the stylesheet (A4); mode toggles are 44px targets
+   and the dead .pair-* CSS is gone (M2/M5); Normal's mode line states
+   the premise and Hard's states its scoring (N1/N2); the best streak
+   is shown on the results screen (N4); the dead REVERSE_PROMPT /
+   EXPERT_ODD_PROMPT strings are no longer shipped (N5).
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -186,6 +196,34 @@ class TestDomHarness(unittest.TestCase):
     def test_advance_actually_advanced(self):
         self.assertEqual(self.out["afterAdvance"]["q"], "2 / 12")
 
+    def test_keyboard_advance_lands_focus_on_question_prompt(self):
+        events = self.out["keyboardEvents"]
+        scrolls = [e for e in events if e["kind"] == "scrollTo"]
+        self.assertTrue(scrolls, "keyboard advance must still scroll")
+        for e in scrolls:
+            self.assertEqual(e["top"], 1140)
+        focuses = [e for e in events if e["kind"] == "focus"]
+        self.assertEqual(len(focuses), 1)
+        self.assertEqual(focuses[0]["target"], "qTitle")
+        kinds = [e["kind"] for e in events]
+        self.assertLess(kinds.index("scrollTo"), kinds.index("focus"),
+                        "focus must land after the scroll, with preventScroll")
+        self.assertEqual(self.out["afterKeyboardAdvance"]["focusId"], "qTitle")
+        self.assertEqual(self.out["afterKeyboardAdvance"]["q"], "3 / 12")
+
+    def test_pointer_advance_does_not_move_focus_to_prompt(self):
+        # The pointer path is the original scroll fix: blur, then scroll,
+        # and nothing else — no focus() call at all.
+        self.assertFalse([e for e in self.out["events"] if e["kind"] == "focus"])
+
+    def test_question_changes_are_announced(self):
+        self.assertTrue(self.out["srAfterLoad"].startswith("Question 1 of 12"))
+        self.assertTrue(self.out["srAfterAdvance"].startswith("Question 2 of 12"))
+
+    def test_mode_buttons_aria_pressed_updates(self):
+        self.assertEqual(self.out["modePressed"],
+                         {"normal": "false", "hard": "true", "expert": "false"})
+
 
 class TestFeedbackWording(unittest.TestCase):
     def test_reverse_feedback_names_candidate_position(self):
@@ -202,6 +240,110 @@ class TestFeedbackWording(unittest.TestCase):
         self.assertIn("written to be sung like a ballad", hard)
         self.assertNotIn("s, k and i are the only functions", expert)
         self.assertIn("i = s k k", expert)
+
+
+def _luminance(hexcolor):
+    h = hexcolor.lstrip("#")
+    rgb = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    lin = [c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+           for c in rgb]
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+
+
+def _contrast(fg, bg):
+    hi, lo = sorted((_luminance(fg), _luminance(bg)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def _scheme_vars(dark):
+    if dark:
+        block = re.search(
+            r"prefers-color-scheme: dark\)\{\s*:root\{(.*?)\}", STYLE, re.S).group(1)
+    else:
+        block = STYLE.split("@media (prefers-color-scheme: dark)")[0]
+    return dict(re.findall(r"(--[\w-]+)\s*:\s*(#[0-9a-fA-F]{6})", block))
+
+
+# Foreground/background variable pairs that carry text in each scheme.
+# The disabled-Hint and dimmed-option blends are excluded on purpose:
+# WCAG exempts genuinely inactive components, and their information is
+# repeated in the feedback line (itself a pair below). The accent is a
+# non-text graphic (progress bar), held to the 3:1 bar instead.
+TEXT_PAIRS = [("ink", "bg"), ("ink", "good-bg"), ("ink", "bad-bg"),
+              ("code-ink", "code-bg"), ("code-dim", "code-bg"),
+              ("muted", "bg"), ("muted", "surface-2"),
+              ("good", "bg"), ("bad", "bg"), ("bg", "ink")]
+
+
+class TestAuditAccessibility(unittest.TestCase):
+    def test_feedback_is_a_live_region(self):
+        self.assertRegex(BUILT, r'id="feedbackEl"[^>]*aria-live="polite"')
+
+    def test_question_live_region_and_announcement(self):
+        self.assertRegex(BUILT, r'id="srStatus"[^>]*role="status"')
+        self.assertIn("srStatus.textContent = 'Question '", SCRIPT)
+        self.assertIn(".sr-only{", STYLE)
+
+    def test_mode_buttons_start_with_aria_pressed(self):
+        self.assertRegex(BUILT, r'id="modeNormalBtn"[^>]*aria-pressed="true"')
+        self.assertRegex(BUILT, r'id="modeHardBtn"[^>]*aria-pressed="false"')
+        self.assertRegex(BUILT, r'id="modeExpertBtn"[^>]*aria-pressed="false"')
+        self.assertIn("setAttribute('aria-pressed'", SCRIPT)
+
+    def test_focus_visible_styled_and_prompt_is_anchor(self):
+        self.assertIn(":focus-visible{outline:2px solid var(--accent)", STYLE)
+        self.assertRegex(BUILT, r'id="qTitle"[^>]*tabindex="-1"')
+        self.assertIn("focus({preventScroll:true})", SCRIPT)
+
+    def test_all_text_pairs_pass_aa_contrast(self):
+        for dark in (False, True):
+            vars_ = _scheme_vars(dark)
+            for fg, bg in TEXT_PAIRS:
+                ratio = _contrast(vars_["--" + fg], vars_["--" + bg])
+                self.assertGreaterEqual(
+                    ratio, 4.5,
+                    f"{'dark' if dark else 'light'} --{fg} on --{bg}: {ratio:.2f}")
+            self.assertGreaterEqual(
+                _contrast(vars_["--accent"], vars_["--bg"]), 3.0,
+                "accent progress bar is a graphic: 3:1 non-text bar")
+
+    def test_code_dim_value_is_the_fixed_one(self):
+        self.assertEqual(_scheme_vars(False)["--code-dim"], "#6f6f6c")
+
+    def test_snippet_buttons_get_candidate_labels(self):
+        # Both snippet renderers (reverse + odd-one-out), so feedback's
+        # "candidate 3" has an accessible name to refer to (A6).
+        self.assertEqual(SCRIPT.count("setAttribute('aria-label', 'Candidate '"), 2)
+
+
+class TestAuditMobileAndCopy(unittest.TestCase):
+    def test_mode_toggle_targets_are_44px(self):
+        rule = re.search(r"\.mode-toggle button\{(.*?)\}", STYLE).group(1)
+        self.assertIn("min-height:44px", rule)
+
+    def test_dead_pair_css_removed(self):
+        self.assertNotIn("pair-label", STYLE)
+        self.assertNotIn("pair-block", STYLE)
+
+    def test_normal_mode_line_states_the_premise(self):
+        self.assertIn("Every program prints Hello, World! — name the language.", SCRIPT)
+
+    def test_hard_mode_line_states_its_scoring(self):
+        self.assertIn("Excerpts only · +100 per correct · 1 hint per run (−25 pts)"
+                      " · facts at results.", SCRIPT)
+
+    def test_streak_is_explained_and_best_streak_shown(self):
+        self.assertIn('title="Questions answered correctly in a row"', BUILT)
+        self.assertIn('id="bdBestStreak"', BUILT)
+        self.assertIn("getElementById('bdBestStreak')", SCRIPT)
+
+    def test_dead_prompt_strings_no_longer_ship(self):
+        self.assertNotIn("REVERSE_PROMPT", BUILT)
+        self.assertNotIn("EXPERT_ODD_PROMPT", BUILT)
+        for name in ("hard.json", "expert.json"):
+            data = (ROOT / "src/data" / name).read_text(encoding="utf-8")
+            self.assertNotIn("REVERSE_PROMPT", data)
+            self.assertNotIn("EXPERT_ODD_PROMPT", data)
 
 
 if __name__ == "__main__":
