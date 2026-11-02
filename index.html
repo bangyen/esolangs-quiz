@@ -42,9 +42,10 @@
   .mode-toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
   .mode-toggle button{appearance:none;border:0;background:transparent;color:var(--muted);padding:8px 12px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:500}
   .mode-toggle button.active{background:var(--ink);color:var(--bg);font-weight:600}
-  .head-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  /* Study is a view, not a mode: a plain text button beside the pill,
-     so the pill stays four tabs wide on phones. */
+  /* Study is a view, not a mode: a plain text button on its own
+     right-aligned row under the header, so neither the pill nor the
+     header row has to make room for a fifth item on phones. */
+  .study-row{display:flex;justify-content:flex-end}
   .study-link{appearance:none;border:0;background:transparent;color:var(--muted);padding:8px 2px;min-height:44px;display:inline-flex;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
   .study-link.active{color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:4px}
   .mode-note{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:0}
@@ -137,16 +138,16 @@
 <div class="wrap">
   <header class="site-head">
     <h1>Esolangs Quiz</h1>
-    <div class="head-actions">
-      <div class="mode-toggle" role="group" aria-label="Quiz mode">
-        <button type="button" id="modeNormalBtn" class="active" aria-pressed="true">Normal</button>
-        <button type="button" id="modeHardBtn" aria-pressed="false">Hard</button>
-        <button type="button" id="modeExpertBtn" aria-pressed="false">Expert</button>
-        <button type="button" id="modeCommandsBtn" aria-pressed="false">Commands</button>
-      </div>
-      <button type="button" id="studyBtn" class="study-link" aria-pressed="false">Study</button>
+    <div class="mode-toggle" role="group" aria-label="Quiz mode">
+      <button type="button" id="modeNormalBtn" class="active" aria-pressed="true">Normal</button>
+      <button type="button" id="modeHardBtn" aria-pressed="false">Hard</button>
+      <button type="button" id="modeExpertBtn" aria-pressed="false">Expert</button>
+      <button type="button" id="modeCommandsBtn" aria-pressed="false">Commands</button>
     </div>
   </header>
+  <div class="study-row">
+    <button type="button" id="studyBtn" class="study-link" aria-pressed="false">Study</button>
+  </div>
   <p class="mode-note" id="modeNote"></p>
 
   <div id="quizView">
@@ -191,8 +192,10 @@
     </div>
     <h2 id="studyLanguages">Languages</h2>
     <div id="studyLangs"></div>
+    <p class="study-nav"><a href="#studyLanguages">Languages</a></p>
     <h2 id="studyCommands">Commands</h2>
     <div id="studyCmds"></div>
+    <p class="study-nav"><a href="#studyLanguages">Back to top</a></p>
   </div>
 </div>
 

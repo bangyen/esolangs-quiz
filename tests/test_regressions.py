@@ -544,6 +544,30 @@ class TestStudyView(unittest.TestCase):
         self.assertIn("studyBtn.classList.remove('active')", SCRIPT)
         self.assertNotIn("studyBtn.className", SCRIPT)
 
+    def test_study_button_has_its_own_row(self):
+        # On phones the pill + Study wrapped as one unit, so Study
+        # still shared the tabs' line. It now sits in its own
+        # right-aligned row under the header.
+        self.assertRegex(
+            BUILT,
+            r'<div class="study-row">\s*<button[^>]*id="studyBtn"')
+        self.assertIn('.study-row{display:flex', STYLE)
+        self.assertNotIn('head-actions', BUILT)
+
+    def test_study_nav_at_both_sections(self):
+        # The jump links used to exist only at the top: the Commands
+        # section had no way back. Now a Languages link sits right
+        # before the Commands heading and a Back to top after the
+        # tables.
+        self.assertEqual(BUILT.count('class="study-nav"'), 3)
+        langs = BUILT.index('id="studyLangs"')
+        cmds = BUILT.index('id="studyCommands"')
+        navs = [m.start() for m in
+                re.finditer(r'class="study-nav"', BUILT)]
+        self.assertTrue(langs < navs[1] < cmds)
+        self.assertGreater(BUILT.index('Back to top'),
+                           BUILT.index('id="studyCmds"'))
+
     def test_study_renders_from_the_pools(self):
         body = re.search(r"function buildStudy\(\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)
