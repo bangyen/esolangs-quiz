@@ -21,7 +21,7 @@ fact from one round can't help with a later one.
 | Expert | 15 | Identification 18 → 6 · Odd-one-out 8 → 3 · Two-stage 10 → 3 · Pairing 10 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
 
 - **Normal** — famous esolangs (Brainfuck, LOLCODE, Shakespeare, Chef, …),
-  full programs, a distinct caption under each option.
+  full programs, plain name-only options.
 - **Hard** — the telltales are cut: fragments are a 1–2 line middle excerpt
   (no `HAI`, no recipe header, no `IT'S SHOWTIME`), and every option comes
   from the same close family. Reverse rounds name a language and offer four
