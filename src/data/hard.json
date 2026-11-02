@@ -361,7 +361,6 @@
       "fact": "/// (pronounced \"slashes\") has one construct: /pattern/replacement/ applied to the text that follows, repeatedly. Its Hello World is a single substitution that expands a marker into the greeting."
     }
   ],
-  "REVERSE_PROMPT": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
   "HARD_REVERSE": [
     {
       "kind": "reverse",

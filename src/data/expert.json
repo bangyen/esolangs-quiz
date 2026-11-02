@@ -433,7 +433,6 @@
       "fact": "Deadfish has one accumulator and four commands — i increment, d decrement, s square, o output — plus the notorious rule that hitting exactly 256 or -1 resets the value to 0. The excerpt works because 8 squared is 64, and 64 + 8 is H."
     }
   ],
-  "EXPERT_ODD_PROMPT": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
   "EXPERT_ODD": [
     {
       "kind": "expert-odd",

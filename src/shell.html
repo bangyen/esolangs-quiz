@@ -25,9 +25,9 @@ __CSS__
   <header class="site-head">
     <h1>Esolangs Quiz</h1>
     <div class="mode-toggle" role="group" aria-label="Quiz mode">
-      <button type="button" id="modeNormalBtn" class="active">Normal</button>
-      <button type="button" id="modeHardBtn">Hard</button>
-      <button type="button" id="modeExpertBtn">Expert</button>
+      <button type="button" id="modeNormalBtn" class="active" aria-pressed="true">Normal</button>
+      <button type="button" id="modeHardBtn" aria-pressed="false">Hard</button>
+      <button type="button" id="modeExpertBtn" aria-pressed="false">Expert</button>
     </div>
   </header>
   <p class="mode-note" id="modeNote"></p>
@@ -36,20 +36,21 @@ __CSS__
     <div class="status" aria-label="Quiz status">
       <span><b id="statQ">1 / 12</b></span>
       <span><span id="scoreLabel">Score</span> <b id="statScore">0</b></span>
-      <span>Streak <b id="statStreak">0</b></span>
+      <span title="Questions answered correctly in a row">Streak <b id="statStreak">0</b></span>
       <span id="hintsStat">Hints <b id="statHints">0</b></span>
     </div>
     <div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
 
+    <div class="sr-only" id="srStatus" role="status"></div>
     <article class="card" id="card">
-      <div class="card-meta"><span id="qTag"></span><span class="q-prompt" id="qTitle"></span></div>
+      <div class="card-meta"><span id="qTag"></span><span class="q-prompt" id="qTitle" tabindex="-1"></span></div>
       <div class="code-wrap">
         <pre id="codeEl" aria-label="Hello World program"></pre>
         <img class="code-img" id="codeImg" src="__PIET_DATA_URI__" alt="A Piet program: a dense grid of coloured rectangles — red, yellow, blue, green, magenta and cyan blocks separated by black borders — that prints Hello, World!">
         <div class="code-note" id="codeNote"></div>
       </div>
       <div class="options" id="optionsEl" role="group" aria-label="Answer options"></div>
-      <div class="feedback" id="feedbackEl"></div>
+      <div class="feedback" id="feedbackEl" aria-live="polite"></div>
       <div class="hint-box" id="hintBox" role="status"></div>
       <div class="actions">
         <button class="btn-hint" id="hintBtn" type="button">Hint</button>
@@ -60,7 +61,7 @@ __CSS__
 
   <div class="results" id="resultsView">
     <div class="final-score"><span id="finalScore">0</span><span class="denom" id="finalDenom"></span></div>
-    <p class="final-sub"><span id="bdCorrect">0</span> correct</p>
+    <p class="final-sub"><span id="bdCorrect">0</span> correct · Best streak: <span id="bdBestStreak">0</span></p>
     <button class="btn-restart" id="restartBtn" type="button">Play again</button>
     <div class="review" id="reviewEl"></div>
   </div>

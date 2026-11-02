@@ -26,8 +26,8 @@ ROOT = Path(__file__).resolve().parent.parent
 # Pool variables in the exact order the original page declared them.
 DATA_FILES = [
     ("src/data/normal.json", ["QUESTIONS", "DISTRACTORS", "SUBS"]),
-    ("src/data/hard.json", ["HARD_FRAGMENTS", "REVERSE_PROMPT", "HARD_REVERSE", "HARD_WIDE"]),
-    ("src/data/expert.json", ["EXPERT_ID", "EXPERT_ODD_PROMPT", "EXPERT_ODD",
+    ("src/data/hard.json", ["HARD_FRAGMENTS", "HARD_REVERSE", "HARD_WIDE"]),
+    ("src/data/expert.json", ["EXPERT_ID", "EXPERT_ODD",
                               "EXPERT_FAMILIES", "EXPERT_TWO", "EXPERT_PAIR"]),
 ]
 

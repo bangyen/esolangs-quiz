@@ -25,7 +25,8 @@ var codeEl=document.getElementById('codeEl'), codeNote=document.getElementById('
     progressBar=document.getElementById('progressBar'),
     qTitle=document.getElementById('qTitle');
 var qTag=document.getElementById('qTag'), codeImg=document.getElementById('codeImg'),
-    modeNote=document.getElementById('modeNote'), hintsStat=document.getElementById('hintsStat');
+    modeNote=document.getElementById('modeNote'), hintsStat=document.getElementById('hintsStat'),
+    srStatus=document.getElementById('srStatus');
 
 function pool(){ return mode==='expert' ? EXPERT_ALL : (mode==='hard' ? HARD_ALL : QUESTIONS); }
 function currentQ(){ return pool()[order[idx]]; }
@@ -150,9 +151,10 @@ function render(){
   if(kind==='expert-odd'){
     optionsEl.className='options snippets';
     var osnips = shuffle(q.snippets.map(function(sn,i){ return {sn:sn, orig:i}; }));
-    osnips.forEach(function(item){
+    osnips.forEach(function(item, pos){
       var b=document.createElement('button');
       b.type='button'; b.className='opt snippet'; b.setAttribute('data-name', item.sn.lang);
+      b.setAttribute('aria-label', 'Candidate '+(pos+1));
       var pre=document.createElement('pre'); pre.textContent=item.sn.code;
       b.appendChild(pre);
       b.addEventListener('click', function(){ answer(item.sn.lang, b); });
@@ -182,9 +184,10 @@ function render(){
   } else if(kind==='reverse'){
     optionsEl.className='options snippets';
     var snips = shuffle(q.snippets.map(function(sn,i){ return {sn:sn, orig:i}; }));
-    snips.forEach(function(item){
+    snips.forEach(function(item, pos){
       var b=document.createElement('button');
       b.type='button'; b.className='opt snippet'; b.setAttribute('data-name', item.sn.lang);
+      b.setAttribute('aria-label', 'Candidate '+(pos+1));
       var pre=document.createElement('pre'); pre.textContent=item.sn.code;
       b.appendChild(pre);
       b.addEventListener('click', function(){ answer(item.sn.lang, b); });
@@ -204,6 +207,10 @@ function render(){
     });
   }
   updateStats();
+  // Announce the new question to assistive tech (visually hidden live
+  // region); the verdict itself is announced via #feedbackEl's
+  // aria-live. Without this, a screen-reader run changes silently.
+  srStatus.textContent = 'Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
 }
 
 // Bring the quiz area (stats + card) to the top of the viewport — never the
@@ -233,6 +240,20 @@ function scrollToEl(el){
 function blurActive(){
   var a = document.activeElement;
   if(a && a.blur) a.blur();
+}
+
+// Focus landing after an advance. Pointer users keep the blur-to-body
+// behaviour above (focus must be off the vanishing Next button before
+// render, or the scroll breaks). A keyboard advance instead lands focus
+// on the question prompt (tabindex="-1": a landing point, not a tab
+// stop) AFTER the scroll, with preventScroll so the focus call itself
+// cannot move the page — the prompt is never hidden, so focusing it
+// cannot reintroduce the hidden-focused-element scroll bug, and Tab
+// from it continues into the new round's options instead of restarting
+// from the page top every round.
+var advanceByKeyboard = false;
+function focusQuestionPrompt(){
+  if(qTitle && qTitle.focus) qTitle.focus({preventScroll:true});
 }
 
 function updateStats(){
@@ -386,14 +407,19 @@ function answer(name, btn){
 }
 
 nextBtn.addEventListener('click', function(){
+  var keyboardAdvance = advanceByKeyboard;
+  advanceByKeyboard = false;
   blurActive();
-  if(idx < order.length-1){ idx++; render(); scrollToEl(document.getElementById('quizView')); }
+  if(idx < order.length-1){
+    idx++; render(); scrollToEl(document.getElementById('quizView'));
+    if(keyboardAdvance) focusQuestionPrompt();
+  }
   else { showResults(); }
 });
 
 document.addEventListener('keydown', function(e){
   if(document.getElementById('resultsView').classList.contains('show')){
-    if(e.key==='Enter'){ restart(); } return;
+    if(e.key==='Enter'){ restart(); focusQuestionPrompt(); } return;
   }
   if(!answered && ['1','2','3','4','5','6','7','8'].indexOf(e.key)>=0){
     var n=parseInt(e.key,10)-1;
@@ -401,7 +427,7 @@ document.addEventListener('keydown', function(e){
     if(btns[n]) btns[n].click();
   } else if(answered && (e.key==='Enter' || e.key===' ')){
     if(document.activeElement && document.activeElement.tagName==='BUTTON') return;
-    e.preventDefault(); nextBtn.click();
+    e.preventDefault(); advanceByKeyboard = true; nextBtn.click();
   }
 });
 
@@ -413,6 +439,7 @@ function showResults(){
   document.getElementById('finalScore').textContent = isPoints ? points : score;
   document.getElementById('finalDenom').textContent = isPoints ? ' pts' : ' / '+total();
   document.getElementById('bdCorrect').textContent = count+' / '+total();
+  document.getElementById('bdBestStreak').textContent = bestStreak;
   document.getElementById('restartBtn').textContent = 'Play again';
 
   var rev=document.getElementById('reviewEl');
@@ -441,9 +468,14 @@ function setMode(m){
   document.getElementById('modeNormalBtn').className = m==='normal' ? 'active' : '';
   document.getElementById('modeHardBtn').className = m==='hard' ? 'active' : '';
   document.getElementById('modeExpertBtn').className = m==='expert' ? 'active' : '';
+  // The active mode must not be colour alone: mirror it in aria-pressed.
+  document.getElementById('modeNormalBtn').setAttribute('aria-pressed', m==='normal' ? 'true' : 'false');
+  document.getElementById('modeHardBtn').setAttribute('aria-pressed', m==='hard' ? 'true' : 'false');
+  document.getElementById('modeExpertBtn').setAttribute('aria-pressed', m==='expert' ? 'true' : 'false');
   modeNote.textContent = m==='expert'
     ? 'No hints · +100 correct · −50 wrong · facts at results.'
-    : (m==='hard' ? 'Excerpts only · 1 hint per run (−25 pts) · facts at results.' : '');
+    : (m==='hard' ? 'Excerpts only · +100 per correct · 1 hint per run (−25 pts) · facts at results.'
+                 : 'Every program prints Hello, World! — name the language.');
   document.getElementById('scoreLabel').textContent = m==='normal' ? 'Score' : 'Points';
   startQuiz();
 }
