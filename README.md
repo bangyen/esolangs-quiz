@@ -3,7 +3,7 @@
 Name that Hello World: guess the esoteric programming language from its
 "Hello, World!" program.
 
-Play it: https://bangyen.github.io/esolangs-quiz-repo/
+Play it: https://bangyen.github.io/esolangs-quiz/
 
 ## Modes
 
