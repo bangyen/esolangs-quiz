@@ -8,7 +8,7 @@
 Play it live: **https://bangyen.github.io/esolangs-quiz/**
 
 No timer, no typing — every round is tap/click only (keys 1–8 work on a
-keyboard). Answers give one short line of feedback; in Hard and Expert the
+keyboard). Answers give one short line of feedback; outside Normal the
 explanatory fact about each language is saved for the results review, so a
 fact from one round can't help with a later one.
 
@@ -19,6 +19,7 @@ fact from one round can't help with a later one.
 | Normal | 12 | Questions 30 → 12 | 4 | Free, unlimited | 1 point per correct answer |
 | Hard | 15 | Fragments 24 → 6 · Reverse 14 → 3 · Wide 18 → 6 | 4 (fragments, reverse) · 8 (wide) | 1 per run, −25 pts and your streak | +100 per correct answer |
 | Expert | 15 | Identification 24 → 6 · Odd-one-out 14 → 3 · Two-stage 16 → 3 · Pairing 16 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
+| Commands | 12 | Commands 80 → 12 (9 meaning + 3 reverse) | 4 | 1 per run, −25 pts and your streak | +100 per correct answer |
 
 - **Normal** — famous esolangs (Brainfuck, LOLCODE, Shakespeare, Chef, …),
   full programs, plain name-only options.
@@ -36,6 +37,14 @@ fact from one round can't help with a later one.
   A wrong call ends the round — and a correct "different" call only
   earns its points once you also name the second excerpt's language
   from four options).
+- **Commands** — not whole programs but single instructions: 80 commands
+  across 10 languages (Brainfuck, COW, Ook!, Befunge, Whitespace, FALSE,
+  SNUSP, `><>`, Brainbool, INTERCAL). Meaning rounds show one command and
+  ask what it does, with the tempting wrong answers drawn from sibling
+  commands and from the same symbol's meaning in another language
+  (Brainfuck's byte-wise `+` against Brainbool's bit-wise one); reverse
+  rounds name an effect and ask which command does it. Like Hard and
+  Expert, a finished round advances itself after a short pause.
 
 ## How the draws work
 
@@ -56,7 +65,7 @@ is what GitHub Pages serves (legacy publishing from `main`). That file is
 src/shell.html    page shell (tokens are replaced at build time)
 src/style.css     the stylesheet
 src/quiz.js       game logic
-src/data/*.json   the question pools (normal / hard / expert)
+src/data/*.json   the question pools (normal / hard / expert / commands)
 scripts/build.py  zero-dependency build (Python 3 standard library)
 assets/           the Piet program image, favicon, and social image
 ```
@@ -72,7 +81,11 @@ answer exactly once, fragments ≤ 2 lines, exactly one matching reverse
 candidate, two-stage languages in their declared families, an evenly
 split pairing pool whose different pairs each carry four stage-2 name
 options for the second excerpt (same pairs carry none), pool sizes ≥
-draw counts read out of `buildOrder()`),
+draw counts read out of `buildOrder()`), and for Commands: 80 commands
+with mutually distinct options, no distractor verbatim-equal to a
+same-language effect, and a unique reverse question per command —
+plus a 40-run draw simulation (always 9 meaning + 3 reverse rounds,
+no repeated command, at most 3 rounds from one language),
 check that the built page is fresh and its script parses, and pin the
 playtest regressions: advancing scrolls the window to the quiz area
 (never the document top, and never via a focused button that a render
