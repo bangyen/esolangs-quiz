@@ -184,13 +184,20 @@ class TestExpertPair(unittest.TestCase):
 
 class TestCommands(unittest.TestCase):
     """Commands mode data (src/data/commands.json): 80 commands over
-    10 languages. The distractors carry the difficulty, so they are
-    pinned hard: exactly 3 per command, all four options mutually
-    distinct, and no distractor verbatim-equal to ANY true effect in
-    the same language (a sibling's effect may only appear reworded —
-    otherwise a meaning round would have two defensible answers).
-    Cross-language equality is deliberate and NOT pinned against:
-    Brainfuck vs Brainbool is the built-in same-symbol trap."""
+    10 languages. There are NO stored distractors: a meaning round's
+    options are assembled at draw time from the verbatim effects of
+    sibling commands in the same language (see pickCommands() in
+    src/quiz.js — three blind options-only tests showed any option
+    set with exactly one true statement is expert-solvable, so every
+    option is now a true statement). What the data must therefore
+    guarantee is: no `distractors` field, effects unique within each
+    language (option distinctness depends on it), and every language
+    pool at the feasibility floor for the draw (pool − 3 max drawn
+    ≥ 3 distractor siblings). The old stored-distractor pins (option
+    distinctness, the verbatim ban, and the length/punctuation
+    fairness bands) are gone with the field they measured — surface
+    fairness is no longer a data property, and the blind options-only
+    test is its arbiter now."""
 
     LANG_COUNTS = {"Brainfuck": 8, "COW": 8, "Ook!": 8, "Befunge": 12,
                    "Whitespace": 8, "FALSE": 8, "SNUSP": 8, "><>": 6,
@@ -216,89 +223,43 @@ class TestCommands(unittest.TestCase):
                 self.assertTrue(c[field].strip(),
                                 f"{c['lang']} {c['symbol']}: empty {field}")
 
+    def test_no_distractors_field(self):
+        # Options are assembled at draw time from sibling effects;
+        # a stored distractor field must not creep back in.
+        for c in COMMANDS["COMMANDS"]:
+            self.assertNotIn("distractors", c,
+                             f"{c['lang']} {c['symbol']}")
+
     def test_symbols_unique_per_language(self):
         for lang, cs in self._by_lang().items():
             syms = [c["symbol"] for c in cs]
             self.assertEqual(len(syms), len(set(syms)), lang)
 
-    def test_options_distinct_and_unambiguous(self):
+    def test_effects_unique_per_language(self):
+        # A meaning round's options are the asked effect plus three
+        # sibling effects; if two commands in a language shared an
+        # effect string, a round could show the same option twice (or
+        # a distractor identical to the answer).
         for lang, cs in self._by_lang().items():
             effects = [c["effect"] for c in cs]
             self.assertEqual(len(effects), len(set(effects)),
                              f"{lang}: two commands share an effect string")
-            for c in cs:
-                self.assertEqual(len(c["distractors"]), 3,
-                                 f"{lang} {c['symbol']}")
-                options = [c["effect"]] + c["distractors"]
-                self.assertEqual(len(set(options)), 4,
-                                 f"{lang} {c['symbol']}: options not distinct")
-                for d in c["distractors"]:
-                    self.assertNotIn(
-                        d, effects,
-                        f"{lang} {c['symbol']}: distractor is verbatim a "
-                        f"same-language effect: {d!r}")
 
     def test_reverse_rounds_feasible(self):
         # A reverse round needs the correct symbol plus 3 siblings.
         for lang, cs in self._by_lang().items():
             self.assertGreaterEqual(len(cs), 4, lang)
 
-    def test_answer_length_does_not_identify_the_answer(self):
-        # Length must not be a tell. The correct effects are precise
-        # canonical clauses and the distractors were originally looser
-        # paraphrases, which made the right answer the longest option
-        # in 51 of 80 questions (64%, vs 25% by chance; Ook! was 8/8).
-        # The distractors were rebalanced by lengthening wrong claims
-        # with false detail. Pin the distribution with headroom around
-        # the rebalanced numbers (strictly longest 18, strictly
-        # shortest 17, ranks 18/26/19/17) so a future command cannot
-        # silently reintroduce the tell in either direction.
-        ranks = {1: 0, 2: 0, 3: 0, 4: 0}
-        strictly_longest = strictly_shortest = 0
-        per_lang = {}
-        for c in COMMANDS["COMMANDS"]:
-            effect_len = len(c["effect"])
-            distractor_lens = [len(d) for d in c["distractors"]]
-            ranks[1 + sum(1 for n in distractor_lens if n > effect_len)] += 1
-            entry = per_lang.setdefault(
-                c["lang"], {"n": 0, "longest": 0, "shortest": 0})
-            entry["n"] += 1
-            if all(n < effect_len for n in distractor_lens):
-                strictly_longest += 1
-                entry["longest"] += 1
-            if all(n > effect_len for n in distractor_lens):
-                strictly_shortest += 1
-                entry["shortest"] += 1
-        self.assertGreaterEqual(strictly_longest, 10)
-        self.assertLessEqual(strictly_longest, 26)
-        self.assertLessEqual(strictly_shortest, 26)
-        for rank, count in ranks.items():
-            self.assertGreaterEqual(count, 10, f"length rank {rank}")
-            self.assertLessEqual(count, 30, f"length rank {rank}")
-        for lang, entry in per_lang.items():
-            self.assertLessEqual(entry["longest"] * 2, entry["n"],
-                                 f"{lang}: answer too often the longest")
-            self.assertLessEqual(entry["shortest"] * 2, entry["n"],
-                                 f"{lang}: answer too often the shortest")
-
-    def test_punctuation_does_not_identify_the_answer(self):
-        # Punctuation register must not be a tell either. The correct
-        # effects were written like specifications, while distractors
-        # originally used almost none of the same marks: parentheses,
-        # em dashes, and semicolons appeared in effects but in zero
-        # distractors, and colons in only two. In total, 37 of 80
-        # questions had a mark that appeared only in the correct
-        # answer. For each mark below, no question may now have that
-        # mark in its effect while none of its distractors has it.
-        for mark in ("(", "—", ":", ";"):
-            offenders = [
-                f"{c['lang']} {c['symbol']}"
-                for c in COMMANDS["COMMANDS"]
-                if mark in c["effect"]
-                and not any(mark in d for d in c["distractors"])
-            ]
-            self.assertEqual(offenders, [],
-                             f"{mark!r} appears only in correct answers")
+    def test_language_pools_meet_the_sibling_floor(self):
+        # Draw-time option assembly takes 3 distractor siblings from
+        # the asked command's language, excluding every command in
+        # the run — and a run holds at most 3 commands per language
+        # (the pickCommands cap). So each pool needs at least
+        # 3 drawn + 3 siblings = 6 commands, or some run could not
+        # assemble a meaning round without leaking a run-mate's
+        # effect into the options.
+        for lang, cs in self._by_lang().items():
+            self.assertGreaterEqual(len(cs), 6, lang)
 
     def test_ask_phrases_unique_per_language(self):
         # The ask phrase IS the reverse question; if two commands in a

@@ -63,7 +63,13 @@ var pairStage = 0;
 // Commands mode: the drawn entries (pool indices into COMMANDS), which
 // of them are reverse rounds (parallel to `order`), and the entry keys
 // the previous Commands run served, for the fresh-draw preference.
+// commandsOptions is parallel to the drawn order too: for a meaning
+// round it holds the four option texts (the asked command's effect
+// plus three verbatim sibling effects, assembled by pickCommands —
+// see the two-phase draw there); reverse rounds get null, since their
+// options are symbols, assembled in render() as before.
 var commandsReverse = [];
+var commandsOptions = [];
 var prevCommandsKeys = [];
 // Every pool is larger than the number of rounds it serves. Each run draws
 // its rounds at random from the pool, preferring entries the previous run
@@ -90,6 +96,23 @@ function drawFrom(poolIndices, count, prevLangs, poolArr, excludeLangs){
 // languages where the draw allows) are marked as reverse rounds; the
 // designation is shuffled, so reverse rounds are interleaved through
 // the run rather than dealt as a block.
+//
+// The draw is TWO-PHASE. Phase 1 (immediately below) selects the run's
+// full command set and its reverse designations. Phase 2 then
+// assembles each meaning round's options: the asked command's effect
+// plus the verbatim effects of 3 sibling commands drawn from the same
+// language's pool EXCLUDING every command in the run's set — meaning
+// or reverse alike, because a reverse round shows its effect-derived
+// ask on screen, so serving that command's effect as another round's
+// distractor would leak it both ways. Every option is therefore a
+// true canonical statement; there are no authored distractors any
+// more (three blind options-only tests showed any option set with
+// exactly one true statement is expert-solvable: paraphrases 56%,
+// minimal pairs 92.5%, factorial grids 91.2%, chance 25%). Feasibility
+// rests on the ≤3-per-language cap: the smallest pools hold 6
+// commands, so ≥3 eligible siblings always remain; the data tests pin
+// that floor, and phase 2 throws rather than relax the exclusion if
+// it is ever violated.
 function pickCommands(){
   var shuffled = shuffle(COMMANDS.map(function(_,i){ return i; }));
   var fresh = shuffled.filter(function(i){
@@ -125,6 +148,21 @@ function pickCommands(){
       if(d==='meaning'){ designations[pos]='reverse'; marked++; }
     });
   }
+  // Phase 2: assemble the meaning rounds' options from verbatim
+  // sibling effects, excluding the whole run set (see header comment).
+  var inRun = {};
+  picked.forEach(function(i){ inRun[i] = true; });
+  commandsOptions = picked.map(function(i, pos){
+    if(designations[pos]==='reverse') return null;
+    var lang = COMMANDS[i].lang;
+    var eligible = [];
+    COMMANDS.forEach(function(c, j){
+      if(c.lang===lang && !inRun[j]) eligible.push(j);
+    });
+    var sibs = shuffle(eligible).slice(0, 3).map(function(j){ return COMMANDS[j].effect; });
+    if(sibs.length<3) throw new Error('pickCommands: fewer than 3 eligible sibling effects for '+lang+' '+COMMANDS[i].symbol);
+    return [COMMANDS[i].effect].concat(sibs);
+  });
   commandsReverse = designations;
   return picked;
 }
@@ -269,7 +307,9 @@ function render(){
     });
   } else if(kind==='cmd-meaning'){
     optionsEl.className='options';
-    shuffle([q.effect].concat(q.distractors)).forEach(function(text){
+    // The option set was assembled at draw time (pickCommands phase
+    // 2): the asked effect plus three verbatim sibling effects.
+    shuffle(commandsOptions[idx]).forEach(function(text){
       var b=document.createElement('button');
       b.type='button'; b.className='opt'; b.setAttribute('data-name', text);
       b.innerHTML='<span class="name"></span>';

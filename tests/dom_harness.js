@@ -39,9 +39,12 @@
 //   commands*     Commands mode: aria-pressed across all four tabs; a
 //                 fully instrumented flow run (+100 scoring, the single
 //                 −25 hint and its refusal, one 1200 ms timer, the
-//                 results review showing a command fact); and 40 drawn
-//                 runs for the draw simulation (composition 9 meaning
-//                 + 3 reverse, no repeated command, ≤ 3 per language)
+//                 results review showing a command fact); and 200
+//                 drawn runs for the draw simulation (composition
+//                 9 meaning + 3 reverse, no repeated command, ≤ 3 per
+//                 language, and every meaning round's option set: the
+//                 asked effect plus 3 verbatim effects of same-language
+//                 commands outside the run's drawn set)
 //   study*        Study view: the rendered reference content (language
 //                 entries and command groups, read straight off the
 //                 built DOM); entering Study with a Hard auto-advance
@@ -460,6 +463,7 @@ const cmdEntry = () => {
     (cmdTitle() === 'In ' + c.lang + ', which command ' + c.ask + '?' && code === c.ask));
 };
 const cmdKind = () => qTag.textContent.indexOf('Reverse') >= 0 ? 'reverse' : 'meaning';
+const cmdOpts = () => optionsEl.children.map(b => b.getAttribute('data-name'));
 const cmdCorrectBtn = (entry) => optionsEl.children.find(
   b => b.getAttribute('data-name') === (cmdKind() === 'reverse' ? entry.symbol : entry.effect));
 
@@ -484,7 +488,8 @@ const cmdDraws = [];
     if (!entry) throw new Error('commands round not identifiable: ' + cmdTitle());
     if (round === 0) firstFact = entry.fact;
     if (cmdKind() === 'meaning') meaningShorts.push(entry.short);
-    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind() });
+    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind(),
+                   opts: cmdKind() === 'meaning' ? cmdOpts() : null });
     const before = scoreNow();
     if (round === 1) {
       document.getElementById('hintBtn').click();          // the run's one hint
@@ -528,14 +533,16 @@ const cmdDraws = [];
 }
 out.commandsFlow = cmdFlow;
 
-// Draw simulation: 39 more fresh Commands runs, answered correctly.
-for (let run = 0; run < 39; run++) {
+// Draw simulation: 199 more fresh Commands runs, answered correctly
+// (with the flow run above that makes 200 simulated runs).
+for (let run = 0; run < 199; run++) {
   document.getElementById('modeCommandsBtn').click();
   const runDraw = [];
   for (let round = 0; round < 12; round++) {
     const entry = cmdEntry();
     if (!entry) throw new Error('commands round not identifiable: ' + cmdTitle());
-    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind() });
+    runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind(),
+                   opts: cmdKind() === 'meaning' ? cmdOpts() : null });
     cmdCorrectBtn(entry).click();
     nextBtn.click();
   }

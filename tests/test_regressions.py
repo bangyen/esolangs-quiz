@@ -527,7 +527,18 @@ class TestDomHarness(unittest.TestCase):
 
     def test_commands_draw_simulation(self):
         draws = self.out["commandsDraws"]
-        self.assertEqual(len(draws), 40)
+        self.assertEqual(len(draws), 200)
+        commands = json.loads(
+            (ROOT / "src/data/commands.json").read_text(encoding="utf-8"))["COMMANDS"]
+        effect_of = {(c["lang"], c["symbol"]): c["effect"] for c in commands}
+        effects_by_lang = {}
+        owner_of_effect = {}
+        for c in commands:
+            effects_by_lang.setdefault(c["lang"], set()).add(c["effect"])
+            # Keyed by (language, effect): effect strings may repeat
+            # across languages, but within a language they are unique
+            # (pinned in test_data), so ownership is well-defined.
+            owner_of_effect[(c["lang"], c["effect"])] = (c["lang"], c["symbol"])
         for run in draws:
             self.assertEqual(len(run), 12)
             kinds = [r["kind"] for r in run]
@@ -536,11 +547,36 @@ class TestDomHarness(unittest.TestCase):
             keys = [(r["lang"], r["sym"]) for r in run]
             self.assertEqual(len(set(keys)), 12,
                              f"repeated command in run: {keys}")
+            run_keys = set(keys)
             per_lang = {}
             for r in run:
                 per_lang[r["lang"]] = per_lang.get(r["lang"], 0) + 1
             self.assertLessEqual(max(per_lang.values()), 3,
                                  f"language cap broken: {per_lang}")
+            for r in run:
+                if r["kind"] == "reverse":
+                    # Reverse rounds are untouched by draw-time
+                    # option assembly: no effect options recorded.
+                    self.assertIsNone(r["opts"])
+                    continue
+                opts = r["opts"]
+                asked = effect_of[(r["lang"], r["sym"])]
+                # Exactly 4 distinct options: the asked effect plus
+                # three others, every one a verbatim effect of the
+                # same language...
+                self.assertEqual(len(opts), 4)
+                self.assertEqual(len(set(opts)), 4,
+                                 f"options not distinct: {opts}")
+                self.assertIn(asked, opts)
+                for opt in opts:
+                    self.assertIn(opt, effects_by_lang[r["lang"]],
+                                  f"option not a {r['lang']} effect: {opt}")
+                    # ...whose owning command is NOT in this run's
+                    # drawn set (run exclusion — a run-mate's effect,
+                    # meaning or reverse, never leaks into options).
+                    if opt != asked:
+                        self.assertNotIn(owner_of_effect[(r["lang"], opt)], run_keys,
+                                         f"run-mate effect leaked: {opt}")
 
 
 class TestStudyView(unittest.TestCase):
@@ -666,6 +702,18 @@ class TestCommandsMode(unittest.TestCase):
         self.assertIn("(perLang[lang]||0)>=3", body)
         self.assertIn("marked>=3", body)
         self.assertIn("commandsReverse = designations;", body)
+
+    def test_meaning_options_assembled_from_sibling_effects_at_draw(self):
+        # Phase 2 of the draw: meaning options are verbatim sibling
+        # effects, sampled with the whole run set excluded (inRun),
+        # and render() serves the assembled set — never a stored
+        # per-command distractor list (the data no longer has one).
+        body = re.search(r"function pickCommands\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("commandsOptions = picked.map", body)
+        self.assertIn("!inRun[j]", body)
+        self.assertIn("shuffle(commandsOptions[idx])", SCRIPT)
+        self.assertNotIn("q.distractors", SCRIPT)
 
 
 class TestPairingFormat(unittest.TestCase):
