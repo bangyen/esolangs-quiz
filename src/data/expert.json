@@ -634,6 +634,156 @@
         }
       ],
       "fact": "Lazy K, Iota and Jot are combinatory logic through and through — S, K and I in various disguises, nothing else. Underload is a stack machine: ( … ) pushes a string and S prints it, which is why its Hello World is readable at a glance."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Whitespace",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are verbose English programs you could read aloud in a theatre or a kitchen. One of them says nothing you can see.",
+      "snippets": [
+        {
+          "lang": "Chef",
+          "code": "Hello World Souffle.\n\nIngredients.\n72 g haricot beans\n101 eggs\n108 g lard\n111 cups oil\n…"
+        },
+        {
+          "lang": "Shakespeare Programming Language",
+          "code": "The Infamous Hello World Program.\n\nRomeo, a young man with a remarkable patience.\nJuliet, a likewise young woman of remarkable grace.\n\n        Act I: Hamlet's insults and flattery."
+        },
+        {
+          "lang": "ArnoldC",
+          "code": "IT'S SHOWTIME\nTALK TO THE HAND \"HELLO WORLD\"\nYOU HAVE BEEN TERMINATED"
+        },
+        {
+          "lang": "Whitespace",
+          "code": "␣␣␣ ⇥ ␣␣⇥␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣⇥␣␣␣␣␣ ⏎\n␣␣␣ ⇥ ␣␣␣␣␣␣␣ ⏎\n(shown with visible symbols — the real file looks blank)"
+        }
+      ],
+      "fact": "Chef, the Shakespeare Programming Language and ArnoldC are all verbose English prose — recipes, plays and catchphrases. Whitespace is the odd one: its entire alphabet is spaces, tabs and linefeeds, shown here with visible substitute symbols."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Jot",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these run on a tape of bits or cells inherited from the same ancestor. One of them has no tape at all.",
+      "snippets": [
+        {
+          "lang": "Brainbool",
+          "code": ">++++++++[<++++++++>-]<+.\n.+..+++..+++.<++++++++."
+        },
+        {
+          "lang": "Smallfuck",
+          "code": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>"
+        },
+        {
+          "lang": "Ook!",
+          "code": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook."
+        },
+        {
+          "lang": "Jot",
+          "code": "1111110011110000111110101011\n1100011111000010111110001110"
+        }
+      ],
+      "fact": "Brainbool, Smallfuck and Ook! are all Brainfuck-family tape languages. Jot looks similar — just two symbols — but it is a combinator calculus: its 0s and 1s build functions, not tape cells."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "FALSE",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are laid out on a two-dimensional grid. One of them never leaves a one-dimensional stack.",
+      "snippets": [
+        {
+          "lang": "Befunge",
+          "code": "\"!dlroW ,olleH\" > v\n                 | : <\n                 @"
+        },
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @"
+        },
+        {
+          "lang": "><>",
+          "code": "\"!dlroW ,olleH\":l?!;o"
+        },
+        {
+          "lang": "FALSE",
+          "code": "\"Hello, World!\" ß"
+        }
+      ],
+      "fact": "Befunge, Hexagony and ><> all execute across a 2D playfield (rectangular, hexagonal, toroidal). FALSE is the odd one out: a strictly one-dimensional stack language whose whole program is a string and a print symbol."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "GolfScript",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are pure-function calculi with no variables and almost no alphabet. One of them is a practical stack language wearing ordinary quotes.",
+      "snippets": [
+        {
+          "lang": "Iota",
+          "code": "*i*i*i*i**i*i*i*i*i*i**i*i*i"
+        },
+        {
+          "lang": "Jot",
+          "code": "1111110011110000111110101011\n1100011111000010111110001110"
+        },
+        {
+          "lang": "Lazy K",
+          "code": "``s``s`k``si`k``s``si`k``s\n``si`k`k``s``si`k``s``si`k"
+        },
+        {
+          "lang": "GolfScript",
+          "code": "\"Hello, World!\""
+        }
+      ],
+      "fact": "Iota, Jot and Lazy K are all combinator calculi — programs are pure function application with no variables. GolfScript is the odd one: a conventional stack language, and its Hello World is just a string literal left on the stack to be printed."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "Chicken",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these are the same language in costume, each re-encoding one ancestor word by word. One repeats a word too, but its machine is its own.",
+      "snippets": [
+        {
+          "lang": "Ook!",
+          "code": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook."
+        },
+        {
+          "lang": "COW",
+          "code": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO"
+        },
+        {
+          "lang": "Blub",
+          "code": "Blub. Blub? Blub. Blub. Blub.\nBlub. Blub. Blub! Blub? Blub?"
+        },
+        {
+          "lang": "Chicken",
+          "code": "chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken"
+        }
+      ],
+      "fact": "Ook!, COW and Blub each re-encode Brainfuck's eight commands as pairs of one repeated word. Chicken also has a one-word vocabulary, but the count of chickens per line selects opcodes on its own stack machine — it is not a Brainfuck encoding."
+    },
+    {
+      "kind": "expert-odd",
+      "lang": "HQ9+",
+      "code": "Four snippets follow, labelled 1–4.\nThree of them belong to one family. One does not.\nTap the odd one out.",
+      "note": "// Odd one out — three of these wander a two-dimensional maze or grid. One of them is a single letter standing still.",
+      "snippets": [
+        {
+          "lang": "Hexagony",
+          "code": " . H e l\nl o ; W o\n r l d ! @\n  . . . ."
+        },
+        {
+          "lang": "Labyrinth",
+          "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _"
+        },
+        {
+          "lang": "SNUSP",
+          "code": "$_/==!/==\\#==!\n  \\==!/==/==!"
+        },
+        {
+          "lang": "HQ9+",
+          "code": "H"
+        }
+      ],
+      "fact": "Hexagony, Labyrinth and SNUSP are all two-dimensional: a hexagon, a maze, and a bouncing path. HQ9+ is the odd one — its Hello World is the single instruction H, in a language where the classic exercises are built in as one-letter commands."
     }
   ],
   "EXPERT_FAMILIES": {
