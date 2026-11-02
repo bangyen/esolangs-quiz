@@ -243,6 +243,44 @@ class TestCommands(unittest.TestCase):
         for lang, cs in self._by_lang().items():
             self.assertGreaterEqual(len(cs), 4, lang)
 
+    def test_answer_length_does_not_identify_the_answer(self):
+        # Length must not be a tell. The correct effects are precise
+        # canonical clauses and the distractors were originally looser
+        # paraphrases, which made the right answer the longest option
+        # in 51 of 80 questions (64%, vs 25% by chance; Ook! was 8/8).
+        # The distractors were rebalanced by lengthening wrong claims
+        # with false detail. Pin the distribution with headroom around
+        # the rebalanced numbers (strictly longest 18, strictly
+        # shortest 17, ranks 18/26/19/17) so a future command cannot
+        # silently reintroduce the tell in either direction.
+        ranks = {1: 0, 2: 0, 3: 0, 4: 0}
+        strictly_longest = strictly_shortest = 0
+        per_lang = {}
+        for c in COMMANDS["COMMANDS"]:
+            effect_len = len(c["effect"])
+            distractor_lens = [len(d) for d in c["distractors"]]
+            ranks[1 + sum(1 for n in distractor_lens if n > effect_len)] += 1
+            entry = per_lang.setdefault(
+                c["lang"], {"n": 0, "longest": 0, "shortest": 0})
+            entry["n"] += 1
+            if all(n < effect_len for n in distractor_lens):
+                strictly_longest += 1
+                entry["longest"] += 1
+            if all(n > effect_len for n in distractor_lens):
+                strictly_shortest += 1
+                entry["shortest"] += 1
+        self.assertGreaterEqual(strictly_longest, 10)
+        self.assertLessEqual(strictly_longest, 26)
+        self.assertLessEqual(strictly_shortest, 26)
+        for rank, count in ranks.items():
+            self.assertGreaterEqual(count, 10, f"length rank {rank}")
+            self.assertLessEqual(count, 30, f"length rank {rank}")
+        for lang, entry in per_lang.items():
+            self.assertLessEqual(entry["longest"] * 2, entry["n"],
+                                 f"{lang}: answer too often the longest")
+            self.assertLessEqual(entry["shortest"] * 2, entry["n"],
+                                 f"{lang}: answer too often the shortest")
+
     def test_ask_phrases_unique_per_language(self):
         # The ask phrase IS the reverse question; if two commands in a
         # language shared one, the round would have two right answers.
