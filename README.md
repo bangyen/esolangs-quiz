@@ -68,8 +68,12 @@ python3 -m unittest discover -s tests
 The tests pin the pool invariants (unique option sets containing the
 answer exactly once, fragments ≤ 2 lines, exactly one matching reverse
 candidate, two-stage languages in their declared families, an evenly
-split pairing pool, pool sizes ≥ draw counts read out of `buildOrder()`)
-and check that the built page is fresh and its script parses. CI runs
+split pairing pool, pool sizes ≥ draw counts read out of `buildOrder()`),
+check that the built page is fresh and its script parses, and pin the
+playtest regressions: advancing scrolls the window to the quiz area
+(never the document top, and never via a focused button that a render
+is about to hide), first-load stats match restart stats, and reverse /
+pairing feedback names the candidate position and both languages. CI runs
 both on every push and pull request to `main`.
 
 To play a local build, open `index.html` in a browser or serve the repo
