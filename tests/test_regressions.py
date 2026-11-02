@@ -529,6 +529,21 @@ class TestStudyView(unittest.TestCase):
         self.assertIn(".study{display:none", STYLE)
         self.assertIn(".study.show{display:block", STYLE)
 
+    def test_study_button_sits_outside_the_mode_pill(self):
+        # Study is a view, not a mode: its button lives outside the
+        # four-tab pill as a plain text link, so the pill stays narrow
+        # on phones. The active state must toggle via classList —
+        # assigning className would wipe the study-link class.
+        start = BUILT.index('class="mode-toggle"')
+        toggle_block = BUILT[start:BUILT.index('</div>', start)]
+        self.assertIn('modeCommandsBtn', toggle_block)
+        self.assertNotIn('studyBtn', toggle_block)
+        self.assertRegex(BUILT, r'id="studyBtn" class="study-link"')
+        self.assertIn('.study-link{', STYLE)
+        self.assertIn("studyBtn.classList.add('active')", SCRIPT)
+        self.assertIn("studyBtn.classList.remove('active')", SCRIPT)
+        self.assertNotIn("studyBtn.className", SCRIPT)
+
     def test_study_renders_from_the_pools(self):
         body = re.search(r"function buildStudy\(\)\{(.*?)\n\}",
                          SCRIPT, re.S).group(1)

@@ -789,7 +789,7 @@ function showStudy(){
     b.className = '';
     b.setAttribute('aria-pressed', 'false');
   });
-  studyBtn.className = 'active';
+  studyBtn.classList.add('active');
   studyBtn.setAttribute('aria-pressed', 'true');
   modeNote.textContent = 'Reference — every Hello World and command in the quiz.';
   // Announce the view switch on the same live region questions use.
@@ -817,7 +817,7 @@ function syncModeTabs(){
 function backToQuiz(){
   view = 'quiz';
   studyView.classList.remove('show');
-  studyBtn.className = '';
+  studyBtn.classList.remove('active');
   studyBtn.setAttribute('aria-pressed', 'false');
   syncModeTabs();
   applyModeChrome();
@@ -842,7 +842,7 @@ function setMode(m){
   clearAutoAdvance();
   view = 'quiz';
   studyView.classList.remove('show');
-  studyBtn.className = '';
+  studyBtn.classList.remove('active');
   studyBtn.setAttribute('aria-pressed', 'false');
   mode=m;
   syncModeTabs();
