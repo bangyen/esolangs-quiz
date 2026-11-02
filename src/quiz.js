@@ -40,6 +40,7 @@ var prevExpertOdd = [];
 var prevExpertTwo = [];
 var prevExpertPair = [];
 var expertStage = 0;
+var pairStage = 0;
 // Every pool is larger than the number of rounds it serves. Each run draws
 // its rounds at random from the pool, preferring entries the previous run
 // of that phase did not serve — so a replay gets a genuinely different set
@@ -96,7 +97,7 @@ function buildOrder(){
 }
 function render(){
   var q = currentQ();
-  answered=false; hintShown=false; expertStage=0;
+  answered=false; hintShown=false; expertStage=0; pairStage=0;
   var isHard = mode==='hard';
   var isExpert = mode==='expert';
   var kind = (isHard || isExpert) ? (q.kind||'fragment') : 'normal';
@@ -112,7 +113,7 @@ function render(){
     qTitle.textContent='Which family is this from?';
   } else if(kind==='expert-pair'){
     qTag.textContent='Expert · Pairing';
-    qTitle.textContent='Same language, or not?';
+    qTitle.textContent='Same language — or different? If different, name the second one.';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
     qTitle.textContent='Which snippet is '+q.lang+'?';
@@ -167,7 +168,7 @@ function render(){
       b.type='button'; b.className='opt'; b.setAttribute('data-name', optDef[0]);
       b.innerHTML='<span class="name"></span>';
       b.querySelector('.name').textContent=optDef[1];
-      b.addEventListener('click', function(){ answer(optDef[0], b); });
+      b.addEventListener('click', function(){ answerPair(optDef[0], b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='expert-two'){
@@ -369,6 +370,62 @@ function answerExpertFamily(fam, btn){
     b.addEventListener('click', function(){ answer(name, b); });
     optionsEl.appendChild(b);
   });
+}
+
+// Expert pairing rounds, stage 1: the Same/Different call. A wrong call
+// ends the round at once (−50), and a correct "Same" completes it (+100) —
+// both are exactly the old pairing answer, so they route through answer().
+// A correct "Different" scores NOTHING yet: the round continues to stage 2,
+// where the player must name the second excerpt's language for the same
+// single +100 / −50. The transition below deliberately does not touch
+// answered, the score, the log or finishRound() — so it cannot schedule
+// the auto-advance timer either.
+function answerPair(call, btn){
+  if(answered || pairStage!==0) return;
+  var q=currentQ();
+  var correctCall = q.same ? 'Yes' : 'No';
+  if(call!==correctCall || q.same){ answer(call, btn); return; }
+  pairStage=1;
+  qTag.textContent='Expert · Pairing · Name the second';
+  qTitle.textContent='What language is the second excerpt?';
+  feedbackEl.className='feedback show good';
+  feedbackEl.textContent='✓ Different languages — now name the second excerpt.';
+  // Announce the new stage like a new question (same live region render uses).
+  srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
+  optionsEl.innerHTML='';
+  optionsEl.className='options';
+  shuffle(q.options.slice()).forEach(function(name){
+    var b=document.createElement('button');
+    b.type='button'; b.className='opt'; b.setAttribute('data-name', name);
+    b.innerHTML='<span class="name"></span>';
+    b.querySelector('.name').textContent=name;
+    b.addEventListener('click', function(){ answerPairSecond(name, b); });
+    optionsEl.appendChild(b);
+  });
+}
+
+// Expert pairing rounds, stage 2: name excerpt B's language. This is the
+// round's only scoring point on the Different path — exactly one +100 or
+// −50 per pairing round, however it was reached.
+function answerPairSecond(name, btn){
+  if(answered || pairStage!==1) return;
+  answered=true;
+  var q=currentQ();
+  var correct = name===q.langB;
+  if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { points-=50; streak=0; }
+  resultsLog.push({lang:q.pairLabel, picked:'Different — second: '+name, correctAnswer:'Different — second: '+q.langB, correct:correct, usedHint:hintShown, fact:q.fact, kind:q.kind});
+  var buttons=optionsEl.querySelectorAll('.opt');
+  buttons.forEach(function(b){
+    b.disabled=true;
+    var n=b.getAttribute('data-name');
+    if(n===q.langB) b.classList.add('correct');
+    else if(b===btn) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  var pts = correct ? ' (+100 pts)' : ' (−50 pts)';
+  var line = correct ? '✓ Correct — the second excerpt is '+q.langB+pts
+                     : '✕ Wrong — the second excerpt is '+q.langB+', not '+name+pts;
+  finishRound(correct, line);
 }
 
 function answer(name, btn){

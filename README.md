@@ -32,8 +32,10 @@ fact from one round can't help with a later one.
   Brainbool, Smallfuck, `///`, Underload, Iota, Jot, Lazy K, …), plus
   odd-one-out rounds (four snippets, one not of the family), two-stage
   rounds (commit to a family first — wrong family ends the round — then
-  the exact language), and pairing rounds (two excerpts: same language,
-  yes or no?).
+  the exact language), and pairing rounds (two excerpts: same language?
+  A wrong call ends the round — and a correct "different" call only
+  earns its points once you also name the second excerpt's language
+  from four options).
 
 ## How the draws work
 
@@ -68,7 +70,9 @@ python3 -m unittest discover -s tests
 The tests pin the pool invariants (unique option sets containing the
 answer exactly once, fragments ≤ 2 lines, exactly one matching reverse
 candidate, two-stage languages in their declared families, an evenly
-split pairing pool, pool sizes ≥ draw counts read out of `buildOrder()`),
+split pairing pool whose different pairs each carry four stage-2 name
+options for the second excerpt (same pairs carry none), pool sizes ≥
+draw counts read out of `buildOrder()`),
 check that the built page is fresh and its script parses, and pin the
 playtest regressions: advancing scrolls the window to the quiz area
 (never the document top, and never via a focused button that a render

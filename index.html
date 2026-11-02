@@ -2703,7 +2703,13 @@ var EXPERT_PAIR = [
     "codeA": "``.H.e.l.l.o. .W.o.r.l.d.!",
     "codeB": "``s``s`k``si`k``s``si`k``s",
     "note": "// Pairing round — two different excerpts, both heavy on backticks. Are they the same language?",
-    "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out."
+    "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out.",
+    "options": [
+      "Lazy K",
+      "Iota",
+      "Jot",
+      "Underload"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2714,7 +2720,13 @@ var EXPERT_PAIR = [
     "codeA": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
     "codeB": "1111110011110000111110101011\n1100011111000010111110001110",
     "note": "// Pairing round — two different excerpts, both by the same designer, both combinator calculus. Are they the same language?",
-    "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s."
+    "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s.",
+    "options": [
+      "Jot",
+      "Lazy K",
+      "Unlambda",
+      "Underload"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2725,7 +2737,13 @@ var EXPERT_PAIR = [
     "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
     "codeB": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
     "note": "// Pairing round — two different excerpts, both tape machines with brackets. Are they the same language?",
-    "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *."
+    "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *.",
+    "options": [
+      "Smallfuck",
+      "Brainbool",
+      "Ook!",
+      "COW"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2736,7 +2754,13 @@ var EXPERT_PAIR = [
     "codeA": "x::=~Hello, World!\n::=\nx",
     "codeB": "/x/Hello, World!/x",
     "note": "// Pairing round — two different excerpts, both string-rewriting languages. Are they the same language?",
-    "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites."
+    "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites.",
+    "options": [
+      "///",
+      "Fractran",
+      "Unlambda",
+      "Iota"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2747,7 +2771,13 @@ var EXPERT_PAIR = [
     "codeA": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
     "codeB": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
     "note": "// Pairing round — two different excerpts, both readable English prose. Are they the same language?",
-    "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement."
+    "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement.",
+    "options": [
+      "Shakespeare Programming Language",
+      "Rockstar",
+      "ArnoldC",
+      "LOLCODE"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2791,7 +2821,13 @@ var EXPERT_PAIR = [
     "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
     "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
     "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-    "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation."
+    "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation.",
+    "options": [
+      "COW",
+      "Ook!",
+      "Blub",
+      "Brainfuck"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2802,7 +2838,13 @@ var EXPERT_PAIR = [
     "codeA": "\"Hello, World!\" ß",
     "codeB": "\"Hello, World!\"",
     "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-    "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all."
+    "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all.",
+    "options": [
+      "GolfScript",
+      "Underload",
+      "Thue",
+      "Befunge"
+    ]
   },
   {
     "kind": "expert-pair",
@@ -2813,7 +2855,13 @@ var EXPERT_PAIR = [
     "codeA": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
     "codeB": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
     "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-    "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound."
+    "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound.",
+    "options": [
+      "Velato",
+      "Piet",
+      "Rockstar",
+      "Emojicode"
+    ]
   }
 ];
 
@@ -2859,6 +2907,7 @@ var prevExpertOdd = [];
 var prevExpertTwo = [];
 var prevExpertPair = [];
 var expertStage = 0;
+var pairStage = 0;
 // Every pool is larger than the number of rounds it serves. Each run draws
 // its rounds at random from the pool, preferring entries the previous run
 // of that phase did not serve — so a replay gets a genuinely different set
@@ -2915,7 +2964,7 @@ function buildOrder(){
 }
 function render(){
   var q = currentQ();
-  answered=false; hintShown=false; expertStage=0;
+  answered=false; hintShown=false; expertStage=0; pairStage=0;
   var isHard = mode==='hard';
   var isExpert = mode==='expert';
   var kind = (isHard || isExpert) ? (q.kind||'fragment') : 'normal';
@@ -2931,7 +2980,7 @@ function render(){
     qTitle.textContent='Which family is this from?';
   } else if(kind==='expert-pair'){
     qTag.textContent='Expert · Pairing';
-    qTitle.textContent='Same language, or not?';
+    qTitle.textContent='Same language — or different? If different, name the second one.';
   } else if(kind==='reverse'){
     qTag.textContent='Hard · Reverse';
     qTitle.textContent='Which snippet is '+q.lang+'?';
@@ -2986,7 +3035,7 @@ function render(){
       b.type='button'; b.className='opt'; b.setAttribute('data-name', optDef[0]);
       b.innerHTML='<span class="name"></span>';
       b.querySelector('.name').textContent=optDef[1];
-      b.addEventListener('click', function(){ answer(optDef[0], b); });
+      b.addEventListener('click', function(){ answerPair(optDef[0], b); });
       optionsEl.appendChild(b);
     });
   } else if(kind==='expert-two'){
@@ -3188,6 +3237,62 @@ function answerExpertFamily(fam, btn){
     b.addEventListener('click', function(){ answer(name, b); });
     optionsEl.appendChild(b);
   });
+}
+
+// Expert pairing rounds, stage 1: the Same/Different call. A wrong call
+// ends the round at once (−50), and a correct "Same" completes it (+100) —
+// both are exactly the old pairing answer, so they route through answer().
+// A correct "Different" scores NOTHING yet: the round continues to stage 2,
+// where the player must name the second excerpt's language for the same
+// single +100 / −50. The transition below deliberately does not touch
+// answered, the score, the log or finishRound() — so it cannot schedule
+// the auto-advance timer either.
+function answerPair(call, btn){
+  if(answered || pairStage!==0) return;
+  var q=currentQ();
+  var correctCall = q.same ? 'Yes' : 'No';
+  if(call!==correctCall || q.same){ answer(call, btn); return; }
+  pairStage=1;
+  qTag.textContent='Expert · Pairing · Name the second';
+  qTitle.textContent='What language is the second excerpt?';
+  feedbackEl.className='feedback show good';
+  feedbackEl.textContent='✓ Different languages — now name the second excerpt.';
+  // Announce the new stage like a new question (same live region render uses).
+  srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;
+  optionsEl.innerHTML='';
+  optionsEl.className='options';
+  shuffle(q.options.slice()).forEach(function(name){
+    var b=document.createElement('button');
+    b.type='button'; b.className='opt'; b.setAttribute('data-name', name);
+    b.innerHTML='<span class="name"></span>';
+    b.querySelector('.name').textContent=name;
+    b.addEventListener('click', function(){ answerPairSecond(name, b); });
+    optionsEl.appendChild(b);
+  });
+}
+
+// Expert pairing rounds, stage 2: name excerpt B's language. This is the
+// round's only scoring point on the Different path — exactly one +100 or
+// −50 per pairing round, however it was reached.
+function answerPairSecond(name, btn){
+  if(answered || pairStage!==1) return;
+  answered=true;
+  var q=currentQ();
+  var correct = name===q.langB;
+  if(correct){ points+=100; correctCount++; streak++; if(streak>bestStreak) bestStreak=streak; } else { points-=50; streak=0; }
+  resultsLog.push({lang:q.pairLabel, picked:'Different — second: '+name, correctAnswer:'Different — second: '+q.langB, correct:correct, usedHint:hintShown, fact:q.fact, kind:q.kind});
+  var buttons=optionsEl.querySelectorAll('.opt');
+  buttons.forEach(function(b){
+    b.disabled=true;
+    var n=b.getAttribute('data-name');
+    if(n===q.langB) b.classList.add('correct');
+    else if(b===btn) b.classList.add('wrong');
+    else b.classList.add('dim');
+  });
+  var pts = correct ? ' (+100 pts)' : ' (−50 pts)';
+  var line = correct ? '✓ Correct — the second excerpt is '+q.langB+pts
+                     : '✕ Wrong — the second excerpt is '+q.langB+', not '+name+pts;
+  finishRound(correct, line);
 }
 
 function answer(name, btn){

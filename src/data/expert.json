@@ -1024,7 +1024,13 @@
       "codeA": "``.H.e.l.l.o. .W.o.r.l.d.!",
       "codeB": "``s``s`k``si`k``s``si`k``s",
       "note": "// Pairing round — two different excerpts, both heavy on backticks. Are they the same language?",
-      "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out."
+      "fact": "Not the same. The first is Unlambda — the .x commands print characters directly. The second is Lazy K, pure S/K/I combinators with no printing primitive at all: its output is encoded, not spelled out.",
+      "options": [
+        "Lazy K",
+        "Iota",
+        "Jot",
+        "Underload"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1035,7 +1041,13 @@
       "codeA": "*i*i*i*i**i*i*i*i*i*i**i*i*i",
       "codeB": "1111110011110000111110101011\n1100011111000010111110001110",
       "note": "// Pairing round — two different excerpts, both by the same designer, both combinator calculus. Are they the same language?",
-      "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s."
+      "fact": "Not the same — siblings, not twins. Iota writes its single combinator as i with * for application; Jot (same designer, Chris Barker) encodes combinatory logic as a pure binary string of 0s and 1s.",
+      "options": [
+        "Jot",
+        "Lazy K",
+        "Unlambda",
+        "Underload"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1046,7 +1058,13 @@
       "codeA": "++++++++++[>+++++++>++++++++++\n>+++>+<<<<-]  >++.>+.",
       "codeB": "*>*>*>>*[*<]*>>[*<]\n*>>*[*<]>>>>*[*<]>>>>",
       "note": "// Pairing round — two different excerpts, both tape machines with brackets. Are they the same language?",
-      "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *."
+      "fact": "Not the same. Brainfuck has eight commands — note the + and . everywhere. Smallfuck kept only > < * [ ] and replaced increment-and-print with a single bit-flip, *.",
+      "options": [
+        "Smallfuck",
+        "Brainbool",
+        "Ook!",
+        "COW"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1057,7 +1075,13 @@
       "codeA": "x::=~Hello, World!\n::=\nx",
       "codeB": "/x/Hello, World!/x",
       "note": "// Pairing round — two different excerpts, both string-rewriting languages. Are they the same language?",
-      "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites."
+      "fact": "Not the same. Thue separates its rules with ::= and marks output with ~, with the rule list closed off before the data. /// has no rule list at all — each /pattern/replacement/ sits inline in the text it rewrites.",
+      "options": [
+        "///",
+        "Fractran",
+        "Unlambda",
+        "Iota"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1068,7 +1092,13 @@
       "codeA": "Put haricot beans into the mixing bowl.\nFold lard into the mixing bowl.",
       "codeB": "Hamlet:\n You are as honest as the sum of\n a hero and thyself! Speak your mind!",
       "note": "// Pairing round — two different excerpts, both readable English prose. Are they the same language?",
-      "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement."
+      "fact": "Not the same. The first is Chef — ingredients and mixing bowls. The second is the Shakespeare Programming Language — a named character speaking, with “Speak your mind!” as its print statement.",
+      "options": [
+        "Shakespeare Programming Language",
+        "Rockstar",
+        "ArnoldC",
+        "LOLCODE"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1112,7 +1142,13 @@
       "codeA": "Ook. Ook? Ook. Ook. Ook. Ook.\nOok. Ook. Ook! Ook? Ook? Ook.",
       "codeB": "MoO MoO MoO MoO MoO MoO\nMoO MoO mOo mOo MoO MoO",
       "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation."
+      "fact": "Different languages — but only just: Ook! (for orangutans) and COW (for cows) are both one-word re-encodings of Brainfuck. Ook! distinguishes its tokens by sentence punctuation; COW by capitalisation.",
+      "options": [
+        "COW",
+        "Ook!",
+        "Blub",
+        "Brainfuck"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1123,7 +1159,13 @@
       "codeA": "\"Hello, World!\" ß",
       "codeB": "\"Hello, World!\"",
       "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all."
+      "fact": "Different languages, one near-identical line: FALSE (1993) needs its ß print symbol after the string, while GolfScript (which FALSE inspired) prints whatever the stack holds at the end — so it needs nothing after the quote at all.",
+      "options": [
+        "GolfScript",
+        "Underload",
+        "Thue",
+        "Befunge"
+      ]
     },
     {
       "kind": "expert-pair",
@@ -1134,7 +1176,13 @@
       "codeA": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)",
       "codeB": "MIDI track 1:  C4 · E4 · D4 · G4 · A4 · E4 · C5\nMIDI track 1:  D4 · F4 · E4 · A4 · G4 · B4 · A4",
       "note": "// Pairing round — two different excerpts. Are they the same language? Different programs, possibly the same tongue.",
-      "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound."
+      "fact": "Different languages, sibling ideas (both by David Morgan-Mar's circle of art-languages): Piet's source is an image of colour blocks, Velato's source is a MIDI melody. Sight versus sound.",
+      "options": [
+        "Velato",
+        "Piet",
+        "Rockstar",
+        "Emojicode"
+      ]
     }
   ]
 }
