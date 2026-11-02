@@ -207,12 +207,32 @@ function render(){
 }
 
 // Bring the quiz area (stats + card) to the top of the viewport — never the
-// whole page. Scrolling to document top on every round forced Hard Mode
-// players back past the header, mode toggle and rules box after each answer.
+// whole page. This used to scroll #quizView into view natively, and a live
+// playtest showed advancing still landed at the document top on tall
+// Hard/Expert rounds. Root cause: the clicked Next button still holds focus
+// when render() strips its .show class, leaving a focused element at
+// display:none; the browser's focus/scroll-anchoring reaction to that
+// cancels the in-flight smooth scrollIntoView and drops the page at the
+// document top (invisible on short rounds, where the top is the quiz area
+// anyway). The header is a sibling before #quizView, not inside it, so
+// target alignment was never the problem. Fix: callers blur the active
+// element before rendering (see the Next/restart handlers), and this
+// helper scrolls the window directly to the element's measured document
+// offset instead of relying on scrollIntoView; style.css also sets
+// overflow-anchor:none so scroll anchoring cannot fight the scroll.
 function scrollToEl(el){
   if(!el) return;
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  el.scrollIntoView({block:'start', behavior: reduce ? 'auto' : 'smooth'});
+  var y = el.getBoundingClientRect().top + (window.pageYOffset || window.scrollY || 0);
+  window.scrollTo({top: Math.max(0, y), behavior: reduce ? 'auto' : 'smooth'});
+}
+
+// The advance/restart buttons hide themselves (or their whole view) as
+// part of the transition; a focused element must never be the one that
+// disappears, per the scroll bug above.
+function blurActive(){
+  var a = document.activeElement;
+  if(a && a.blur) a.blur();
 }
 
 function updateStats(){
@@ -315,11 +335,29 @@ function answer(name, btn){
   } else {
     if(correct){ score++; streak++; if(streak>bestStreak) bestStreak=streak; } else { streak=0; }
   }
-  var logLang = q.kind==='expert-pair' ? q.pairLabel : (q.kind==='expert-odd' ? q.lang+' — odd one out' : q.lang);
-  var logPicked = q.kind==='expert-pair' ? name+' ('+(q.same?'they are the same language':'they are different languages')+')' : name;
-  resultsLog.push({lang:logLang, picked:logPicked, correctAnswer:correctName, correct:correct, usedHint:hintShown, fact:q.fact, kind:q.kind||'fragment'});
-
   var buttons = optionsEl.querySelectorAll('.opt');
+  // Display positions of the correct option and the player's pick, for
+  // snippet rounds whose feedback must say WHICH candidate was right —
+  // "answer: Labyrinth" alone leaves the player hunting for a green border.
+  var btnArr = Array.prototype.slice.call(buttons);
+  var correctPos = 0, pickedPos = 0;
+  btnArr.forEach(function(b, i){
+    if(b.getAttribute('data-name')===correctName) correctPos = i+1;
+    if(b===btn) pickedPos = i+1;
+  });
+
+  var logLang = q.kind==='expert-pair' ? q.pairLabel : (q.kind==='expert-odd' ? q.lang+' — odd one out' : q.lang);
+  var logPicked = name, logCorrect = correctName;
+  if(q.kind==='expert-pair'){
+    // Name the pair and record the player's actual claim, not just Yes/No.
+    logPicked = name==='Yes' ? 'Same language' : 'Different languages';
+    logCorrect = (q.same ? 'Same language' : 'Different languages')+' ('+q.langA+' vs '+q.langB+')';
+  } else if(q.kind==='reverse'){
+    logPicked = name+' (candidate '+pickedPos+')';
+    logCorrect = q.lang+' (candidate '+correctPos+')';
+  }
+  resultsLog.push({lang:logLang, picked:logPicked, correctAnswer:logCorrect, correct:correct, usedHint:hintShown, fact:q.fact, kind:q.kind||'fragment'});
+
   buttons.forEach(function(b){
     b.disabled=true;
     var n=b.getAttribute('data-name');
@@ -331,8 +369,11 @@ function answer(name, btn){
   var pts = isExpert ? (correct ? ' (+100 pts)' : ' (−50 pts)') : (mode==='hard' && correct ? ' (+100 pts)' : '');
   var line;
   if(q.kind==='expert-pair'){
-    line = correct ? '✓ Correct — '+(q.same ? 'same language' : 'different languages')+pts
-                   : '✕ Wrong — answer: '+(q.same ? 'Yes, same language' : 'No, different languages')+pts;
+    line = correct ? '✓ Correct — '+q.langA+' vs '+q.langB+': '+(q.same ? 'same language' : 'different languages')+pts
+                   : '✕ Wrong — '+q.langA+' vs '+q.langB+' are '+(q.same ? 'the same language' : 'different languages')+pts;
+  } else if(q.kind==='reverse'){
+    line = correct ? '✓ Correct — '+q.lang+' (candidate '+correctPos+')'+pts
+                   : '✕ Wrong — '+q.lang+' was candidate '+correctPos+' · you picked the '+name+' snippet'+pts;
   } else if(q.kind==='expert-odd'){
     line = correct ? '✓ Correct — odd one out: '+q.lang+pts
                    : '✕ Wrong — odd one out: '+q.lang+pts;
@@ -345,6 +386,7 @@ function answer(name, btn){
 }
 
 nextBtn.addEventListener('click', function(){
+  blurActive();
   if(idx < order.length-1){ idx++; render(); scrollToEl(document.getElementById('quizView')); }
   else { showResults(); }
 });
@@ -391,7 +433,7 @@ function startQuiz(){
   document.getElementById('quizView').style.display='';
   render();
 }
-function restart(){ startQuiz(); scrollToEl(document.getElementById('quizView')); }
+function restart(){ blurActive(); startQuiz(); scrollToEl(document.getElementById('quizView')); }
 document.getElementById('restartBtn').addEventListener('click', restart);
 
 function setMode(m){

@@ -12,6 +12,9 @@
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
+  /* Scroll anchoring must not "correct" the deliberate scroll on round
+     advance after the options DOM is rebuilt (see scrollToEl in quiz.js). */
+  html{overflow-anchor:none}
   body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.5}
   .wrap{max-width:680px;margin:0 auto;padding:22px 18px 56px}
   /* Header: title + mode toggle only */
