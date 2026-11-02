@@ -73,7 +73,11 @@ check that the built page is fresh and its script parses, and pin the
 playtest regressions: advancing scrolls the window to the quiz area
 (never the document top, and never via a focused button that a render
 is about to hide), first-load stats match restart stats, and reverse /
-pairing feedback names the candidate position and both languages. CI runs
+pairing feedback names the candidate position and both languages. They
+also pin the accessibility audit fixes: live-region announcements of
+verdicts and question changes, focus landing on the question prompt
+after a keyboard advance, `aria-pressed` on the mode buttons, and every
+stylesheet text colour pair passing WCAG AA contrast. CI runs
 both on every push and pull request to `main`.
 
 To play a local build, open `index.html` in a browser or serve the repo
