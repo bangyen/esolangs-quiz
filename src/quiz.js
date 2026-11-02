@@ -256,6 +256,30 @@ function focusQuestionPrompt(){
   if(qTitle && qTitle.focus) qTitle.focus({preventScroll:true});
 }
 
+// Auto-advance (Hard/Expert only): when a round completes, move on after
+// a short pause so the verdict line can register — Normal keeps its
+// manual Next because its feedback carries a fact paragraph to read.
+// Exactly one timer can be pending: scheduling clears any old handle,
+// and every other path out of a round (manual Next, restart, mode
+// switch, a new run) clears it too, so a stale timer can never advance
+// a fresh run or double-advance the current one. The timer fires the
+// Next button itself, so a timer advance is literally the pointer
+// advance path (blur, measured scroll, no focus jump) — never the
+// keyboard path, and never a second copy of the advance logic.
+var AUTO_ADVANCE_MS = 1200;
+var autoAdvanceTimer = null;
+function clearAutoAdvance(){
+  if(autoAdvanceTimer!==null){ clearTimeout(autoAdvanceTimer); autoAdvanceTimer=null; }
+}
+function scheduleAutoAdvance(){
+  if(mode==='normal') return;
+  clearAutoAdvance();
+  autoAdvanceTimer=setTimeout(function(){
+    autoAdvanceTimer=null;
+    nextBtn.click();
+  }, AUTO_ADVANCE_MS);
+}
+
 function updateStats(){
   statQ.textContent=(Math.min(idx+1, total()))+' / '+total();
   statScore.textContent = mode==='normal' ? score : points;
@@ -298,6 +322,13 @@ function finishRound(correct, lineText){
   progressBar.style.width=Math.round(((idx+1)/total())*100)+'%';
   nextBtn.classList.add('show');
   updateStats();
+  // The single round-completion point: every finished round (any Hard
+  // kind; Expert identification / odd / pairing / two-stage, including
+  // a wrong family pick, which also ends its round in finishRound)
+  // passes through here. A correct Expert family pick does NOT — it
+  // sets its feedback inline and the round continues — so it can never
+  // start the timer. No-op in Normal (see scheduleAutoAdvance).
+  scheduleAutoAdvance();
 }
 
 // Expert two-stage rounds, stage 1: the family gate. A wrong family ends
@@ -407,6 +438,9 @@ function answer(name, btn){
 }
 
 nextBtn.addEventListener('click', function(){
+  // Any manual advance cancels a pending auto-advance, so the round
+  // moves on exactly once however the player got here.
+  clearAutoAdvance();
   var keyboardAdvance = advanceByKeyboard;
   advanceByKeyboard = false;
   blurActive();
@@ -454,16 +488,18 @@ function showResults(){
 }
 
 function startQuiz(){
+  clearAutoAdvance();
   order=buildOrder();
   idx=0; score=0; points=0; correctCount=0; streak=0; bestStreak=0; hintsUsed=0; resultsLog=[];
   document.getElementById('resultsView').classList.remove('show');
   document.getElementById('quizView').style.display='';
   render();
 }
-function restart(){ blurActive(); startQuiz(); scrollToEl(document.getElementById('quizView')); }
+function restart(){ clearAutoAdvance(); blurActive(); startQuiz(); scrollToEl(document.getElementById('quizView')); }
 document.getElementById('restartBtn').addEventListener('click', restart);
 
 function setMode(m){
+  clearAutoAdvance();
   mode=m;
   document.getElementById('modeNormalBtn').className = m==='normal' ? 'active' : '';
   document.getElementById('modeHardBtn').className = m==='hard' ? 'active' : '';
