@@ -49,6 +49,18 @@
    clearAutoAdvance path as a mode switch, aria-pressed stays
    coherent across all five header controls, and returning via a
    mode tab starts a run as a mode switch does.
+9. Full UI/UX audit fixes (2026-11-01): the default mode's line and
+   score label are initialised at startup from the same MODE_INFO
+   table setMode uses (F1); Study's Back button resumes the run
+   exactly as left (F2); UI strings use program/excerpt only (F3);
+   the og-image names Commands (F4); the two-stage stage-2 swap is
+   announced like pairing's (F5); a family-error review entry names
+   language + family (F7); compact lines use "pts" uniformly (F8);
+   Study has section jump links (F10); a <noscript> note covers the
+   no-JS shell (F11); clicking the already-active mode tab mid-run
+   is a no-op, while on results it restarts (F12); Commands review
+   entries use the short effect form (F13). F9 is a deliberate
+   non-fix: Commands options keep their full effect strings.
 
 Run:  python3 -m unittest discover -s tests
 """
@@ -359,6 +371,69 @@ class TestDomHarness(unittest.TestCase):
     def test_commands_results_review_shows_a_fact(self):
         self.assertTrue(self.out["commandsFlow"]["reviewHasFact"])
 
+    def test_commands_review_uses_short_effect_forms(self):
+        # F13: every meaning round's review meta line carries the
+        # command's short effect form (all 9 are checked in the harness).
+        self.assertTrue(self.out["commandsFlow"]["reviewShortsAllPresent"])
+
+    # --- Full-audit fixes (harness) ---
+
+    def test_first_load_shows_default_mode_line_and_score_label(self):
+        # F1: no clicks — startup itself initialises the chrome.
+        self.assertEqual(self.out["modeNoteAfterLoad"],
+                         "Every program prints Hello, World! — "
+                         "name the language.")
+        self.assertEqual(self.out["scoreLabelAfterLoad"], "Score")
+
+    def test_two_stage_stage_two_is_announced(self):
+        # F5: the family gate's stage swap updates the live region,
+        # like the pairing stage swap does.
+        sr = self.out["expertTwoStage"]["srAfterFamily"]
+        self.assertRegex(sr, r"^Question \d+ of 15\. ")
+        self.assertIn("Family correct — which language exactly?", sr)
+
+    def test_two_stage_family_error_review_names_language_and_family(self):
+        # F7: the review's correct answer is "Lang (Family)".
+        fam = self.out["expertFamilyError"]
+        self.assertIsNotNone(fam, "harness never reached a two-stage round")
+        self.assertTrue(fam["reviewHit"],
+                        f"review lacks '{fam['lang']} ({fam['family']})'")
+
+    def test_study_back_button_resumes_the_run_as_left(self):
+        # F2: the round trip preserves question, feedback, score and
+        # the Next button's visibility; chrome is restored for the
+        # mode still in play; the resumed run then advances normally.
+        res = self.out["studyResume"]
+        before, after = res["before"], res["after"]
+        for key in ("q", "score", "title", "feedback", "nextShown"):
+            self.assertEqual(after[key], before[key], f"resume changed {key}")
+        self.assertTrue(after["nextShown"])
+        self.assertFalse(after["studyShown"])
+        self.assertEqual(after["quizDisplay"], "")
+        self.assertEqual(after["modeNote"],
+                         "Excerpts only · +100 pts per correct · "
+                         "1 hint per run (−25 pts) · facts at results.")
+        self.assertEqual(after["pressed"],
+                         {"normal": "false", "hard": "true",
+                          "expert": "false", "commands": "false",
+                          "study": "false"})
+        self.assertTrue(after["sr"].startswith("Back to the quiz. Question"))
+        self.assertEqual(res["afterNextQ"], "2 / 15")
+
+    def test_same_mode_tab_mid_run_is_a_no_op(self):
+        # F12: question, score AND the pending timer all survive.
+        mid = self.out["sameTabMidRun"]
+        self.assertEqual(mid["before"]["pending"], 1)
+        self.assertEqual(mid["after"], mid["before"])
+
+    def test_same_mode_tab_on_results_restarts(self):
+        # F12: on the results screen the same click acts as play-again.
+        self.assertTrue(self.out["sameTabResultsShown"])
+        after = self.out["sameTabAfterResultsClick"]
+        self.assertEqual(after["q"], "1 / 15")
+        self.assertEqual(after["score"], "0")
+        self.assertFalse(after["resultsShown"])
+
     # --- Study view (harness) ---
 
     def test_study_renders_every_normal_language(self):
@@ -449,8 +524,8 @@ class TestStudyView(unittest.TestCase):
     def test_toggle_and_view_structure(self):
         self.assertRegex(BUILT, r'id="studyBtn"[^>]*aria-pressed="false"[^>]*>Study<')
         self.assertRegex(BUILT, r'<div class="study" id="studyView">')
-        self.assertIn("<h2>Languages</h2>", BUILT)
-        self.assertIn("<h2>Commands</h2>", BUILT)
+        self.assertIn('<h2 id="studyLanguages">Languages</h2>', BUILT)
+        self.assertIn('<h2 id="studyCommands">Commands</h2>', BUILT)
         self.assertIn(".study{display:none", STYLE)
         self.assertIn(".study.show{display:block", STYLE)
 
@@ -499,8 +574,8 @@ class TestCommandsMode(unittest.TestCase):
         self.assertIn("setMode('commands')", SCRIPT)
 
     def test_mode_line_states_the_rules(self):
-        self.assertIn("What does it do? · +100 per correct · 1 hint per run "
-                      "(−25 pts) · facts at results.", SCRIPT)
+        self.assertIn("Name what a command does · +100 pts per correct · "
+                      "1 hint per run (−25 pts) · facts at results.", SCRIPT)
 
     def test_commands_rounds_complete_through_finish_round(self):
         body = re.search(r"function answerCommand\(picked, btn\)\{(.*?)\n\}",
@@ -622,7 +697,7 @@ class TestAutoAdvancePins(unittest.TestCase):
 class TestFeedbackWording(unittest.TestCase):
     def test_reverse_feedback_names_candidate_position(self):
         self.assertIn("was candidate '+correctPos+'", SCRIPT)
-        self.assertIn("you picked the '+name+' snippet", SCRIPT)
+        self.assertIn("you picked the '+name+' excerpt", SCRIPT)
 
     def test_pairing_feedback_names_both_languages(self):
         self.assertIn("q.langA+' vs '+q.langB", SCRIPT)
@@ -723,7 +798,7 @@ class TestAuditMobileAndCopy(unittest.TestCase):
         self.assertIn("Every program prints Hello, World! — name the language.", SCRIPT)
 
     def test_hard_mode_line_states_its_scoring(self):
-        self.assertIn("Excerpts only · +100 per correct · 1 hint per run (−25 pts)"
+        self.assertIn("Excerpts only · +100 pts per correct · 1 hint per run (−25 pts)"
                       " · facts at results.", SCRIPT)
 
     def test_streak_is_explained_and_best_streak_shown(self):
@@ -738,6 +813,105 @@ class TestAuditMobileAndCopy(unittest.TestCase):
             data = (ROOT / "src/data" / name).read_text(encoding="utf-8")
             self.assertNotIn("REVERSE_PROMPT", data)
             self.assertNotIn("EXPERT_ODD_PROMPT", data)
+
+
+class TestFullAuditFixes(unittest.TestCase):
+    """Full UI/UX audit (2026-11-01) source pins. Behavioural sides of
+    F1/F2/F5/F7/F12/F13 live in TestDomHarness; these pin the strings
+    and structures behind them."""
+
+    # F1 — one per-mode source for the line + score label, applied by
+    # setMode on a switch and once at startup for the default mode.
+    def test_mode_chrome_comes_from_one_table(self):
+        self.assertIn("var MODE_INFO = {", SCRIPT)
+        self.assertRegex(SCRIPT, r"buildStudy\(\);\s*applyModeChrome\(\);\s*startQuiz\(\);")
+        body = re.search(r"function setMode\(m\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("applyModeChrome();", body)
+        # No second copy of a mode line outside the table.
+        self.assertEqual(SCRIPT.count("Every program prints Hello, World!"), 1)
+
+    # F3 — UI strings say program/excerpt; "snippet"/"Fragment" are
+    # gone from generated prompts, tags and feedback (internal kind
+    # names and CSS classes are not UI strings and stay).
+    def test_ui_terminology_is_program_and_excerpt(self):
+        self.assertIn("'Hard · Excerpt'", SCRIPT)
+        self.assertIn("'Which excerpt is '+q.lang+'?'", SCRIPT)
+        self.assertIn("you picked the '+name+' excerpt'", SCRIPT)
+        self.assertNotIn("Which snippet is", SCRIPT)
+        self.assertNotIn("Hard · Fragment", SCRIPT)
+        self.assertNotIn("name+' snippet'", SCRIPT)
+
+    # F4 — the share image names Commands like the meta description.
+    def test_og_image_mentions_commands(self):
+        svg = (ROOT / "assets/og-image.svg").read_text(encoding="utf-8")
+        self.assertIn("Normal · Hard · Expert · Commands", svg)
+
+    # F5 — the family gate announces its stage swap on srStatus,
+    # mirroring the pairing transition's line.
+    def test_family_gate_announces_stage_two(self):
+        body = re.search(r"function answerExpertFamily\(fam, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("srStatus.textContent='Question '+(idx+1)+' of '+total()+'. '+qTitle.textContent;",
+                      body)
+
+    # F7 — family-error log entry is unit-consistent. (The stage-2
+    # error path goes through answer() with a language on both sides
+    # already, so it needs no change.)
+    def test_family_error_log_names_language_and_family(self):
+        body = re.search(r"function answerExpertFamily\(fam, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("correctAnswer:q.lang+' ('+q.family+')'", body)
+
+    # F8 — "pts" uniformly in the compact mode lines.
+    def test_mode_lines_use_pts_uniformly(self):
+        self.assertIn("'No hints · +100 pts correct · −50 pts wrong · facts at results.'", SCRIPT)
+        self.assertIn("'Excerpts only · +100 pts per correct · 1 hint per run (−25 pts) · facts at results.'", SCRIPT)
+        self.assertIn("'Name what a command does · +100 pts per correct · 1 hint per run (−25 pts) · facts at results.'", SCRIPT)
+        self.assertNotIn("+100 per correct", SCRIPT)
+        self.assertNotIn("+100 correct · −50 wrong", SCRIPT)
+
+    # F2/F10 — Back button + jump links in the Study head; Back
+    # restores without restarting anything.
+    def test_study_back_button_and_jump_links(self):
+        self.assertRegex(BUILT, r'id="studyBackBtn"[^>]*>Back to quiz<')
+        self.assertIn('href="#studyLanguages"', BUILT)
+        self.assertIn('href="#studyCommands"', BUILT)
+        body = re.search(r"function backToQuiz\(\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertNotIn("startQuiz", body)
+        self.assertNotIn("render()", body)
+        self.assertIn("syncModeTabs();", body)
+        self.assertIn("applyModeChrome();", body)
+        # Entering Study records which screen to restore.
+        study = re.search(r"function showStudy\(\)\{(.*?)\n\}",
+                          SCRIPT, re.S).group(1)
+        self.assertIn("studyFromResults = document.getElementById('resultsView')"
+                      ".classList.contains('show');", study)
+
+    # F11 — no-JS note inside the quiz card.
+    def test_noscript_note_in_card(self):
+        self.assertIn("<noscript>", BUILT)
+        self.assertIn("This quiz needs JavaScript to run.", BUILT)
+
+    # F12 — the guard sits at the top of setMode, before any state
+    # (including the pending timer) is touched.
+    def test_same_mode_guard_precedes_state_changes(self):
+        body = re.search(r"function setMode\(m\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        guard = "if(m===mode && view==='quiz' && !document.getElementById('resultsView').classList.contains('show')) return;"
+        self.assertIn(guard, body)
+        self.assertLess(body.index(guard), body.index("clearAutoAdvance();"))
+
+    # F13 — Commands review logging compresses meaning rounds to the
+    # short form; live feedback keeps the full effect (answerCommand
+    # still scores against q.effect and names q.short there).
+    def test_commands_review_log_uses_short_form(self):
+        body = re.search(r"function answerCommand\(picked, btn\)\{(.*?)\n\}",
+                         SCRIPT, re.S).group(1)
+        self.assertIn("logCorrect = q.short || q.effect;", body)
+        self.assertIn("picked:logPicked", body)
+        self.assertIn("correctAnswer:logCorrect", body)
 
 
 if __name__ == "__main__":

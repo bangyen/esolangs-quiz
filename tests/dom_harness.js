@@ -161,7 +161,11 @@ const srText = () => document.getElementById('srStatus').textContent;
 
 const out = { afterLoad: stats(), events: null, afterAdvance: null, afterRestart: null,
               keyboardEvents: null, afterKeyboardAdvance: null,
-              srAfterLoad: srText(), srAfterAdvance: null, modePressed: null };
+              srAfterLoad: srText(), srAfterAdvance: null, modePressed: null,
+              // F1: the default mode's line + score label must be set at
+              // startup (from MODE_INFO), not only by a mode-tab click.
+              modeNoteAfterLoad: document.getElementById('modeNote').textContent,
+              scoreLabelAfterLoad: document.getElementById('scoreLabel').textContent };
 
 const nextBtn = document.getElementById('nextBtn');
 document.getElementById('optionsEl').children[0].click();  // answer round 1
@@ -235,6 +239,7 @@ for (let step = 0; step < 15 && !twoStage; step++) {
       family: entry.family,
       pendingAfterFamily: pendingTimers(),
       titleAfterFamily: document.getElementById('qTitle').textContent,
+      srAfterFamily: srText(),  // F5: stage 2 must be announced like pairing's
     };
     optionsEl.children[0].click();                         // exact language (stage 2)
     twoStage.pendingAfterComplete = pendingTimers();
@@ -379,6 +384,44 @@ while (Object.keys(pairScen).length < 5 && pairRuns < 20) {
 out.pairing = pairScen;
 out.pairingRuns = pairRuns;
 
+// --- Expert two-stage family error (F7) -----------------------------------
+// A wrong family pick must log a unit-consistent review entry: the
+// correct answer names the language AND its family ("Jot
+// (Combinators)"), not the bare language against a family pick. Hunt
+// a two-stage round in fresh Expert runs, pick a wrong family, play
+// the run out, and search the serialized review for the entry.
+let famErr = null;
+{
+  let runs = 0;
+  while (!famErr && runs < 20) {
+    runs++;
+    document.getElementById('modeExpertBtn').click();  // fresh Expert run
+    for (let round = 0; round < 15; round++) {
+      if (qTag.textContent.indexOf('Two-stage') >= 0) {
+        const entry = twoData.find(
+          e => e.code === document.getElementById('codeEl').textContent);
+        optionsEl.children.find(
+          b => b.getAttribute('data-name') !== entry.family).click();
+        famErr = { lang: entry.lang, family: entry.family };
+        nextBtn.click();
+      } else if (qTag.textContent.indexOf('Pairing') >= 0) {
+        handlePairRound();
+      } else {
+        playGenericRound();
+      }
+    }
+  }
+  if (famErr) {
+    // The review markup is built with escapeHtml(); escape the needle
+    // the same way (family names contain '&').
+    const esc = s => s.replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    famErr.reviewHit = document.getElementById('reviewEl').innerHTML
+      .indexOf(esc(famErr.lang + ' (' + famErr.family + ')')) >= 0;
+  }
+}
+out.expertFamilyError = famErr;
+
 // --- Commands mode --------------------------------------------------------
 // Identify the current round's entry from the page's own injected
 // COMMANDS data, matched by the rendered title + code block (meaning
@@ -413,10 +456,12 @@ const cmdDraws = [];
 {
   const runDraw = [];
   let firstFact = null;
+  const meaningShorts = [];
   for (let round = 0; round < 12; round++) {
     const entry = cmdEntry();
     if (!entry) throw new Error('commands round not identifiable: ' + cmdTitle());
     if (round === 0) firstFact = entry.fact;
+    if (cmdKind() === 'meaning') meaningShorts.push(entry.short);
     runDraw.push({ lang: entry.lang, sym: entry.symbol, kind: cmdKind() });
     const before = scoreNow();
     if (round === 1) {
@@ -451,6 +496,12 @@ const cmdDraws = [];
   cmdFlow.reviewHasFact =
     document.getElementById('reviewEl').innerHTML
       .indexOf(escapeForHtml(firstFact)) >= 0;
+  // F13: every meaning round was answered correctly, so each one's
+  // review meta line must carry the command's SHORT effect form
+  // (9 meaning rounds are guaranteed per run — deterministic).
+  const reviewHtml = document.getElementById('reviewEl').innerHTML;
+  cmdFlow.reviewShortsAllPresent = meaningShorts.length === 9 &&
+    meaningShorts.every(s => reviewHtml.indexOf(escapeForHtml(s)) >= 0);
 }
 out.commandsFlow = cmdFlow;
 
@@ -512,14 +563,73 @@ out.studyEnter = {
 if (studyStale) fireTimer(studyStale.id);
 out.studyAfterStaleFire = { q: stats().q, studyShown: studyShown() };
 
+// Study Back-to-quiz resume (F2): enter Study mid-feedback on a Hard
+// run, come Back, and the round must be exactly as left — same
+// question, feedback, score and Next state — then advance normally.
+// (Entering Study cleared the auto-advance timer, so the round waits
+// for the manual Next click below.)
+document.getElementById('modeHardBtn').click();           // fresh Hard run (from Study: always allowed)
+optionsEl.children[0].click();                            // answer round 1: feedback visible
+const resumeBefore = {
+  q: stats().q, score: stats().score,
+  title: document.getElementById('qTitle').textContent,
+  feedback: feedbackNow(),
+  nextShown: nextBtn.classList.contains('show'),
+};
+document.getElementById('studyBtn').click();              // enter Study mid-feedback
+document.getElementById('studyBackBtn').click();          // Back: resume as left
+out.studyResume = {
+  before: resumeBefore,
+  after: {
+    q: stats().q, score: stats().score,
+    title: document.getElementById('qTitle').textContent,
+    feedback: feedbackNow(),
+    nextShown: nextBtn.classList.contains('show'),
+    studyShown: studyShown(),
+    quizDisplay: document.getElementById('quizView').style.display,
+    modeNote: document.getElementById('modeNote').textContent,
+    pressed: pressedAll(),
+    sr: srText(),
+  },
+};
+nextBtn.click();                                          // the resumed run advances normally
+out.studyResume.afterNextQ = stats().q;
+
 // Returning via a mode tab: Study hides, the quiz view is back, the
 // pressed states flip back, and a fresh run starts normally.
+document.getElementById('studyBtn').click();              // enter Study again
 document.getElementById('modeNormalBtn').click();
 out.studyReturn = {
   q: stats().q,
   studyShown: studyShown(),
   quizDisplay: document.getElementById('quizView').style.display,
   pressed: pressedAll(),
+};
+
+// --- Same-mode tab guard (F12) --------------------------------------------
+// Clicking the already-active tab mid-run must be a complete no-op
+// (question, score and even the pending auto-advance timer survive);
+// the same click on the results screen restarts like play-again.
+document.getElementById('modeHardBtn').click();           // fresh Hard run (different mode)
+optionsEl.children[0].click();                            // answer round 1 (timer pending)
+const guardBefore = { q: stats().q, score: stats().score, pending: pendingTimers().length };
+document.getElementById('modeHardBtn').click();           // same tab mid-run: no-op
+out.sameTabMidRun = {
+  before: guardBefore,
+  after: { q: stats().q, score: stats().score, pending: pendingTimers().length },
+};
+nextBtn.click();                                          // -> round 2 (cancels the timer)
+for (let i = 0; i < 14; i++) {                            // play rounds 2..15 out
+  if (document.getElementById('resultsView').classList.contains('show')) break;
+  optionsEl.children[0].click();
+  nextBtn.click();
+}
+out.sameTabResultsShown =
+  document.getElementById('resultsView').classList.contains('show');
+document.getElementById('modeHardBtn').click();           // same tab on results: fresh run
+out.sameTabAfterResultsClick = {
+  q: stats().q, score: stats().score,
+  resultsShown: document.getElementById('resultsView').classList.contains('show'),
 };
 
 console.log(JSON.stringify(out));
