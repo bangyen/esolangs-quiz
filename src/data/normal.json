@@ -159,6 +159,86 @@
       "note": "// Shown as the note sequence — the real source is a MIDI file. Each step from one note to the next is one command.",
       "hint": "Listen, don’t look: this one is played, not read. The interval between successive notes carries the meaning.",
       "fact": "Velato (Daniel Johnson) reads a MIDI file: the interval between successive notes is the command, so a program is literally a melody — a good one should sound pleasant, not just run."
+    },
+    {
+      "lang": "Piet",
+      "sub": "Programs are abstract paintings",
+      "code": "■ light red (12 codels)  →  ■ red (18)  →  ■ yellow (6)\n■ dark blue (24)  →  ■ blue (18)  →  ■ cyan (9)\n(a painting-like grid of coloured rectangles — block size and hue change are the instructions)",
+      "note": "// Shown as a description — the real source is an image in the style of Piet Mondrian.\n// Block sizes push values; moving between colours is the instruction set.",
+      "hint": "This program is a picture. The size of each coloured block and the change of hue between blocks are the instructions.",
+      "fact": "Piet, by David Morgan-Mar, is named after Piet Mondrian: programs are abstract paintings, and the interpreter walks the coloured blocks (codels), using block size and hue changes as commands."
+    },
+    {
+      "lang": "Fractran",
+      "sub": "Nothing but a list of fractions",
+      "code": "17/91   78/85   19/51   23/38   29/33\n77/29   95/23   77/19    1/17   11/13",
+      "note": "// Output: Hello World!\n// No variables, no keywords — one integer is multiplied by the first fraction in the list that keeps it whole, over and over.",
+      "hint": "There is no syntax to read: just fractions. A single integer state is multiplied by the first fraction that divides it evenly.",
+      "fact": "FRACTRAN, invented by John Conway, is a Turing-complete language whose entire program is an ordered list of fractions. Conway also used it to build a prime-generating machine out of 14 fractions."
+    },
+    {
+      "lang": "Labyrinth",
+      "sub": "2D maze — walls steer the pointer",
+      "code": ") \"Hello, World!\"\n\" @ ,   ( ! \"\n# _ \"   _   \" _",
+      "note": "// Output: Hello, World!\n// The grid is a maze: the execution head wanders the corridors, and the character under it is the instruction.",
+      "hint": "Read it as a floor plan, not as text — execution travels through the grid like a maze, and walls matter.",
+      "fact": "Labyrinth (by Martin Ender) is a two-dimensional language whose source is a maze. The instruction pointer moves through open corridors, choosing its direction from the walls around it, and the stack is bottomless."
+    },
+    {
+      "lang": "GolfScript",
+      "sub": "A string is the whole program",
+      "code": "\"Hello, World!\"",
+      "note": "// Output: Hello, World!\n// That really is the complete program — a string literal left on the stack is printed when the program ends.",
+      "hint": "One pair of quotes is the entire program. In this stack language, whatever is left on the stack at the end gets printed.",
+      "fact": "GolfScript is a stack-based language built for code golf, where the shortest program wins. Its Hello World is famously just the quoted string, because the final stack is printed automatically."
+    },
+    {
+      "lang": "Chicken",
+      "sub": "One word: chicken",
+      "code": "chicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\nchicken chicken chicken chicken chicken chicken chicken chicken chicken chicken\n…",
+      "note": "// Excerpt — the real program runs to many lines of the same word.\n// How many chickens are on a line is the instruction; nothing else exists.",
+      "hint": "Every word is the same word. Count them: the number of repetitions on each line is the opcode.",
+      "fact": "Chicken's entire vocabulary is the word \"chicken\". A program is lines of chickens, and the count on each line selects an instruction — a joke language that is nonetheless fully working."
+    },
+    {
+      "lang": "Unary",
+      "sub": "Nothing but zeroes, enormously long",
+      "code": "0000000000000000000000000000000000000000…\n(one unbroken run of zeroes — the full Hello World runs to an astronomical length)",
+      "note": "// Shown in miniature — the real file is a single run of 0 characters with nothing else in it.\n// The length of the run is the program: it encodes another language's code in unary.",
+      "hint": "There is exactly one character, repeated. All the information is in how many of them there are.",
+      "fact": "Unary pushes a joke to its limit: a Brainfuck program is converted to a single number, then written out as that many zeroes. Even tiny programs become files of astronomical length, which is the point."
+    },
+    {
+      "lang": "FALSE",
+      "sub": "Stack language from 1993",
+      "code": "\"Hello, World!\" ß",
+      "note": "// Output: Hello, World!\n// The string is pushed onto a stack, and the single symbol after it prints the top of the stack.",
+      "hint": "A quoted string plus one symbol. Think stack: push the text, then one command writes it out — ß is this language's print.",
+      "fact": "FALSE, created by Wouter van Oortmerssen in 1993, is a tiny stack-based language named for its creator's favourite boolean value. It was a direct inspiration for GolfScript."
+    },
+    {
+      "lang": "Thue",
+      "sub": "Programs are rewrite rules",
+      "code": "x::=~Hello, World!\n::=\nx",
+      "note": "// Output: Hello, World!\n// Everything here is a substitution rule: ::= says what replaces what, and ~ means \"print this\" instead of rewriting.",
+      "hint": "Look for the ::= signs — the whole language is find-and-replace rules applied to a starting string until nothing matches.",
+      "fact": "Thue (John Colagioia, 2000) is a string-rewriting language named after the Norwegian mathematician Axel Thue. Programs are replacement rules; text after a ~ is output rather than substituted."
+    },
+    {
+      "lang": "SNUSP",
+      "sub": "A path traced through a grid",
+      "code": "$_/==!/==\\#==!\n  \\==!/==/==!",
+      "note": "// Output: Hello, World!\n// Execution starts at the $ and follows the path characters — / and \\ are mirrors that turn the direction of travel.",
+      "hint": "Find the $ — that's the entry point. The slashes are mirrors, and the program is the route traced through the grid.",
+      "fact": "SNUSP executes like a beam of light: it enters at $, travels in straight lines, and bounces off / and \\ mirrors. The two-dimensional path, not the line order, is the program."
+    },
+    {
+      "lang": "Deadfish",
+      "sub": "Four commands: i, d, s, o",
+      "code": "iiiiiiiisiiiiiiiioiiiiiiiiiiiiiiiiiiiiiiiiiiiiio\niiiiiiiooiiio\n…",
+      "note": "// Excerpt — this fragment genuinely prints \"Hello\"; the full program keeps counting for the rest.\n// One accumulator: i adds 1, d subtracts 1, s squares, o outputs the value as a character.",
+      "hint": "Only four letters do anything: increment, decrement, square, output. The counter is nudged to each character's code, one letter at a time — 8 squared is 64, plus 8 is H.",
+      "fact": "Deadfish is a joke language with a single accumulator and four commands (i, d, s, o) — and a famous quirk: whenever the value hits exactly 256 or -1 it resets to 0, which makes long outputs an exercise in planning."
     }
   ],
   "DISTRACTORS": {
@@ -261,6 +341,56 @@
       "Chef",
       "Piet",
       "Emojicode"
+    ],
+    "Piet": [
+      "Velato",
+      "Emojicode",
+      "Befunge"
+    ],
+    "Fractran": [
+      "Thue",
+      "JSFuck",
+      "Malbolge"
+    ],
+    "Labyrinth": [
+      "Befunge",
+      "Hexagony",
+      "SNUSP"
+    ],
+    "GolfScript": [
+      "FALSE",
+      "Rockstar",
+      "HQ9+"
+    ],
+    "Chicken": [
+      "Ook!",
+      "COW",
+      "Blub"
+    ],
+    "Unary": [
+      "Whitespace",
+      "Brainfuck",
+      "HQ9+"
+    ],
+    "FALSE": [
+      "GolfScript",
+      "Unlambda",
+      "JSFuck"
+    ],
+    "Thue": [
+      "Fractran",
+      "Unlambda",
+      "GolfScript"
+    ],
+    "SNUSP": [
+      "Befunge",
+      "Labyrinth",
+      "Hexagony"
+    ],
+    "Deadfish": [
+      "Brainfuck",
+      "HQ9+",
+      "Fractran"
     ]
   },
   "SUBS": {
@@ -287,6 +417,13 @@
     "Unlambda": "Functional — backticks and single letters",
     "><>": "A fish swimming through code",
     "Labyrinth": "2D maze — walls steer the pointer",
-    "HQ9+": "One letter per joke program"
+    "HQ9+": "One letter per joke program",
+    "GolfScript": "A string is the whole program",
+    "Chicken": "One word: chicken",
+    "Unary": "Nothing but zeroes, enormously long",
+    "FALSE": "Stack language from 1993",
+    "Thue": "Programs are rewrite rules",
+    "SNUSP": "A path traced through a grid",
+    "Deadfish": "Four commands: i, d, s, o"
   }
 }
