@@ -269,6 +269,96 @@
       ],
       "weakHint": "The pictures aren’t decoration.",
       "fact": "Emojicode is a real, open-source, high-level language — it has classes, generics and closures, all spelled in emoji. 🏁 is the entry point and 😀 is its print."
+    },
+    {
+      "kind": "fragment",
+      "lang": "FALSE",
+      "family": "Stack machines & postfix",
+      "code": "\"Hello, World!\" ß",
+      "note": "// Tiny excerpt (1–2 lines) — in this language that is nearly the whole program: a string, then the one symbol that prints it.",
+      "options": [
+        "FALSE",
+        "Underload",
+        "Befunge",
+        "Thue"
+      ],
+      "weakHint": "Almost everything on show is the message itself — the language is the symbol left over.",
+      "fact": "FALSE (Wouter van Oortmerssen, 1993) is a tiny stack language: strings push themselves, and ß pops and prints. It directly inspired GolfScript."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Smallfuck",
+      "family": "Tape & token soup",
+      "code": "*>>*[*<]>>>>*[*<]>>>>",
+      "note": "// Tiny excerpt (1–2 lines) — a mid-print slice. The alphabet here has five characters, and one of them is an asterisk.",
+      "options": [
+        "Smallfuck",
+        "Brainfuck",
+        "Brainbool",
+        "Ook!"
+      ],
+      "weakHint": "Same tape, fewer letters — and one of them is a star.",
+      "fact": "Smallfuck shrinks Brainfuck to a 5-command bit-tape language (* flips a bit, > and < move, [ ] loop). Whole programs look like a spilled box of asterisks."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Brainbool",
+      "family": "Tape & token soup",
+      "code": ">++++++++[<++++++++>-]<+.\n.+..+++..+++.<++++++++.",
+      "note": "// Tiny excerpt (1–2 lines) — mid-print. Familiar-looking commands, but the cells underneath hold one bit each.",
+      "options": [
+        "Brainbool",
+        "Smallfuck",
+        "Brainfuck",
+        "COW"
+      ],
+      "weakHint": "It walks like Brainfuck, but each cell can only say yes or no.",
+      "fact": "Brainbool is Brainfuck restricted to bit cells: values are built by counting, not stored, which is why its programs are all pointer moves, pluses and dots."
+    },
+    {
+      "kind": "fragment",
+      "lang": "SNUSP",
+      "family": "2D grids & paths",
+      "code": "$_/==!/==\\#==!\n  \\==!/==/==!",
+      "note": "// Tiny excerpt (1–2 lines) — the whole program fits the slice. Execution enters at one symbol and bounces around the grid.",
+      "options": [
+        "SNUSP",
+        "Befunge",
+        "Hexagony",
+        "Labyrinth"
+      ],
+      "weakHint": "Follow the line, not the reading order — something in here acts like a mirror.",
+      "fact": "SNUSP runs like a light beam entering at $ and reflecting off / and \\ mirrors; the traced path through the grid is the execution order."
+    },
+    {
+      "kind": "fragment",
+      "lang": "Thue",
+      "family": "String rewriting & substitution",
+      "code": "x::=~Hello, World!",
+      "note": "// Tiny excerpt (1–2 lines) — one rule from the program, plus the seed string it starts from has been cut.",
+      "options": [
+        "Thue",
+        "///",
+        "Underload",
+        "Fractran"
+      ],
+      "weakHint": "There is a before and an after here, separated by a very distinctive sign.",
+      "fact": "Thue (John Colagioia, 2000) is pure find-and-replace: rules of the form a::=b rewrite a starting string, and ~ marks text as output instead of a replacement."
+    },
+    {
+      "kind": "fragment",
+      "lang": "///",
+      "family": "String rewriting & substitution",
+      "code": "/x/Hello, World!/x",
+      "note": "// Tiny excerpt (1–2 lines) — slashes are the only punctuation this language has; a pattern, a replacement, and the text it works on.",
+      "options": [
+        "///",
+        "Thue",
+        "Fractran",
+        "Underload"
+      ],
+      "weakHint": "Count the dividers — the whole grammar fits between them.",
+      "fact": "/// (pronounced \"slashes\") has one construct: /pattern/replacement/ applied to the text that follows, repeatedly. Its Hello World is a single substitution that expands a marker into the greeting."
     }
   ],
   "REVERSE_PROMPT": "Four candidates follow, labelled 1–4.\nAll four are genuine — real Hello, World! code, or a faithful excerpt or representation of it — each in a different language from the same close family.\nOnly one of them is the language named above. Pick that one.",
