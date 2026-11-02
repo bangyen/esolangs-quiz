@@ -16,9 +16,9 @@ fact from one round can't help with a later one.
 
 | Mode | Rounds per run | Pools (size → drawn) | Options | Hints | Scoring |
 | --- | --- | --- | --- | --- | --- |
-| Normal | 12 | Questions 20 → 12 | 4 | Free, unlimited | 1 point per correct answer |
-| Hard | 15 | Fragments 18 → 6 · Reverse 8 → 3 · Wide 9 → 6 | 4 (fragments, reverse) · 8 (wide) | 1 per run, −25 pts and your streak | +100 per correct answer |
-| Expert | 15 | Identification 18 → 6 · Odd-one-out 8 → 3 · Two-stage 10 → 3 · Pairing 10 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
+| Normal | 12 | Questions 30 → 12 | 4 | Free, unlimited | 1 point per correct answer |
+| Hard | 15 | Fragments 24 → 6 · Reverse 14 → 3 · Wide 18 → 6 | 4 (fragments, reverse) · 8 (wide) | 1 per run, −25 pts and your streak | +100 per correct answer |
+| Expert | 15 | Identification 24 → 6 · Odd-one-out 14 → 3 · Two-stage 16 → 3 · Pairing 16 → 3 | 8 (identification) | None | +100 correct · −50 wrong |
 
 - **Normal** — famous esolangs (Brainfuck, LOLCODE, Shakespeare, Chef, …),
   full programs, plain name-only options.
