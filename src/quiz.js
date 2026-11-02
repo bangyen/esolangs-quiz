@@ -27,6 +27,7 @@ var codeEl=document.getElementById('codeEl'), codeNote=document.getElementById('
 var qTag=document.getElementById('qTag'), codeImg=document.getElementById('codeImg'),
     modeNote=document.getElementById('modeNote'), hintsStat=document.getElementById('hintsStat'),
     srStatus=document.getElementById('srStatus');
+var studyBtn=document.getElementById('studyBtn'), studyView=document.getElementById('studyView');
 
 function pool(){ return mode==='expert' ? EXPERT_ALL : (mode==='hard' ? HARD_ALL : (mode==='commands' ? COMMANDS : QUESTIONS)); }
 function currentQ(){ return pool()[order[idx]]; }
@@ -634,6 +635,9 @@ nextBtn.addEventListener('click', function(){
 });
 
 document.addEventListener('keydown', function(e){
+  // In the Study view the quiz keys (digits to answer, Enter to
+  // advance) must not reach the hidden run.
+  if(view==='study') return;
   if(document.getElementById('resultsView').classList.contains('show')){
     if(e.key==='Enter'){ restart(); focusQuestionPrompt(); } return;
   }
@@ -680,8 +684,85 @@ function startQuiz(){
 function restart(){ clearAutoAdvance(); blurActive(); startQuiz(); scrollToEl(document.getElementById('quizView')); }
 document.getElementById('restartBtn').addEventListener('click', restart);
 
+// Study view content: rendered once from the same pools the quiz
+// draws from — the Normal pool's languages (alphabetical) with the
+// Hello World and fact the quiz itself shows for each, and the
+// Commands pool grouped by language (alphabetical; commands in their
+// stored order) with each command's effect verbatim. No content is
+// authored here; Study is a reference rendering of the quiz data.
+function buildStudy(){
+  var byLang = function(a, b){ return a.lang < b.lang ? -1 : (a.lang > b.lang ? 1 : 0); };
+  var langBox = document.getElementById('studyLangs');
+  QUESTIONS.slice().sort(byLang).forEach(function(q){
+    var sec = document.createElement('section');
+    var h = document.createElement('h3'); h.textContent = q.lang;
+    var wrap = document.createElement('div'); wrap.className = 'code-wrap';
+    var pre = document.createElement('pre'); pre.textContent = q.code;
+    wrap.appendChild(pre);
+    var fact = document.createElement('p'); fact.className = 'study-fact';
+    fact.textContent = q.fact;
+    sec.appendChild(h); sec.appendChild(wrap); sec.appendChild(fact);
+    langBox.appendChild(sec);
+  });
+  var cmdBox = document.getElementById('studyCmds');
+  var groups = {}, names = [];
+  COMMANDS.forEach(function(c){
+    if(!groups[c.lang]){ groups[c.lang] = []; names.push(c.lang); }
+    groups[c.lang].push(c);
+  });
+  names.sort();
+  names.forEach(function(lang){
+    var sec = document.createElement('section');
+    var h = document.createElement('h3'); h.textContent = lang;
+    var table = document.createElement('table'); table.className = 'cmd-table';
+    var head = document.createElement('tr');
+    var thS = document.createElement('th'); thS.textContent = 'Command';
+    var thE = document.createElement('th'); thE.textContent = 'Effect';
+    head.appendChild(thS); head.appendChild(thE);
+    table.appendChild(head);
+    groups[lang].forEach(function(c){
+      var tr = document.createElement('tr');
+      var tdS = document.createElement('td'); tdS.className = 'sym';
+      tdS.textContent = c.symbol;
+      var tdE = document.createElement('td'); tdE.textContent = c.effect;
+      tr.appendChild(tdS); tr.appendChild(tdE);
+      table.appendChild(tr);
+    });
+    sec.appendChild(h); sec.appendChild(table);
+    cmdBox.appendChild(sec);
+  });
+}
+
+// Study is a VIEW, not a fifth mode. Entering it cancels any pending
+// auto-advance (the same clearAutoAdvance path a mode switch uses),
+// hides both quiz views, and leaves the run state untouched —
+// returning via a mode tab goes through setMode(), which starts a
+// run exactly as a mode switch does today.
+var view = 'quiz';
+function showStudy(){
+  clearAutoAdvance();
+  view = 'study';
+  document.getElementById('quizView').style.display = 'none';
+  document.getElementById('resultsView').classList.remove('show');
+  studyView.classList.add('show');
+  ['modeNormalBtn', 'modeHardBtn', 'modeExpertBtn', 'modeCommandsBtn'].forEach(function(id){
+    var b = document.getElementById(id);
+    b.className = '';
+    b.setAttribute('aria-pressed', 'false');
+  });
+  studyBtn.className = 'active';
+  studyBtn.setAttribute('aria-pressed', 'true');
+  modeNote.textContent = 'Reference — every Hello World and command in the quiz.';
+  // Announce the view switch on the same live region questions use.
+  srStatus.textContent = 'Study view. Reference — every Hello World and command in the quiz.';
+}
+
 function setMode(m){
   clearAutoAdvance();
+  view = 'quiz';
+  studyView.classList.remove('show');
+  studyBtn.className = '';
+  studyBtn.setAttribute('aria-pressed', 'false');
   mode=m;
   document.getElementById('modeNormalBtn').className = m==='normal' ? 'active' : '';
   document.getElementById('modeHardBtn').className = m==='hard' ? 'active' : '';
@@ -704,7 +785,9 @@ document.getElementById('modeNormalBtn').addEventListener('click', function(){ s
 document.getElementById('modeHardBtn').addEventListener('click', function(){ setMode('hard'); });
 document.getElementById('modeExpertBtn').addEventListener('click', function(){ setMode('expert'); });
 document.getElementById('modeCommandsBtn').addEventListener('click', function(){ setMode('commands'); });
+studyBtn.addEventListener('click', showStudy);
 
 // Start through startQuiz (not a bare render) so the very first run is also
 // a random draw from the pools, not the full pool in shuffled order.
+buildStudy();
 startQuiz();

@@ -24,11 +24,12 @@ __CSS__
 <div class="wrap">
   <header class="site-head">
     <h1>Esolangs Quiz</h1>
-    <div class="mode-toggle" role="group" aria-label="Quiz mode">
+    <div class="mode-toggle" role="group" aria-label="Quiz mode and study view">
       <button type="button" id="modeNormalBtn" class="active" aria-pressed="true">Normal</button>
       <button type="button" id="modeHardBtn" aria-pressed="false">Hard</button>
       <button type="button" id="modeExpertBtn" aria-pressed="false">Expert</button>
       <button type="button" id="modeCommandsBtn" aria-pressed="false">Commands</button>
+      <button type="button" id="studyBtn" aria-pressed="false">Study</button>
     </div>
   </header>
   <p class="mode-note" id="modeNote"></p>
@@ -65,6 +66,13 @@ __CSS__
     <p class="final-sub"><span id="bdCorrect">0</span> correct · Best streak: <span id="bdBestStreak">0</span></p>
     <button class="btn-restart" id="restartBtn" type="button">Play again</button>
     <div class="review" id="reviewEl"></div>
+  </div>
+
+  <div class="study" id="studyView">
+    <h2>Languages</h2>
+    <div id="studyLangs"></div>
+    <h2>Commands</h2>
+    <div id="studyCmds"></div>
   </div>
 </div>
 
