@@ -24,9 +24,10 @@
   .mode-toggle button{appearance:none;border:0;background:transparent;color:var(--muted);padding:8px 12px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;font-weight:500}
   .mode-toggle button.active{background:var(--ink);color:var(--bg);font-weight:600}
   /* Study is a view, not a mode: a plain text button on its own
-     right-aligned row under the header, so neither the pill nor the
-     header row has to make room for a fifth item on phones. */
-  .study-row{display:flex;justify-content:flex-end}
+     row under the header, left-aligned with the rest of the content
+     flow, so neither the pill nor the header row has to make room
+     for a fifth item on phones. */
+  .study-row{display:flex;justify-content:flex-start}
   .study-link{appearance:none;border:0;background:transparent;color:var(--muted);padding:8px 2px;min-height:44px;display:inline-flex;align-items:center;font-size:14px;font-weight:500;cursor:pointer}
   .study-link.active{color:var(--ink);font-weight:600;text-decoration:underline;text-underline-offset:4px}
   .mode-note{font-size:13px;color:var(--muted);margin:12px 0 0;min-height:0}

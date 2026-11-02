@@ -581,6 +581,10 @@ class TestStudyView(unittest.TestCase):
             BUILT,
             r'<div class="study-row">\s*<button[^>]*id="studyBtn"')
         self.assertIn('.study-row{display:flex', STYLE)
+        # Left-aligned like everything else in the content flow —
+        # the right alignment was a leftover from its header days.
+        self.assertIn('justify-content:flex-start', STYLE)
+        self.assertNotIn('justify-content:flex-end', STYLE)
         self.assertNotIn('head-actions', BUILT)
 
     def test_study_nav_at_both_sections(self):
